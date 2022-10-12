@@ -1,14 +1,18 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Tabs, Modal, Input } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
+import Cookies from "universal-cookie";
 
 const VisulisationNagivation = () => {
-  const [items, setItems] = useState([
-    { label: "Male vs Female", key: "item-1", children: "content-1" },
-    { label: "Another view", key: "item-2", children: "content-2" },
-    { label: "Pie chart", key: "item-3", children: "content-3" },
-  ]);
-  const newTabIndex = useRef(0);
+  const defaultItems = [
+    { label: "Male vs Female", key: "0", children: "content-1" },
+    { label: "Another view", key: "1", children: "content-2" },
+    { label: "Pie chart", key: "2", children: "content-3" },
+  ];
+  const cookies = new Cookies();
+  const [items, setItems] = useState(defaultItems);
+  const newTabIndex = useRef(3);
+  const firstUpdate = useRef(true);
   const [activeKey, setActiveKey] = useState("item-1");
   const [isModalOpen, setModalOpen] = useState(false);
   const [newName, setNewName] = useState("");
@@ -18,8 +22,33 @@ const VisulisationNagivation = () => {
     setActiveKey(key);
   };
 
+  const setCookie = () => {
+    cookies.set("items", items, { path: "/" });
+  };
+
+  useEffect(() => {
+    let cookieItems = cookies.get("items");
+    if (cookieItems) {
+      console.log(items);
+      console.log("Getting cookie");
+      console.log(cookieItems);
+      setItems(cookieItems);
+      newTabIndex.current += Number(cookieItems[cookieItems.length - 1].key);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (firstUpdate.current) {
+      firstUpdate.current = false;
+      return;
+    }
+    console.log("Updating cookie");
+    console.log(items);
+    setCookie();
+  }, [items]);
+
   const add = () => {
-    const newActiveKey = `newTab${newTabIndex.current++}`;
+    const newActiveKey = `${newTabIndex.current++}`;
     setItems([
       ...items,
       {
@@ -87,6 +116,7 @@ const VisulisationNagivation = () => {
     }
     setNewName("");
     setModalOpen(false);
+    setCookie();
   };
 
   const handleCancel = () => {
