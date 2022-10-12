@@ -88,7 +88,7 @@ const VisulisationNagivation = () => {
         items.find((i) => i.key == targetKey)?.label +
         "'?",
       icon: <ExclamationCircleOutlined />,
-      content: "Some descriptions",
+      content: "This cannot be undone.",
       okText: "Yes",
       okType: "danger",
       cancelText: "No",
