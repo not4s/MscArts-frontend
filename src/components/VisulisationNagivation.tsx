@@ -2,10 +2,11 @@ import React, { useState, useRef, useEffect } from "react";
 import { Tabs, Modal, Input } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import Cookies from "universal-cookie";
+import Graph from "./Graph";
 
 const VisulisationNagivation = () => {
   const defaultItems = [
-    { label: "Male vs Female", key: "0", children: "content-1" },
+    { label: "Male vs Female", key: "0", children: <Graph /> },
     { label: "Another view", key: "1", children: "content-2" },
     { label: "Pie chart", key: "2", children: "content-3" },
   ];
@@ -23,7 +24,7 @@ const VisulisationNagivation = () => {
   };
 
   const setCookie = () => {
-    cookies.set("items", items, { path: "/" });
+    // cookies.set("items", items, { path: "/" });
   };
 
   useEffect(() => {
@@ -134,18 +135,18 @@ const VisulisationNagivation = () => {
         <Input
           placeholder="New name..."
           value={newName}
-          onChange={(e) => setNewName(e.target.value)}
+          onChange={(e: any) => setNewName(e.target.value)}
         />
       </Modal>
       <Tabs
         onChange={onChange}
         activeKey={activeKey}
         type="editable-card"
-        onEdit={(e) => {
+        onEdit={(e: any) => {
           onEdit(e.toString());
         }}
         items={items}
-        onTabClick={(e) => clicked(e.toString())}
+        onTabClick={(e: any) => clicked(e.toString())}
       />
     </div>
   );
