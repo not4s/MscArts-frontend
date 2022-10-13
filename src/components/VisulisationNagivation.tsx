@@ -3,10 +3,11 @@ import { Tabs, Modal, Input } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import Cookies from "universal-cookie";
 import Graph from "./Graph";
+import GraphGrid from "./GraphGrid";
 
 const VisulisationNagivation = () => {
   const defaultItems = [
-    { label: "Male vs Female", key: "0", children: <Graph /> },
+    { label: "Male vs Female", key: "0", children: <GraphGrid /> },
     { label: "Another view", key: "1", children: "content-2" },
     { label: "Pie chart", key: "2", children: "content-3" },
   ];
