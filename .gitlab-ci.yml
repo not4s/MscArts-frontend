@@ -1,0 +1,25 @@
+stages:
+  - test
+  - staging
+
+testing:
+  stage: test
+  script:
+    - echo "Testing"
+
+staging:
+  variables:
+    ENV: staging
+  stage: staging
+  script:
+    - source ~/.bashrc
+    - npm install
+    - CI=false npm run build
+    - sudo rm -f /usr/share/nginx/html/*
+    - sudo cp -a build/. /usr/share/nginx/html/
+    - sudo service nginx restart
+  environment:
+    name: staging
+    url: http://146.169.43.35:3000/
+  only:
+    - master
