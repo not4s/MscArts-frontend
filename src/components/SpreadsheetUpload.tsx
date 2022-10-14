@@ -1,11 +1,35 @@
 import React, { useState } from "react";
 import { FileUploader } from "react-drag-drop-files";
 import axios from "axios";
+import { Modal, Input } from "antd";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 
 const FILE_TYPES = ["CSV", "XLS", "XML", "XLSX"];
 
 const SpreadsheetUpload = () => {
+  const [file, setFile] = useState("");
+  const { confirm } = Modal;
+
+  const showConfirm = () => {
+    confirm({
+      title: "Are you sure you want to upload this spreadsheet?",
+      icon: <ExclamationCircleOutlined />,
+      okText: "Upload",
+      onOk() {
+        handleOk();
+      },
+      onCancel() {
+        console.log("Canceled");
+      },
+    });
+  };
+
   const handleChange = (file: any) => {
+    setFile(file);
+    showConfirm();
+  };
+
+  const handleOk = () => {
     const formData = new FormData();
     formData.append("file", file);
     axios
