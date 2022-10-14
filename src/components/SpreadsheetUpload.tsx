@@ -7,16 +7,16 @@ import { ExclamationCircleOutlined } from "@ant-design/icons";
 const FILE_TYPES = ["CSV", "XLS", "XML", "XLSX"];
 
 const SpreadsheetUpload = () => {
-  const [file, setFile] = useState("");
+  // const [file, setFile] = useState("");
   const { confirm } = Modal;
 
-  const showConfirm = () => {
+  const showConfirm = (file: File) => {
     confirm({
       title: "Are you sure you want to upload this spreadsheet?",
       icon: <ExclamationCircleOutlined />,
       okText: "Upload",
       onOk() {
-        handleOk();
+        handleOk(file);
       },
       onCancel() {
         console.log("Canceled");
@@ -24,12 +24,12 @@ const SpreadsheetUpload = () => {
     });
   };
 
-  const handleChange = (file: any) => {
-    setFile(file);
-    showConfirm();
+  const handleChange = (file: File) => {
+    // setFile(file);
+    showConfirm(file);
   };
 
-  const handleOk = () => {
+  const handleOk = (file: File) => {
     const formData = new FormData();
     formData.append("file", file);
     axios
