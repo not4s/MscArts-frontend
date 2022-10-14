@@ -1,13 +1,25 @@
 import React, { useState } from "react";
 import { FileUploader } from "react-drag-drop-files";
+import axios from "axios";
 
 const FILE_TYPES = ["CSV", "XLS", "XML", "XLSX"];
 
 const SpreadsheetUpload = () => {
-  const [file, setFile] = useState(null);
   const handleChange = (file: any) => {
-    setFile(file);
-    console.log(file);
+    const formData = new FormData();
+    formData.append("file", file);
+    axios
+      .post("/api/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then(function () {
+        console.log("success");
+      })
+      .catch(function () {
+        console.log("failure");
+      });
   };
 
   return (
