@@ -3,6 +3,7 @@ import { Tabs, Modal, Input } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import GraphGrid from "./GraphGrid";
 import Cookies from "universal-cookie";
+import CreateGraph from "./CreateGraph";
 
 const VisulisationNagivation = () => {
   const defaultItems = [
@@ -55,7 +56,7 @@ const VisulisationNagivation = () => {
       ...items,
       {
         label: "Untitled",
-        children: "Enter a new visulisation here!",
+        children: <CreateGraph />,
         key: newActiveKey,
       },
     ]);
