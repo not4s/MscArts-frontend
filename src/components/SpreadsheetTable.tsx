@@ -18,6 +18,7 @@ export const SpreadsheetTable = () => {
     {
       title: "Date",
       dataIndex: "date",
+      sorter: (a, b) => moment(a.date).unix() - moment(b.date).unix(),
     },
   ];
 
@@ -49,5 +50,14 @@ export const SpreadsheetTable = () => {
     },
   ];
 
-  return <Table columns={columns} dataSource={data} />;
+  const onChange: TableProps<DataType>["onChange"] = (
+    pagination,
+    filters,
+    sorter,
+    extra
+  ) => {
+    console.log("params", pagination, filters, sorter, extra);
+  };
+
+  return <Table columns={columns} dataSource={data} onChange={onChange} />;
 };
