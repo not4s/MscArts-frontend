@@ -12,16 +12,25 @@ import FormItem from "antd/es/form/FormItem";
 
 const { Option } = Select;
 
-const CreateGraph = () => {
+const CreateGraph = ({}) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [graphType, setGraphType] = useState("");
   const [form] = Form.useForm();
 
+  const createBarChart = () => {
+    console.log("Creating bar chart");
+  };
+
   const handleOk = () => {
     form.submit();
-    console.log(Object.values(form.getFieldsValue()));
     if (!Object.values(form.getFieldsValue()).includes(undefined)) {
       setModalOpen(false);
+      var type = form.getFieldValue("Visulisation");
+      switch (type) {
+        case "BAR":
+          createBarChart();
+        default:
+      }
     }
   };
 
