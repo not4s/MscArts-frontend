@@ -15,7 +15,7 @@ staging:
     - source ~/.bashrc
     - npm install
     - CI=false npm run build
-    - sudo rm -f /usr/share/nginx/html/*
+    - sudo rm -rf /usr/share/nginx/html/*
     - sudo cp -a build/. /usr/share/nginx/html/
     - sudo service nginx restart
   environment:
