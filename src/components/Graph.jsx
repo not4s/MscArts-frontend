@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Column } from "@ant-design/charts";
+import axios from "axios";
 
 const Graph = () => {
-  const [graphs, setGraphs] = useState({
+  const [graph, setGraph] = useState({
     tid: 1,
     graphs: [
       {
@@ -26,12 +27,25 @@ const Graph = () => {
     ],
   });
 
+  const [data, setData] = useState([])
+
+  useEffect(() => {
+    axios
+      .get('/api/applicant')
+      .then(res => {console.log(res); setData(res.data.map(x => ({...x, value: 1})  ))})
+      .catch(err => console.log(err));
+  }, [])
+
+  useEffect(() => {
+    console.log(data)
+  }, [data])
+
   const config = {
-    data: graphs.graphs[0].data,
-    isStack: true,
-    xField: "year",
+    data: data,
+    xField: "gender",
     yField: "value",
-    seriesField: "type",
+    isStack: "true",
+    seriesField: "nationality",
     annotations: [
       {
         type: 'line',

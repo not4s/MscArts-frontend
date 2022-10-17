@@ -9,16 +9,19 @@ import {
 import { Button, Form, Modal, Select, Tag } from "antd";
 import type { MenuProps } from "antd";
 import FormItem from "antd/es/form/FormItem";
+import axios from "axios";
+import Graph from "./Graph";
 
 const { Option } = Select;
 
-const CreateGraph = ({}) => {
+const CreateGraph = (graphs: any, setGraphs: any) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [graphType, setGraphType] = useState("");
   const [form] = Form.useForm();
 
   const createBarChart = () => {
-    console.log("Creating bar chart");
+    //TODO
+    setGraphs(...graphs, <Graph />);
   };
 
   const handleOk = () => {
