@@ -31,8 +31,8 @@ const Graph = () => {
 
   useEffect(() => {
     axios
-      .get('/api/applicant')
-      .then(res => {console.log(res); setData(res.data.map(x => ({...x, value: 1})  ))})
+      .get('/api/applicant?count=gender')
+      .then(res => {console.log(res.data); setData(res.data)})
       .catch(err => console.log(err));
   }, [])
 
@@ -43,7 +43,7 @@ const Graph = () => {
   const config = {
     data: data,
     xField: "gender",
-    yField: "value",
+    yField: "count",
     isStack: "true",
     seriesField: "nationality",
     annotations: [
