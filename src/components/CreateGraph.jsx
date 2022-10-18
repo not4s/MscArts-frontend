@@ -7,21 +7,20 @@ import {
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import { Button, Form, Modal, Select, Tag } from "antd";
-import type { MenuProps } from "antd";
 import FormItem from "antd/es/form/FormItem";
 import axios from "axios";
 import Graph from "./Graph";
 
 const { Option } = Select;
 
-const CreateGraph = (graphs: any, setGraphs: any) => {
+const CreateGraph = (props) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [graphType, setGraphType] = useState("");
   const [form] = Form.useForm();
 
   const createBarChart = () => {
     //TODO
-    setGraphs(...graphs, <Graph />);
+    props.setGraphs([...props.graphs, <Graph />]);
   };
 
   const handleOk = () => {
@@ -57,7 +56,7 @@ const CreateGraph = (graphs: any, setGraphs: any) => {
             <Select
               placeholder="Select visulisation type"
               style={{ width: 240 }}
-              onChange={(value: string) => setGraphType(value)}
+              onChange={(value) => setGraphType(value)}
             >
               <Option value="BAR">
                 <BarChartOutlined /> Bar Chart

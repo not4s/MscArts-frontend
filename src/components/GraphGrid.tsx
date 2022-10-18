@@ -1,24 +1,27 @@
 import { Col, Row } from "antd";
-import axios from "axios";
-import React, { useEffect, useState, ReactNode } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import CreateGraph from "./CreateGraph";
-import Graph from "./Graph";
 
 const GraphGrid = () => {
-  const [graphs, setGraphs] = useState([<Graph />]);
+  const list: Element[] = [];
 
-  const rows: JSX.Element[][] = sliceIntoChunks(graphs, 3);
+  const [graphs, setGraphs] = useState(list);
+
+  const allGraphs = [
+    ...graphs,
+    <CreateGraph graphs={graphs} setGraphs={setGraphs} />,
+  ];
+
+  const rows: JSX.Element[][] = sliceIntoChunks(allGraphs, 3);
   console.log(rows);
   const nodes = rows.map((row) => {
     return (
       <>
         <Row>
-          {" "}
           {row.map((graph) => {
             return <Col span={24 / row.length}> {graph} </Col>;
-          })}{" "}
+          })}
         </Row>
-        <CreateGraph graphs={graphs} setGraphs={setGraphs} />
       </>
     );
   });
