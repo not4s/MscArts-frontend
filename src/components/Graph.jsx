@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Column } from "@ant-design/charts";
 import axios from "axios";
+import { APIService } from "../services/API";
 
 const Graph = () => {
   const [graph, setGraph] = useState({
@@ -30,10 +31,10 @@ const Graph = () => {
   const [data, setData] = useState([])
 
   useEffect(() => {
-    axios
-      .get('/api/applicant?count=gender')
-      .then(res => {console.log(res.data); setData(res.data)})
-      .catch(err => console.log(err));
+    const api = new APIService()
+
+    api.getApplicantData()
+      .then(res => { console.log(res.data); setData(res.data) } )
   }, [])
 
   useEffect(() => {
