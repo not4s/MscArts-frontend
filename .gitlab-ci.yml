@@ -9,6 +9,7 @@ testing:
 
 staging:
   variables:
+    REACT_APP_API_URL: http://146.169.43.35:5000/
     ENV: staging
   stage: staging
   script:
