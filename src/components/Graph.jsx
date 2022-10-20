@@ -50,8 +50,8 @@ const Graph = () => {
       {
         type: 'line',
         id: 'line',
-        start: ['0%', '66%'], // [StartX, StartY]
-        end: ['50%', '66%'], // [EndX, EndY]
+        start: ['0%', '50%'], // [StartX, StartY]
+        end: ['33%', '50%'], // [EndX, EndY]
         text: {
           content: 'Target',
           position: 'right',
@@ -69,7 +69,26 @@ const Graph = () => {
       {
         type: 'line',
         id: 'line',
-        start: ['50%', '20%'], // [StartX, StartY]
+        start: ['33%', '40%'], // [StartX, StartY]
+        end: ['66%', '40%'], // [EndX, EndY]
+        text: {
+          content: 'Target',
+          position: 'right',
+          offsetY: 18,
+          style: {
+            textAlign: 'right',
+          },
+        },
+        style: {
+          lineWidth: 2,
+          // lineDash: [4, 4],
+          fill: '#000000'
+        },
+      },
+      {
+        type: 'line',
+        id: 'line',
+        start: ['66%', '20%'], // [StartX, StartY]
         end: ['100%', '20%'], // [EndX, EndY]
         text: {
           content: 'Target',
