@@ -1,9 +1,22 @@
 import { Table } from "antd";
 import { ColumnsType, TableProps } from "antd/lib/table";
+import axios from "axios";
 import moment from "moment";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 export const SpreadsheetTable = () => {
+  const [tableData, setTableData] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get(`/api/applicant`)
+      .then((res) => {
+        console.log(res.data);
+        setTableData(res.data);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
   interface DataType {
     key: React.Key;
     name: string;
@@ -13,41 +26,38 @@ export const SpreadsheetTable = () => {
   const columns: ColumnsType<DataType> = [
     {
       title: "Name",
-      dataIndex: "name",
+      dataIndex: "first_name",
     },
     {
-      title: "Date",
-      dataIndex: "date",
-      sorter: (a, b) => moment(a.date).unix() - moment(b.date).unix(),
+      title: "Surname",
+      dataIndex: "last_name",
     },
-  ];
+    {
+      title: "Gender",
+      dataIndex: "gender",
+    },
+    {
+      title: "Prefix",
+      dataIndex: "prefix",
+    },
+    {
+      title: "Program",
+      dataIndex: "program_code",
+    },
+    {
+      title: "Fee Status",
+      dataIndex: "fee_status",
+    },
+    {
+      title: "nationality",
+      dataIndex: "nationality",
+    },
 
-  const data = [
-    {
-      key: "1",
-      name: "Excel 1",
-      date: "05/09/2019",
-    },
-    {
-      key: "2",
-      name: "Excel 2",
-      date: "04/09/2019",
-    },
-    {
-      key: "3",
-      name: "Excel 3",
-      date: "03/09/2019",
-    },
-    {
-      key: "4",
-      name: "Excel 4",
-      date: "02/09/2019",
-    },
-    {
-      key: "5",
-      name: "Excel 5",
-      date: "01/09/2019",
-    },
+    // {
+    // title: "Date",
+    // dataIndex: "date",
+    // sorter: (a, b) => moment(a.date).unix() - moment(b.date).unix(),
+    // },
   ];
 
   const onChange: TableProps<DataType>["onChange"] = (
@@ -56,8 +66,8 @@ export const SpreadsheetTable = () => {
     sorter,
     extra
   ) => {
-    console.log("params", pagination, filters, sorter, extra);
+    console.log("params", filters, sorter, extra);
   };
 
-  return <Table columns={columns} dataSource={data} onChange={onChange} />;
+  return <Table columns={columns} dataSource={tableData} onChange={onChange} />;
 };
