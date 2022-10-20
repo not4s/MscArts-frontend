@@ -26,10 +26,10 @@ export class APIService {
   async buildAuthRequest(method: string, endpoint: string) {}
 
   getApplicantData(): Promise<APIResponse> {
-    return this.buildRequest("GET", "/api/applicant/?count=gender/");
+    return this.buildRequest("GET", "/api/applicant/?count=gender");
   }
 
   postSpreadsheet(data: FormData): Promise<APIResponse> {
-    return this.buildRequest("POST", "/api/upload/", data);
+    return this.buildRequest("POST", "/api/upload", data);
   }
 }
