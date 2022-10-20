@@ -49,7 +49,7 @@ export const SpreadsheetTable = () => {
       dataIndex: "fee_status",
     },
     {
-      title: "nationality",
+      title: "Nationality",
       dataIndex: "nationality",
     },
 
