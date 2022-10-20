@@ -46,6 +46,7 @@ const Graph = () => {
     xField: "gender",
     yField: "count",
     isStack: "true",
+    seriesField: "type",
     annotations: [
       {
         type: 'line',
