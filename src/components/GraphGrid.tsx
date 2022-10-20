@@ -1,11 +1,10 @@
 import { Col, Row } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import CreateGraph from "./CreateGraph";
+import Graph from "./Graph";
 
 const GraphGrid = () => {
-  const list: Element[] = [];
-
-  const [graphs, setGraphs] = useState(list);
+  const [graphs, setGraphs] = useState([<Graph />]);
 
   const allGraphs = [
     ...graphs,
