@@ -3,6 +3,7 @@ import { FileUploader } from "react-drag-drop-files";
 import axios from "axios";
 import { Modal, Input } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
+import { SpreadsheetTable } from "./SpreadsheetTable";
 import { APIService } from "../services/API";
 
 const FILE_TYPES = ["CSV", "XLS", "XML", "XLSX"];
@@ -61,6 +62,7 @@ const SpreadsheetUpload = () => {
         name="file"
         types={FILE_TYPES}
       />
+      <SpreadsheetTable />
     </div>
   );
 };

@@ -9,7 +9,11 @@ testing:
 
 staging:
   variables:
+<<<<<<< .gitlab-ci.yml
+    REACT_APP_API_URL: http://146.169.43.35:5000/
+=======
     REACT_APP_API_URL: http://146.169.43.35:5000
+>>>>>>> .gitlab-ci.yml
     ENV: staging
   stage: staging
   script:
