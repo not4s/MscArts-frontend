@@ -56,7 +56,7 @@ const VisulisationNagivation = () => {
       ...items,
       {
         label: "Untitled",
-        children: <CreateGraph />,
+        children: <GraphGrid />,
         key: newActiveKey,
       },
     ]);

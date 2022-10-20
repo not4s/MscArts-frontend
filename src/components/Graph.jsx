@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Column } from "@ant-design/charts";
+import axios from "axios";
+import { APIService } from "../services/API";
 
 const Graph = () => {
-  const [graphs, setGraphs] = useState({
+  const [graph, setGraph] = useState({
     tid: 1,
     graphs: [
       {
@@ -26,12 +28,25 @@ const Graph = () => {
     ],
   });
 
+  const [data, setData] = useState([])
+
+  useEffect(() => {
+    const api = new APIService()
+
+    api.getApplicantData()
+      .then(res => { console.log(res.data); setData(res.data) } )
+  }, [])
+
+  useEffect(() => {
+    console.log(data)
+  }, [data])
+
   const config = {
-    data: graphs.graphs[0].data,
-    isStack: true,
-    xField: "year",
-    yField: "value",
-    seriesField: "type",
+    data: data,
+    xField: "gender",
+    yField: "count",
+    isStack: "true",
+    seriesField: "nationality",
     annotations: [
       {
         type: 'line',

@@ -4,6 +4,7 @@ import axios from "axios";
 import { Modal, Input } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { SpreadsheetTable } from "./SpreadsheetTable";
+import { APIService } from "../services/API";
 
 const FILE_TYPES = ["CSV", "XLS", "XML", "XLSX"];
 
@@ -33,18 +34,24 @@ const SpreadsheetUpload = () => {
   const handleOk = (file: File) => {
     const formData = new FormData();
     formData.append("file", file);
-    axios
-      .post("/api/upload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then(function () {
-        console.log("success");
-      })
-      .catch(function () {
-        console.log("failure");
-      });
+    // axios
+    //   .post("/api/upload", formData, {
+    //     headers: {
+    //       "Content-Type": "multipart/form-data",
+    //     },
+    //   })
+    //   .then(function () {
+    //     console.log("success");
+    //   })
+    //   .catch(function () {
+    //     console.log("failure");
+    //   });
+    const api = new APIService();
+    console.log("POSTING");
+    api
+      .postSpreadsheet(formData)
+      .then(() => console.log("success"))
+      .catch(() => console.log("failure"));
   };
 
   return (

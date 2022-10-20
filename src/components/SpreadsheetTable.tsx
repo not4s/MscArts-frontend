@@ -71,3 +71,5 @@ export const SpreadsheetTable = () => {
 
   return <Table columns={columns} dataSource={tableData} onChange={onChange} />;
 };
+
+export default SpreadsheetTable;
