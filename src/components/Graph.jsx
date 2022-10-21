@@ -3,7 +3,7 @@ import { Column } from "@ant-design/charts";
 import axios from "axios";
 import { APIService } from "../services/API";
 
-const Graph = () => {
+const Graph = ({ preset=0 }) => {
   const [graph, setGraph] = useState({
     tid: 1,
     graphs: [
@@ -33,7 +33,7 @@ const Graph = () => {
   useEffect(() => {
     const api = new APIService()
 
-    api.getApplicantData()
+    api.getApplicantData(configs[preset ? preset : 0].xField)
       .then(res => { console.log(res.data); setData(res.data) } )
   }, [])
 
@@ -41,12 +41,22 @@ const Graph = () => {
     console.log(data)
   }, [data])
 
-  const config = {
-    data: data,
-    xField: "gender",
-    yField: "count",
-    isStack: "true",
-    seriesField: "type",
+  const configs = [
+    {
+      data: data,
+      xField: "gender",
+      yField: "count",
+      isStack: "true",
+      seriesField: "type",
+    },
+    {
+      data: data,
+      xField: "fee_status",
+      yField: "count",
+      isStack: "true",
+    }
+
+]
     // annotations: [
     //   {
     //     type: 'line',
@@ -106,9 +116,8 @@ const Graph = () => {
     //     },
     //   },
     // ],
-  };
 
-  return <Column {...config} />;
+  return <Column {...configs[preset ? preset : 0]} />;
 };
 
 export default Graph;

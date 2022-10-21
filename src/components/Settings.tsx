@@ -29,22 +29,22 @@ const Settings = () => {
           Dark Mode: <Switch defaultChecked onChange={onSwitchChange} />{" "}
         </pre>
       </Drawer>
-      <Row gutter={16}>
-        <Col span={8}>
+      <Row gutter={22}>
+        <Col span={6}>
           <Card title="General Settings" bordered={true}>
             <Button type="primary" onClick={displayDrawer}>
               Open
             </Button>
           </Card>
         </Col>
-        <Col span={8}>
+        <Col span={6}>
           <Card title="Settings 2" bordered={true}>
             <Button type="primary" onClick={displayDrawer}>
               Open
             </Button>
           </Card>
         </Col>
-        <Col span={8}>
+        <Col span={6}>
           <Card title="Settings 3" bordered={true}>
             <Button type="primary" onClick={displayDrawer}>
               Open
@@ -52,22 +52,22 @@ const Settings = () => {
           </Card>
         </Col>
       </Row>
-      <Row gutter={16}>
-        <Col span={8}>
+      <Row gutter={22}>
+        <Col span={6}>
           <Card title="Settings 4" bordered={true}>
             <Button type="primary" onClick={displayDrawer}>
               Open
             </Button>
           </Card>
         </Col>
-        <Col span={8}>
+        <Col span={6}>
           <Card title="Settings 5" bordered={true}>
             <Button type="primary" onClick={displayDrawer}>
               Open
             </Button>
           </Card>
         </Col>
-        <Col span={8}>
+        <Col span={6}>
           <Card title="Settings 6" bordered={true}>
             <Button type="primary" onClick={displayDrawer}>
               Open

@@ -19,14 +19,14 @@ export class APIService {
       method: method,
       data,
     });
-
+    console.log(res.data);
     return res;
   }
 
   async buildAuthRequest(method: string, endpoint: string) {}
 
-  getApplicantData(): Promise<APIResponse> {
-    return this.buildRequest("GET", "/api/applicant/?count=gender");
+  getApplicantData(count: string): Promise<APIResponse> {
+    return this.buildRequest("GET", `/api/applicant/?count=${count}`);
   }
 
   postSpreadsheet(data: FormData): Promise<APIResponse> {
