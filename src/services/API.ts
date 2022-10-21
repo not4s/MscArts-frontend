@@ -32,4 +32,8 @@ export class APIService {
   postSpreadsheet(data: FormData): Promise<APIResponse> {
     return this.buildRequest("POST", "/api/upload", data);
   }
+
+  getAllApplicants(): Promise<APIResponse> {
+    return this.buildRequest("GET", "/api/applicant");
+  }
 }

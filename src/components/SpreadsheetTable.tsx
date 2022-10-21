@@ -3,16 +3,19 @@ import { ColumnsType, TableProps } from "antd/lib/table";
 import axios from "axios";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
+import { APIService } from "../services/API";
 
 export const SpreadsheetTable = () => {
   const [tableData, setTableData] = useState([]);
+
+  const api = new APIService();
 
   useEffect(() => {}, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      axios
-        .get(`/api/applicant`)
+      api
+        .getAllApplicants()
         .then((res) => {
           console.log(res.data);
           setTableData(res.data);
