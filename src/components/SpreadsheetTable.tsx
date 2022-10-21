@@ -7,14 +7,21 @@ import React, { useEffect, useState } from "react";
 export const SpreadsheetTable = () => {
   const [tableData, setTableData] = useState([]);
 
+  useEffect(() => {}, []);
+
   useEffect(() => {
-    axios
-      .get(`/api/applicant`)
-      .then((res) => {
-        console.log(res.data);
-        setTableData(res.data);
-      })
-      .catch((err) => console.log(err));
+    const interval = setInterval(() => {
+      axios
+        .get(`/api/applicant`)
+        .then((res) => {
+          console.log(res.data);
+          setTableData(res.data);
+        })
+        .catch((err) => console.log(err));
+      console.log("poll");
+    }, 3000);
+
+    return () => clearInterval(interval);
   }, []);
 
   interface DataType {
