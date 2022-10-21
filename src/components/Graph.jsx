@@ -47,65 +47,65 @@ const Graph = () => {
     yField: "count",
     isStack: "true",
     seriesField: "type",
-    annotations: [
-      {
-        type: 'line',
-        id: 'line',
-        start: ['0%', '50%'], // [StartX, StartY]
-        end: ['33%', '50%'], // [EndX, EndY]
-        text: {
-          content: 'Target',
-          position: 'right',
-          offsetY: 18,
-          style: {
-            textAlign: 'right',
-          },
-        },
-        style: {
-          lineWidth: 2,
-          // lineDash: [4, 4],
-          fill: '#000000'
-        },
-      },
-      {
-        type: 'line',
-        id: 'line',
-        start: ['33%', '40%'], // [StartX, StartY]
-        end: ['66%', '40%'], // [EndX, EndY]
-        text: {
-          content: 'Target',
-          position: 'right',
-          offsetY: 18,
-          style: {
-            textAlign: 'right',
-          },
-        },
-        style: {
-          lineWidth: 2,
-          // lineDash: [4, 4],
-          fill: '#000000'
-        },
-      },
-      {
-        type: 'line',
-        id: 'line',
-        start: ['66%', '20%'], // [StartX, StartY]
-        end: ['100%', '20%'], // [EndX, EndY]
-        text: {
-          content: 'Target',
-          position: 'right',
-          offsetY: 18,
-          style: {
-            textAlign: 'right',
-          },
-        },
-        style: {
-          lineWidth: 2,
-          // lineDash: [4, 4],
-          fill: '#000000'
-        },
-      },
-    ],
+    // annotations: [
+    //   {
+    //     type: 'line',
+    //     id: 'line',
+    //     start: ['0%', '50%'], // [StartX, StartY]
+    //     end: ['33%', '50%'], // [EndX, EndY]
+    //     text: {
+    //       content: 'Target',
+    //       position: 'right',
+    //       offsetY: 18,
+    //       style: {
+    //         textAlign: 'right',
+    //       },
+    //     },
+    //     style: {
+    //       lineWidth: 2,
+    //       // lineDash: [4, 4],
+    //       fill: '#000000'
+    //     },
+    //   },
+    //   {
+    //     type: 'line',
+    //     id: 'line',
+    //     start: ['33%', '40%'], // [StartX, StartY]
+    //     end: ['66%', '40%'], // [EndX, EndY]
+    //     text: {
+    //       content: 'Target',
+    //       position: 'right',
+    //       offsetY: 18,
+    //       style: {
+    //         textAlign: 'right',
+    //       },
+    //     },
+    //     style: {
+    //       lineWidth: 2,
+    //       // lineDash: [4, 4],
+    //       fill: '#000000'
+    //     },
+    //   },
+    //   {
+    //     type: 'line',
+    //     id: 'line',
+    //     start: ['66%', '20%'], // [StartX, StartY]
+    //     end: ['100%', '20%'], // [EndX, EndY]
+    //     text: {
+    //       content: 'Target',
+    //       position: 'right',
+    //       offsetY: 18,
+    //       style: {
+    //         textAlign: 'right',
+    //       },
+    //     },
+    //     style: {
+    //       lineWidth: 2,
+    //       // lineDash: [4, 4],
+    //       fill: '#000000'
+    //     },
+    //   },
+    // ],
   };
 
   return <Column {...config} />;
