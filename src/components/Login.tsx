@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { APIService } from "../services/API";
 import AuthService from "../services/auth.service";
 import { Button, Checkbox, Form, Input } from "antd";
 import React from "react";
@@ -21,27 +22,21 @@ export default function Login(props: any) {
   };
 
   const handleLogin = async () => {
-    try {
-      AuthService.login(username, password).then(
-        () => {
-          props.setCurrentUser(username);
-          AuthService.role(username).then(
-            () => {
-              props.setCurrentUserRole();
-            },
-            (error) => {
-              console.log(error);
-            }
-          );
-        },
-        (error) => {
-          setShowError(true);
-          console.log(error);
-        }
-      );
-    } catch (err) {
-      setShowError(true);
-    }
+    const api = new APIService();
+    api.login(username, password).then((res: any) => {
+      if (!res.success) {
+        setShowError(true);
+        return;
+      }
+      console.log(res);
+      sessionStorage.setItem("user", res.data.accessToken);
+      props.setCurrentUser(res.data.accessToken);
+
+      api.getRole().then((res) => {
+        console.log(`Role is `, res);
+        props.setCurrentUserRole(res.data);
+      });
+    });
   };
 
   return (

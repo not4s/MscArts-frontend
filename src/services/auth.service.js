@@ -14,7 +14,7 @@ const login = (username, password) => {
     })
     .then((response) => {
       if (response.data.accessToken) {
-        localStorage.setItem("user", JSON.stringify(response.data));
+        sessionStorage.setItem("user", JSON.stringify(response.data));
       }
 
       return response.data;
@@ -37,12 +37,25 @@ const role = (username) => {
     });
 };
 
+const getCurrentRole = (accessToken) => {
+  axios
+    .get("/api/user/roles", {
+      Authorization: `Bearer ${accessToken}`,
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+    .then((response) => {
+      return response.data;
+    });
+};
+
 const logout = () => {
-  localStorage.removeItem("user");
+  sessionStorage.removeItem("user");
 };
 
 const getCurrentUser = () => {
-  return JSON.parse(localStorage.getItem("user"));
+  return JSON.parse(sessionStorage.getItem("user"));
 };
 
 const authService = {
@@ -50,5 +63,6 @@ const authService = {
   logout,
   role,
   getCurrentUser,
+  getCurrentRole,
 };
 export default authService;
