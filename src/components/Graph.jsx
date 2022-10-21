@@ -43,6 +43,12 @@ const Graph = ({ preset=0 }) => {
 
   const configs = [
     {
+      data: graph.graphs[0].data,
+      xField: "year",
+      yField: "value",
+      onclick: console.log("Detected")
+    },
+    {
       data: data,
       xField: "gender",
       yField: "count",
@@ -54,6 +60,7 @@ const Graph = ({ preset=0 }) => {
       xField: "fee_status",
       yField: "count",
       isStack: "true",
+      onclick: console.log("Detected")
     }
 
 ]
@@ -116,8 +123,8 @@ const Graph = ({ preset=0 }) => {
     //     },
     //   },
     // ],
-
-  return <Column {...configs[preset ? preset : 0]} />;
+    //  configs[preset ? preset : 0]
+  return <Column {...configs[0]} />;
 };
 
 export default Graph;
