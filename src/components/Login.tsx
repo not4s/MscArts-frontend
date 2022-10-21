@@ -25,7 +25,14 @@ export default function Login(props: any) {
       AuthService.login(username, password).then(
         () => {
           props.setCurrentUser(username);
-          props.setCurrentUserRole();
+          AuthService.role(username).then(
+            () => {
+              props.setCurrentUserRole();
+            },
+            (error) => {
+              console.log(error);
+            }
+          );
         },
         (error) => {
           setShowError(true);

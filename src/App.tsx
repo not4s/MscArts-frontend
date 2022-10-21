@@ -66,7 +66,7 @@ export default function App() {
           <Layout style={{ minHeight: "100vh" }}>
             <Content>
               {tab == 1 ? <VisulisationNagivation /> : <></>}
-              {tab == 2 ? <SpreadsheetUpload /> : <></>}
+              {tab == 2 && currentUserRole >= 2 ? <SpreadsheetUpload /> : <></>}
               {tab == 3 ? <Settings /> : <></>}
             </Content>
             {/* <Footer > */}
@@ -74,7 +74,10 @@ export default function App() {
           </Layout>
         </Layout>
       ) : (
-        <Login setCurrentUser={setCurrentUser} />
+        <Login
+          setCurrentUser={setCurrentUser}
+          setCurrentUserRole={setCurrentUserRole}
+        />
       )}
     </div>
   );
