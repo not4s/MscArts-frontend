@@ -1,4 +1,5 @@
 import axios from "axios";
+import authHeader from "./auth-header";
 
 const login = (username, password) => {
   const json = JSON.stringify({ username: username, password: password });
@@ -20,6 +21,22 @@ const login = (username, password) => {
     });
 };
 
+const role = (username) => {
+  const json = JSON.stringify({ username: username });
+  const headers = authHeader();
+  headers.assign("Content-Type", "application/json");
+  return axios
+    .post("/api/user/roles", json, {
+      headers: headers,
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+    .then((response) => {
+      return response.data;
+    });
+};
+
 const logout = () => {
   localStorage.removeItem("user");
 };
@@ -31,6 +48,7 @@ const getCurrentUser = () => {
 const authService = {
   login,
   logout,
+  role,
   getCurrentUser,
 };
 export default authService;

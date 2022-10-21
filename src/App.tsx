@@ -30,6 +30,7 @@ function getItem(
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState(null);
+  const [currentUserRole, setCurrentUserRole] = useState(0);
   const [tab, setTab] = useState(1);
   const items: MenuItem[] = [
     getItem("Visulisations", "1", <PieChartOutlined />),
