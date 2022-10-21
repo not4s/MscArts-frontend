@@ -33,7 +33,7 @@ const Graph = ({ preset=0 }) => {
   useEffect(() => {
     const api = new APIService()
 
-    api.getApplicantData(configs[preset ? preset : 0].xField)
+    api.getApplicantData(configs[preset].xField)
       .then(res => { console.log(res.data); setData(res.data) } )
   }, [])
 
@@ -46,7 +46,6 @@ const Graph = ({ preset=0 }) => {
       data: graph.graphs[0].data,
       xField: "year",
       yField: "value",
-      onclick: console.log("Detected")
     },
     {
       data: data,
@@ -60,7 +59,7 @@ const Graph = ({ preset=0 }) => {
       xField: "fee_status",
       yField: "count",
       isStack: "true",
-      onclick: console.log("Detected")
+      seriesField: "type"
     }
 
 ]
@@ -124,7 +123,7 @@ const Graph = ({ preset=0 }) => {
     //   },
     // ],
     //  configs[preset ? preset : 0]
-  return <Column {...configs[0]} />;
+  return <Column {...configs[preset]} />;
 };
 
 export default Graph;

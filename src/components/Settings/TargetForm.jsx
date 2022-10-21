@@ -25,6 +25,15 @@ const TargetForm = () => {
           <Form.Item label="Target" name="target">
             <Input />
           </Form.Item>
+          <Form.Item label="Year" name="year">
+            <Select>
+              <Select.Option value="2023">22/23</Select.Option>
+              <Select.Option value="2022">21/22</Select.Option>
+              <Select.Option value="2021">20/21</Select.Option>
+              <Select.Option value="2020">19/20</Select.Option>
+              <Select.Option value="2019">18/19</Select.Option>
+            </Select>
+          </Form.Item>
           <Form.Item>
             <Button onClick={submitNewTarget}> Submit</Button>
           </Form.Item>
