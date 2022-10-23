@@ -1,12 +1,125 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { APIService } from "../services/API";
-import { ColumnsType, TableProps } from "antd/lib/table";
-import { Table, Switch } from "antd";
+import { ColumnsType, TableProps, ColumnType } from "antd/lib/table";
+import { Table, Switch, Button, Input, Space } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
+import Highlighter from "react-highlight-words";
+import type { InputRef } from "antd";
+import type { FilterConfirmProps, FilterValue } from "antd/lib/table/interface";
+
+interface DataType {
+  key: React.Key;
+  name: string;
+  code: string;
+  academic_level: string;
+  active: boolean;
+}
+
+type DataIndex = keyof DataType;
 
 export default function ProgramPage() {
   const [programs, setPrograms] = useState(undefined);
   const api = new APIService();
   const [flag, setFlag] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const [searchedColumn, setSearchedColumn] = useState("");
+  const searchInput = useRef<InputRef>(null);
+
+  const handleSearch = (
+    selectedKeys: string[],
+    confirm: (param?: FilterConfirmProps) => void,
+    dataIndex: DataIndex
+  ) => {
+    confirm();
+    setSearchText(selectedKeys[0]);
+    setSearchedColumn(dataIndex);
+  };
+
+  const handleReset = (clearFilters: () => void) => {
+    clearFilters();
+    setSearchText("");
+  };
+
+  const getColumnSearchProps = (
+    dataIndex: DataIndex
+  ): ColumnType<DataType> => ({
+    filterDropdown: ({
+      setSelectedKeys,
+      selectedKeys,
+      confirm,
+      clearFilters,
+    }) => (
+      <div style={{ padding: 8 }}>
+        <Input
+          ref={searchInput}
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={(e) =>
+            setSelectedKeys(e.target.value ? [e.target.value] : [])
+          }
+          onPressEnter={() =>
+            handleSearch(selectedKeys as string[], confirm, dataIndex)
+          }
+          style={{ marginBottom: 8, display: "block" }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() =>
+              handleSearch(selectedKeys as string[], confirm, dataIndex)
+            }
+            icon={<SearchOutlined />}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Search
+          </Button>
+          <Button
+            onClick={() => clearFilters && handleReset(clearFilters)}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Reset
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              confirm({ closeDropdown: false });
+              setSearchText((selectedKeys as string[])[0]);
+              setSearchedColumn(dataIndex);
+            }}
+          >
+            Filter
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered: boolean) => (
+      <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
+    ),
+    onFilter: (value, record) =>
+      record[dataIndex]
+        .toString()
+        .toLowerCase()
+        .includes((value as string).toLowerCase()),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+    render: (text) =>
+      searchedColumn === dataIndex ? (
+        <Highlighter
+          highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
+          searchWords={[searchText]}
+          autoEscape
+          textToHighlight={text ? text.toString() : ""}
+        />
+      ) : (
+        text
+      ),
+  });
 
   useEffect(() => {
     api.getPrograms().then((result) => {
@@ -38,24 +151,37 @@ export default function ProgramPage() {
     });
   };
 
-  interface DataType {
-    key: React.Key;
-    name: string;
-    date: string;
-  }
-
   const columns: ColumnsType<DataType> = [
     {
       title: "Name",
       dataIndex: "name",
+      ...getColumnSearchProps("name"),
     },
     {
       title: "Code",
       dataIndex: "code",
+      ...getColumnSearchProps("code"),
     },
     {
       title: "Academic Level",
       dataIndex: "academic_level",
+      filters: [
+        {
+          text: "PGR",
+          value: "IC Application - PGR",
+        },
+        {
+          text: "PGT",
+          value: "IC Application - PGT",
+        },
+        {
+          text: "Short Course",
+          value: "IC Application - Short Course",
+        },
+      ],
+      filterMode: "tree",
+      // @ts-ignore
+      onFilter: (value: string, record) => record.academic_level === value,
     },
     {
       title: "Tracking Status",
@@ -63,14 +189,5 @@ export default function ProgramPage() {
     },
   ];
 
-  const onChange: TableProps<DataType>["onChange"] = (
-    pagination,
-    filters,
-    sorter,
-    extra
-  ) => {
-    console.log("params", filters, sorter, extra);
-  };
-
-  return <Table columns={columns} dataSource={programs} onChange={onChange} />;
+  return <Table columns={columns} dataSource={programs} />;
 }
