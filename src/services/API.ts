@@ -69,4 +69,22 @@ export class APIService {
   getRole(): Promise<APIResponse> {
     return this.buildAuthRequest("GET", "/api/user/roles");
   }
+
+  getPrograms(): Promise<APIResponse> {
+    return this.buildAuthRequest("GET", "api/program");
+  }
+
+  programChange(
+    code: string,
+    name: string,
+    academicLevel: string,
+    active: boolean
+  ): Promise<APIResponse> {
+    return this.buildAuthRequest("PUT", "api/program", {
+      code: code,
+      name: name,
+      academic_level: academicLevel,
+      active: active,
+    });
+  }
 }

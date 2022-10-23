@@ -3,6 +3,7 @@ import {
   FileOutlined,
   LogoutOutlined,
   PieChartOutlined,
+  ProjectOutlined,
   TeamOutlined,
   UserOutlined,
 } from "@ant-design/icons";
@@ -12,7 +13,7 @@ import VisulisationNagivation from "./components/VisulisationNagivation";
 import { Layout, MenuProps, Menu } from "antd";
 import Settings from "./components/Settings";
 import Login from "./components/Login";
-import PrivateComponent from "./components/PrivateComponent/PrivateComponent";
+import ProgramPage from "./components/ProgramPage";
 import authService from "./services/auth.service";
 import { APIService } from "./services/API";
 import { ItemType } from "antd/lib/menu/hooks/useItems";
@@ -39,7 +40,7 @@ function getItem(
 }
 
 export default function App() {
-  const LOGOUT_KEY = "4";
+  const LOGOUT_KEY = "5";
 
   const [currentUser, setCurrentUser] = useState(null);
   const [currentUserRole, setCurrentUserRole] = useState(0);
@@ -49,6 +50,7 @@ export default function App() {
     getItem(currentUserRole >= 1, "Visulisations", "1", <PieChartOutlined />),
     getItem(currentUserRole >= 2, "Spreadsheets", "2", <FileOutlined />),
     getItem(currentUserRole >= 3, "Settings", "3", <DesktopOutlined />),
+    getItem(currentUserRole >= 2, "Programs", "4", <ProjectOutlined />),
     { type: "divider" },
     getItem(currentUserRole >= 1, "Logout", LOGOUT_KEY, <LogoutOutlined />),
   ];
@@ -58,7 +60,6 @@ export default function App() {
   React.useEffect(() => {
     const accessToken = sessionStorage.getItem("user");
     if (!accessToken) return;
-    console.log("HELLO");
     let accessTime = JSON.parse(atob(accessToken.split(".")[1]));
     if (accessTime.exp * 1000 < Date.now()) {
       logout();
@@ -106,6 +107,7 @@ export default function App() {
               {tab == 1 ? <VisulisationNagivation /> : <></>}
               {tab == 2 ? <SpreadsheetUpload /> : <></>}
               {tab == 3 ? <Settings /> : <></>}
+              {tab == 4 ? <ProgramPage /> : <></>}
             </Content>
             {/* <Footer > */}
             {/* </Footer> */}
