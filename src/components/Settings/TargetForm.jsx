@@ -1,25 +1,45 @@
-import React from 'react'
-import { Button, Form, Select, Input, Progress } from "antd";
+import React, { useEffect } from 'react'
+import { Button, Form, Select, Input, Progress, Spin } from "antd";
 import { useState } from 'react';
+import { APIService } from '../../services/API';
+import { ApiOutlined } from '@ant-design/icons';
 
 const TargetForm = () => {
-  const [targets, setTargets] = useState([{course: "AIML", target: 60 }])
+  const [targets, setTargets] = useState([])
+  const [programs, setPrograms] = useState([])
+  const api = new APIService();
 
-  const submitNewTarget = () => {
-    console.log("Submit")
+  const submitNewTarget = (values) => {
+    api.postTarget(values)
+      .then(res => console.log(res))
+      .catch(err => console.log(err))
   }
+
+  useEffect(() => {
+    api.getPrograms()
+      .then(res => {console.log(res.data); setPrograms(res.data)})
+      .catch(err => console.log(err))
+    api.getTargets()
+      .then(res => {console.log(res.data); setTargets(res.data)})
+      .catch(err => console.log(err))
+  }, [])
   
   return (
     <div>
         You can set targets for each course here.
-        <Form >
+        <Form 
+        name="targets"
+        onFinish={submitNewTarget}
+        >
           <Form.Item label="Course" name="course">
             <Select>
-              <Select.Option value="AIML">AIML</Select.Option>
-              <Select.Option value="MAI">MAI</Select.Option>
-              <Select.Option value="MAC">MAC</Select.Option>
-              <Select.Option value="MCS">MCS</Select.Option>
-              <Select.Option value="MCSS">MCSS</Select.Option>
+              {
+                programs.map(program => {return(
+                  <Select.Option value={program.code}>
+                    {program.name}
+                  </Select.Option>
+                )})
+              }
             </Select>
           </Form.Item>
           <Form.Item label="Target" name="target">
@@ -35,19 +55,25 @@ const TargetForm = () => {
             </Select>
           </Form.Item>
           <Form.Item>
-            <Button onClick={submitNewTarget}> Submit</Button>
+            <Button htmlType='submit'> Submit</Button>
           </Form.Item>
         </Form>
         <div>
           <>
-          Current Targets:
           {
-            targets.map(target => {return (
-              <div>
-                <h3>{target.course}</h3>
-                <Progress percent={target.target} status="active" />
-              </div>
-            )})
+            targets.length == 0 ? 
+            <Spin size="large"/>
+            :
+            <>
+              Current Targets:
+              {
+              targets.map(target => {return (
+                <div>
+                  <h3>{target.program_code}</h3>
+                  <Progress percent={target.target} status="active" />
+                </div>
+              )})}
+            </>
           }
           </>
         </div>
