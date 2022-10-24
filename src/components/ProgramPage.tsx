@@ -2,7 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { APIService } from "../services/API";
 import { ColumnsType, TableProps, ColumnType } from "antd/lib/table";
 import { Table, Switch, Button, Input, Space } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import type { InputRef } from "antd";
 import type { FilterConfirmProps, FilterValue } from "antd/lib/table/interface";
@@ -147,6 +151,24 @@ export default function ProgramPage() {
           }}
         />
       );
+      obj.actions = (
+        <>
+          <Button
+            onClick={() => {
+              console.log("editin");
+            }}
+            icon={<EditOutlined />}
+            style={{ marginLeft: "2vh", marginRight: "2vh" }}
+          />
+          <Button
+            onClick={() => {
+              console.log("delete");
+            }}
+            icon={<DeleteOutlined />}
+            style={{ marginLeft: "2vh", marginRight: "2vh" }}
+          />
+        </>
+      );
       return obj;
     });
   };
@@ -200,6 +222,10 @@ export default function ProgramPage() {
       filterMode: "tree",
       // @ts-ignore
       onFilter: (value: boolean, record: DataType) => record.active === value,
+    },
+    {
+      title: "Edit/Delete",
+      dataIndex: "actions",
     },
   ];
 
