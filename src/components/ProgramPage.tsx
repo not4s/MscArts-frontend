@@ -181,11 +181,25 @@ export default function ProgramPage() {
       ],
       filterMode: "tree",
       // @ts-ignore
-      onFilter: (value: string, record) => record.academic_level === value,
+      onFilter: (value: string, record: DataType) =>
+        record.academic_level === value,
     },
     {
       title: "Tracking Status",
       dataIndex: "switch",
+      filters: [
+        {
+          text: "active",
+          value: true,
+        },
+        {
+          text: "inactive",
+          value: false,
+        },
+      ],
+      filterMode: "tree",
+      // @ts-ignore
+      onFilter: (value: boolean, record: DataType) => record.active === value,
     },
   ];
 
