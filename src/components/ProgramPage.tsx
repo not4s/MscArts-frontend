@@ -10,6 +10,7 @@ import {
 import Highlighter from "react-highlight-words";
 import type { InputRef } from "antd";
 import type { FilterConfirmProps, FilterValue } from "antd/lib/table/interface";
+import ProgramEditModal from "./ProgramEditModal";
 
 interface DataType {
   key: React.Key;
@@ -28,6 +29,11 @@ export default function ProgramPage() {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef<InputRef>(null);
+  const [editName, setEditName] = useState("");
+  const [editCode, setEditCode] = useState("");
+  const [editLevel, setEditLevel] = useState("");
+  const [editActive, setEditActive] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
 
   const handleSearch = (
     selectedKeys: string[],
@@ -133,6 +139,14 @@ export default function ProgramPage() {
 
   const mapToToggle = (data: any) => {
     return data.map((obj: any) => {
+      const onClick = () => {
+        setEditName(obj.name);
+        setEditCode(obj.code);
+        setEditLevel(obj.academic_level);
+        setEditActive(obj.active);
+        setOpenEditModal(true);
+      };
+
       obj.switch = (
         <Switch
           checked={obj.active}
@@ -154,15 +168,13 @@ export default function ProgramPage() {
       obj.actions = (
         <>
           <Button
-            onClick={() => {
-              console.log("editin");
-            }}
+            onClick={onClick}
             icon={<EditOutlined />}
             style={{ marginLeft: "2vh", marginRight: "2vh" }}
           />
           <Button
             onClick={() => {
-              console.log("delete");
+              console.log("");
             }}
             icon={<DeleteOutlined />}
             style={{ marginLeft: "2vh", marginRight: "2vh" }}
@@ -229,5 +241,17 @@ export default function ProgramPage() {
     },
   ];
 
-  return <Table columns={columns} dataSource={programs} />;
+  return (
+    <>
+      <Table columns={columns} dataSource={programs} />
+      <ProgramEditModal
+        name={editName}
+        code={editCode}
+        level={editLevel}
+        open={openEditModal}
+        active={editActive}
+        setOpen={setOpenEditModal}
+      />
+    </>
+  );
 }
