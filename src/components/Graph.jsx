@@ -33,8 +33,13 @@ const Graph = ({ preset=0 }) => {
   useEffect(() => {
     const api = new APIService()
 
-    api.getApplicantData(configs[preset].xField)
-      .then(res => { console.log(res.data); setData(res.data) } )
+    if (configs[preset].stackOn) {
+      api.getApplicantDataStacked(configs[preset].xField, configs[preset].stackOn)
+        .then(res => { console.log(res.data); setData(res.data) } )
+    } else {
+      api.getApplicantData(configs[preset].xField)
+        .then(res => { console.log(res.data); setData(res.data) } )
+    }
   }, [])
 
   useEffect(() => {
@@ -48,18 +53,26 @@ const Graph = ({ preset=0 }) => {
       yField: "value",
     },
     {
-      data: data,
+      data,
       xField: "gender",
       yField: "count",
       isStack: "true",
       seriesField: "type",
     },
     {
-      data: data,
+      data,
       xField: "fee_status",
       yField: "count",
       isStack: "true",
-      seriesField: "type"
+      seriesField: "series"
+    },
+    {
+      data,
+      xField: "fee_status",
+      yField: "count",
+      isStack: "true",
+      seriesField: "series",
+      stackOn: "application_status"
     }
 
 ]

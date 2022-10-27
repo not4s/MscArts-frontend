@@ -54,6 +54,13 @@ export class APIService {
     return this.buildAuthRequest("GET", `/api/applicant/?count=${count}`);
   }
 
+  getApplicantDataStacked(count: string, series: string): Promise<APIResponse> {
+    return this.buildAuthRequest(
+      "GET",
+      `/api/applicant/?count=${count}&series=${series}`
+    );
+  }
+
   postSpreadsheet(data: FormData): Promise<APIResponse> {
     return this.buildAuthRequest("POST", "/api/upload", data);
   }
