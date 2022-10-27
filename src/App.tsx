@@ -12,7 +12,6 @@ import VisulisationNagivation from "./components/VisulisationNagivation";
 import { Layout, MenuProps, Menu } from "antd";
 import Settings from "./components/Settings";
 import Login from "./components/Login";
-import PrivateComponent from "./components/PrivateComponent/PrivateComponent";
 import authService from "./services/auth.service";
 import { APIService } from "./services/API";
 import { ItemType } from "antd/lib/menu/hooks/useItems";
