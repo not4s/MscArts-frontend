@@ -3,7 +3,7 @@ import { Column } from "@ant-design/charts";
 import axios from "axios";
 import { APIService } from "../services/API";
 
-const Graph = () => {
+const Graph = ({ preset=0 }) => {
   const [graph, setGraph] = useState({
     tid: 1,
     graphs: [
@@ -33,20 +33,49 @@ const Graph = () => {
   useEffect(() => {
     const api = new APIService()
 
-    api.getApplicantData()
-      .then(res => { console.log(res.data); setData(res.data) } )
+    if (configs[preset].stackOn) {
+      api.getApplicantDataStacked(configs[preset].xField, configs[preset].stackOn)
+        .then(res => { console.log(res.data); setData(res.data) } )
+    } else {
+      api.getApplicantData(configs[preset].xField)
+        .then(res => { console.log(res.data); setData(res.data) } )
+    }
   }, [])
 
   useEffect(() => {
     console.log(data)
   }, [data])
 
-  const config = {
-    data: data,
-    xField: "gender",
-    yField: "count",
-    isStack: "true",
-    seriesField: "type",
+  const configs = [
+    {
+      data: graph.graphs[0].data,
+      xField: "year",
+      yField: "value",
+    },
+    {
+      data,
+      xField: "gender",
+      yField: "count",
+      isStack: "true",
+      seriesField: "type",
+    },
+    {
+      data,
+      xField: "fee_status",
+      yField: "count",
+      isStack: "true",
+      seriesField: "series"
+    },
+    {
+      data,
+      xField: "fee_status",
+      yField: "count",
+      isStack: "true",
+      seriesField: "series",
+      stackOn: "application_status"
+    }
+
+]
     // annotations: [
     //   {
     //     type: 'line',
@@ -106,9 +135,8 @@ const Graph = () => {
     //     },
     //   },
     // ],
-  };
-
-  return <Column {...config} />;
+    //  configs[preset ? preset : 0]
+  return <Column {...configs[preset]} />;
 };
 
 export default Graph;

@@ -50,8 +50,15 @@ export class APIService {
     return { success: true, ...res };
   }
 
-  getApplicantData(): Promise<APIResponse> {
-    return this.buildAuthRequest("GET", "/api/applicant/?count=gender");
+  getApplicantData(count: string): Promise<APIResponse> {
+    return this.buildAuthRequest("GET", `/api/applicant/?count=${count}`);
+  }
+
+  getApplicantDataStacked(count: string, series: string): Promise<APIResponse> {
+    return this.buildAuthRequest(
+      "GET",
+      `/api/applicant/?count=${count}&series=${series}`
+    );
   }
 
   postSpreadsheet(data: FormData): Promise<APIResponse> {
@@ -68,5 +75,20 @@ export class APIService {
 
   getRole(): Promise<APIResponse> {
     return this.buildAuthRequest("GET", "/api/user/roles");
+  }
+
+  getPrograms(): Promise<APIResponse> {
+    return this.buildAuthRequest("GET", "api/program");
+  }
+
+  getTargets(): Promise<APIResponse> {
+    return this.buildAuthRequest("GET", "api/applicant/target");
+  }
+
+  postTarget({ course, target, year }: any): Promise<APIResponse> {
+    return this.buildAuthRequest(
+      "POST",
+      `api/applicant/target?course=${course}&target=${target}&year=${year}`
+    );
   }
 }

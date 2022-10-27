@@ -4,7 +4,10 @@ import CreateGraph from "./CreateGraph";
 import Graph from "./Graph";
 
 const GraphGrid = () => {
-  const [graphs, setGraphs] = useState([<Graph />]);
+  const [graphs, setGraphs] = useState([
+    <Graph preset={2} />,
+    <Graph preset={1} />,
+  ]);
 
   const allGraphs = [
     ...graphs,

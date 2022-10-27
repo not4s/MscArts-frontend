@@ -1,0 +1,15 @@
+[
+  {
+    data: data,
+    xField: "gender",
+    yField: "count",
+    isStack: "true",
+    seriesField: "type",
+  },
+  {
+    data: data,
+    xField: "fee_status",
+    yField: "count",
+    isStack: "true",
+  }
+]

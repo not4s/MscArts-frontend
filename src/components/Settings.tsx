@@ -1,9 +1,10 @@
-import { BoldOutlined } from "@ant-design/icons";
 import { Card, Col, Row, Button, Drawer, Switch } from "antd";
 import React, { useState } from "react";
+import TargetForm from "./Settings/TargetForm";
 
 const Settings = () => {
   const [open, setOpen] = useState(false);
+  const [setting, setSetting] = useState(0);
 
   const displayDrawer = () => {
     setOpen(true);
@@ -17,6 +18,23 @@ const Settings = () => {
     console.log(`switch to ${checked}`);
   };
 
+  const renderTargets = () => {
+    return <TargetForm />;
+  };
+
+  const renderSettingTab = (i: Number) => {
+    switch (i) {
+      case 1:
+        return renderTargets();
+      default:
+        return (
+          <pre>
+            Dark Mode: <Switch defaultChecked onChange={onSwitchChange} />{" "}
+          </pre>
+        );
+    }
+  };
+
   return (
     <div className="site-card-wrapper">
       <Drawer
@@ -25,49 +43,65 @@ const Settings = () => {
         onClose={closeDrawer}
         open={open}
       >
-        <pre>
-          Dark Mode: <Switch defaultChecked onChange={onSwitchChange} />{" "}
-        </pre>
+        {renderSettingTab(setting)}
       </Drawer>
-      <Row gutter={16}>
-        <Col span={8}>
+      <Row>
+        <Col span={6}>
           <Card title="General Settings" bordered={true}>
-            <Button type="primary" onClick={displayDrawer}>
+            <Button
+              type="primary"
+              onClick={() => {
+                displayDrawer();
+                setSetting(0);
+              }}
+            >
               Open
             </Button>
           </Card>
         </Col>
-        <Col span={8}>
-          <Card title="Settings 2" bordered={true}>
-            <Button type="primary" onClick={displayDrawer}>
+        <Col span={6}>
+          <Card title="Set Course Targets" bordered={true}>
+            <Button
+              type="primary"
+              onClick={() => {
+                displayDrawer();
+                setSetting(1);
+              }}
+            >
               Open
             </Button>
           </Card>
         </Col>
-        <Col span={8}>
+        <Col span={6}>
           <Card title="Settings 3" bordered={true}>
-            <Button type="primary" onClick={displayDrawer}>
+            <Button
+              type="primary"
+              onClick={() => {
+                displayDrawer();
+                setSetting(2);
+              }}
+            >
               Open
             </Button>
           </Card>
         </Col>
       </Row>
-      <Row gutter={16}>
-        <Col span={8}>
+      <Row>
+        <Col span={6}>
           <Card title="Settings 4" bordered={true}>
             <Button type="primary" onClick={displayDrawer}>
               Open
             </Button>
           </Card>
         </Col>
-        <Col span={8}>
+        <Col span={6}>
           <Card title="Settings 5" bordered={true}>
             <Button type="primary" onClick={displayDrawer}>
               Open
             </Button>
           </Card>
         </Col>
-        <Col span={8}>
+        <Col span={6}>
           <Card title="Settings 6" bordered={true}>
             <Button type="primary" onClick={displayDrawer}>
               Open
