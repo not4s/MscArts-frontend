@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { APIService } from "../services/API";
 import { ColumnsType } from "antd/lib/table";
-import { Table, Button, Modal } from "antd";
+import { Table, Button, Modal, message } from "antd";
 import { RollbackOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import type { InputRef } from "antd";
 
@@ -36,9 +36,9 @@ export const RollbackTable = () => {
   const handleOk = (version: Number) => {
     api.rollbackUploadedSheet(version).then((res) => {
       if (res.data.message === "Rolled Back File") {
-        /* 
-          [TODO] Refresh the Table after rollback is complete
-        */
+        message.success("Successfully rolled back");
+      } else {
+        message.error("Failed to rollback File");
       }
     });
   };
@@ -66,11 +66,7 @@ export const RollbackTable = () => {
 
   const columns: ColumnsType<DataType> = [
     {
-      title: "Version",
-      dataIndex: "version",
-    },
-    {
-      title: "Name",
+      title: "File Name",
       dataIndex: "name",
     },
     {
@@ -86,14 +82,6 @@ export const RollbackTable = () => {
   return (
     <>
       <Table columns={columns} dataSource={sheets} />
-      {/* <ProgramEditModal
-        name={editName}
-        code={editCode}
-        level={editLevel}
-        open={openEditModal}
-        active={editActive}
-        setOpen={setOpenEditModal}
-      /> */}
     </>
   );
 };
