@@ -77,10 +77,6 @@ export class APIService {
     return this.buildAuthRequest("GET", "api/user/roles");
   }
 
-  getPrograms(): Promise<APIResponse> {
-    return this.buildAuthRequest("GET", "api/program");
-  }
-
   getTargets(): Promise<APIResponse> {
     return this.buildAuthRequest("GET", "api/applicant/target");
   }
