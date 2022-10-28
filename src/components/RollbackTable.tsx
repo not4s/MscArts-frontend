@@ -23,7 +23,7 @@ export const RollbackTable = () => {
     confirm({
       title: "Are you sure you want to rollback this spreadsheet?",
       icon: <ExclamationCircleOutlined />,
-      okText: "Upload",
+      okText: "Rollback",
       onOk() {
         handleOk(version);
       },
@@ -36,6 +36,9 @@ export const RollbackTable = () => {
   const handleOk = (version: Number) => {
     api.rollbackUploadedSheet(version).then((res) => {
       if (res.data.message === "Rolled Back File") {
+        /* 
+          [TODO] Refresh the Table after rollback is complete
+        */
       }
     });
   };
