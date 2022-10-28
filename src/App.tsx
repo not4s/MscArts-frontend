@@ -15,6 +15,7 @@ import Login from "./components/Login";
 import authService from "./services/auth.service";
 import { APIService } from "./services/API";
 import { ItemType } from "antd/lib/menu/hooks/useItems";
+import ApplicantTable from "./components/ApplicantTable";
 
 const { Sider, Header, Footer, Content } = Layout;
 
@@ -46,8 +47,9 @@ export default function App() {
   const [tab, setTab] = useState(1);
   const items: ItemType[] = [
     getItem(currentUserRole >= 1, "Visulisations", "1", <PieChartOutlined />),
-    getItem(currentUserRole >= 2, "Spreadsheets", "2", <FileOutlined />),
-    getItem(currentUserRole >= 3, "Settings", "3", <DesktopOutlined />),
+    getItem(currentUserRole >= 2, "Applicants", "2", <UserOutlined />),
+    getItem(currentUserRole >= 3, "Spreadsheets", "3", <FileOutlined />),
+    getItem(currentUserRole >= 3, "Settings", "4", <DesktopOutlined />),
     { type: "divider" },
     getItem(currentUserRole >= 1, "Logout", LOGOUT_KEY, <LogoutOutlined />),
   ];
@@ -103,8 +105,9 @@ export default function App() {
           <Layout style={{ minHeight: "100vh" }}>
             <Content>
               {tab == 1 ? <VisulisationNagivation /> : <></>}
-              {tab == 2 ? <SpreadsheetUpload /> : <></>}
-              {tab == 3 ? <Settings /> : <></>}
+              {tab == 2 ? <ApplicantTable /> : <></>}
+              {tab == 3 ? <SpreadsheetUpload /> : <></>}
+              {tab == 4 ? <Settings /> : <></>}
             </Content>
             {/* <Footer > */}
             {/* </Footer> */}
