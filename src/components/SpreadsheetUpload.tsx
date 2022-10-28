@@ -4,6 +4,7 @@ import axios from "axios";
 import { Modal, Input } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { SpreadsheetTable } from "./SpreadsheetTable";
+import { RollbackTable } from "./RollbackTable";
 import { APIService } from "../services/API";
 
 const FILE_TYPES = ["CSV", "XLS", "XML", "XLSX"];
@@ -63,6 +64,7 @@ const SpreadsheetUpload = () => {
         types={FILE_TYPES}
       />
       <SpreadsheetTable />
+      <RollbackTable />
     </div>
   );
 };

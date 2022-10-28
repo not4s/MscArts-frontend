@@ -51,30 +51,30 @@ export class APIService {
   }
 
   getApplicantData(count: string): Promise<APIResponse> {
-    return this.buildAuthRequest("GET", `/api/applicant/?count=${count}`);
+    return this.buildAuthRequest("GET", `api/applicant/?count=${count}`);
   }
 
   getApplicantDataStacked(count: string, series: string): Promise<APIResponse> {
     return this.buildAuthRequest(
       "GET",
-      `/api/applicant/?count=${count}&series=${series}`
+      `api/applicant/?count=${count}&series=${series}`
     );
   }
 
   postSpreadsheet(data: FormData): Promise<APIResponse> {
-    return this.buildAuthRequest("POST", "/api/upload", data);
+    return this.buildAuthRequest("POST", "api/upload/", data);
   }
 
   getAllApplicants(): Promise<APIResponse> {
-    return this.buildAuthRequest("GET", "/api/applicant");
+    return this.buildAuthRequest("GET", "api/applicant");
   }
 
   login(username: string, password: string): Promise<APIResponse> {
-    return this.buildRequest("POST", "/api/user/login", { username, password });
+    return this.buildRequest("POST", "api/user/login", { username, password });
   }
 
   getRole(): Promise<APIResponse> {
-    return this.buildAuthRequest("GET", "/api/user/roles");
+    return this.buildAuthRequest("GET", "api/user/roles");
   }
 
   getPrograms(): Promise<APIResponse> {
@@ -90,5 +90,13 @@ export class APIService {
       "POST",
       `api/applicant/target?course=${course}&target=${target}&year=${year}`
     );
+  }
+
+  getUploadedSheets(): Promise<APIResponse> {
+    return this.buildAuthRequest("GET", "api/upload/");
+  }
+
+  rollbackUploadedSheet(version: Number): Promise<APIResponse> {
+    return this.buildAuthRequest("DELETE", "api/upload/", { version });
   }
 }
