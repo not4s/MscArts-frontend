@@ -100,10 +100,6 @@ export class APIService {
     return this.buildAuthRequest("DELETE", "api/upload/", { version });
   }
 
-  getPrograms(): Promise<APIResponse> {
-    return this.buildAuthRequest("GET", "api/program");
-  }
-
   programChange(
     code: string,
     name: string,
