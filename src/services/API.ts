@@ -87,4 +87,24 @@ export class APIService {
       active: active,
     });
   }
+
+  programAdd(
+    code: string,
+    name: string,
+    academicLevel: string,
+    active: boolean
+  ): Promise<APIResponse> {
+    return this.buildAuthRequest("POST", "api/program", {
+      code: code,
+      name: name,
+      academic_level: academicLevel,
+      active: active,
+    });
+  }
+
+  programDelete(code: string): Promise<APIResponse> {
+    return this.buildAuthRequest("DELETE", "api/program", {
+      code: code,
+    });
+  }
 }

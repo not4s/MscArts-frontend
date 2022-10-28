@@ -4,9 +4,13 @@ import { APIService } from "../services/API";
 export default function ProgramEditModal(props: any) {
   const api = new APIService();
   const onFinish = (values: any) => {
-    api
-      .programChange(values.Code, values.Name, values.Level, props.active)
-      .then(props.setOpen(false));
+    props.add
+      ? api
+          .programChange(values.Code, values.Name, values.Level, props.active)
+          .then(props.setOpen(false))
+      : api
+          .programAdd(values.Code, values.Name, values.Leevl, props.active)
+          .then(props.setOpen(true));
   };
 
   const onFinishFailed = (errorInfo: any) => {

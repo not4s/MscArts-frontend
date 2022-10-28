@@ -5,12 +5,14 @@ import { Table, Switch, Button, Input, Space } from "antd";
 import {
   DeleteOutlined,
   EditOutlined,
+  PlusOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import type { InputRef } from "antd";
 import type { FilterConfirmProps, FilterValue } from "antd/lib/table/interface";
 import ProgramEditModal from "./ProgramEditModal";
+import ProgramDeleteModal from "./ProgramDeleteModal";
 
 interface DataType {
   key: React.Key;
@@ -34,6 +36,8 @@ export default function ProgramPage() {
   const [editLevel, setEditLevel] = useState("");
   const [editActive, setEditActive] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [addFlag, setAddFlag] = useState(false);
 
   const handleSearch = (
     selectedKeys: string[],
@@ -144,7 +148,13 @@ export default function ProgramPage() {
         setEditCode(obj.code);
         setEditLevel(obj.academic_level);
         setEditActive(obj.active);
+        setAddFlag(false);
         setOpenEditModal(true);
+      };
+
+      const onDelete = () => {
+        setEditCode(obj.code);
+        setOpenDeleteModal(true);
       };
 
       obj.switch = (
@@ -173,9 +183,7 @@ export default function ProgramPage() {
             style={{ marginLeft: "2vh", marginRight: "2vh" }}
           />
           <Button
-            onClick={() => {
-              console.log("");
-            }}
+            onClick={onDelete}
             icon={<DeleteOutlined />}
             style={{ marginLeft: "2vh", marginRight: "2vh" }}
           />
@@ -241,16 +249,44 @@ export default function ProgramPage() {
     },
   ];
 
+  const addNewProgram = () => {
+    setEditActive(true);
+    setEditName("");
+    setEditLevel("");
+    setEditCode("");
+    setAddFlag(true);
+    setOpenEditModal(true);
+  };
+
   return (
     <>
-      <Table columns={columns} dataSource={programs} />
+      <Table
+        columns={columns}
+        dataSource={programs}
+        pagination={{
+          total: 25,
+          showTotal: (total) => {
+            return (
+              <Button icon={<PlusOutlined />} onClick={addNewProgram}>
+                New Program
+              </Button>
+            );
+          },
+        }}
+      />
       <ProgramEditModal
         name={editName}
         code={editCode}
         level={editLevel}
         open={openEditModal}
         active={editActive}
+        add={addFlag}
         setOpen={setOpenEditModal}
+      />
+      <ProgramDeleteModal
+        code={editCode}
+        open={openDeleteModal}
+        setOpen={setOpenDeleteModal}
       />
     </>
   );
