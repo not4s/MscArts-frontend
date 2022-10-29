@@ -1,5 +1,5 @@
 import {
-  DesktopOutlined,
+  SettingOutlined,
   FileOutlined,
   LogoutOutlined,
   PieChartOutlined,
@@ -50,7 +50,7 @@ export default function App() {
   const items: ItemType[] = [
     getItem(currentUserRole >= 1, "Visulisations", "1", <PieChartOutlined />),
     getItem(currentUserRole >= 2, "Spreadsheets", "2", <FileOutlined />),
-    getItem(currentUserRole >= 3, "Settings", "3", <DesktopOutlined />),
+    getItem(currentUserRole >= 3, "Settings", "3", <SettingOutlined />),
     getItem(currentUserRole >= 2, "Programs", "4", <ProjectOutlined />),
     { type: "divider" },
     getItem(currentUserRole >= 1, "Logout", LOGOUT_KEY, <LogoutOutlined />),
