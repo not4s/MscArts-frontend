@@ -11,7 +11,7 @@ import React, { useState } from "react";
 import SpreadsheetUpload from "./components/SpreadsheetUpload";
 import VisulisationNagivation from "./components/VisulisationNagivation";
 import { Layout, MenuProps, Menu } from "antd";
-import Settings from "./components/Settings";
+import Settings from "./components/Settings/Settings";
 import Login from "./components/Login";
 import ProgramPage from "./components/ProgramPage";
 import authService from "./services/auth.service";
