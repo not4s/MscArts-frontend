@@ -1,4 +1,4 @@
-import { Card, Col, Row, Button, Modal } from "antd";
+import { Card, Col, Row, Button, Modal, Switch } from "antd";
 import React, { useState } from "react";
 
 const GeneralSettings = () => {
@@ -15,6 +15,10 @@ const GeneralSettings = () => {
 
   const handleCancel = () => {
     setIsModalOpen(false);
+  };
+
+  const onChange = (checked: boolean) => {
+    console.log(`switch to ${checked}`);
   };
 
   return (
@@ -64,6 +68,35 @@ const GeneralSettings = () => {
           </Card>
         </Col>
       </Row>
+      <Modal
+        title="Display"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "8px",
+              marginBottom: "10px",
+              border: "solid",
+              borderColor: "gray",
+              borderWidth: "thin",
+            }}
+          >
+            <>Dark Mode</>
+            <Switch defaultChecked onChange={onChange} />
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };
