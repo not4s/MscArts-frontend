@@ -6,12 +6,13 @@ import {
   ProjectOutlined,
   TeamOutlined,
   UserOutlined,
+  SlidersOutlined,
 } from "@ant-design/icons";
 import React, { useState } from "react";
 import SpreadsheetUpload from "./components/SpreadsheetUpload";
 import VisulisationNagivation from "./components/VisulisationNagivation";
 import { Layout, MenuProps, Menu } from "antd";
-import Settings from "./components/Settings/Settings";
+import GeneralSettings from "./components/Settings/GeneralSettings";
 import Login from "./components/Login";
 import ProgramPage from "./components/ProgramPage";
 import authService from "./services/auth.service";
@@ -50,7 +51,9 @@ export default function App() {
   const items: ItemType[] = [
     getItem(currentUserRole >= 1, "Visulisations", "1", <PieChartOutlined />),
     getItem(currentUserRole >= 2, "Spreadsheets", "2", <FileOutlined />),
-    getItem(currentUserRole >= 3, "Settings", "3", <SettingOutlined />),
+    getItem(currentUserRole >= 3, "Settings", "3", <SettingOutlined />, [
+      getItem(currentUserRole >= 3, "General", "6", <SlidersOutlined />),
+    ]),
     getItem(currentUserRole >= 2, "Programs", "4", <ProjectOutlined />),
     { type: "divider" },
     getItem(currentUserRole >= 1, "Logout", LOGOUT_KEY, <LogoutOutlined />),
@@ -107,7 +110,7 @@ export default function App() {
             <Content>
               {tab == 1 ? <VisulisationNagivation /> : <></>}
               {tab == 2 ? <SpreadsheetUpload /> : <></>}
-              {tab == 3 ? <Settings /> : <></>}
+              {tab == 6 ? <GeneralSettings /> : <></>}
               {tab == 4 ? <ProgramPage /> : <></>}
             </Content>
             {/* <Footer > */}

@@ -2,7 +2,7 @@ import { Card, Col, Row, Button, Drawer, Switch } from "antd";
 import React, { useState } from "react";
 import TargetForm from "./TargetForm";
 
-const Settings = () => {
+const GeneralSettings = () => {
   const [open, setOpen] = useState(false);
   const [setting, setSetting] = useState(0);
 
@@ -23,4 +23,4 @@ const Settings = () => {
   );
 };
 
-export default Settings;
+export default GeneralSettings;
