@@ -1,9 +1,21 @@
-import { Card, Col, Row, Button, Drawer, Switch } from "antd";
+import { Card, Col, Row, Button, Modal } from "antd";
 import React, { useState } from "react";
 
 const GeneralSettings = () => {
-  const [open, setOpen] = useState(false);
-  const [setting, setSetting] = useState(0);
+  const state = { visible: false };
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
   return (
     <div className="site-card-wrapper">
@@ -21,19 +33,26 @@ const GeneralSettings = () => {
                 flexDirection: "column",
               }}
             >
-              <p
+              <div
                 style={{
-                  padding: "5px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  padding: "8px",
+                  marginBottom: "10px",
                   border: "solid",
                   borderColor: "gray",
                   borderWidth: "thin",
                 }}
               >
-                Option 1
-              </p>
+                <>Display</>
+                <Button type="primary" onClick={showModal}>
+                  Open
+                </Button>
+              </div>
               <p
                 style={{
-                  padding: "5px",
+                  padding: "8px",
                   border: "solid",
                   borderColor: "gray",
                   borderWidth: "thin",
