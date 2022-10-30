@@ -7,12 +7,14 @@ import {
   TeamOutlined,
   UserOutlined,
   SlidersOutlined,
+  RiseOutlined,
 } from "@ant-design/icons";
 import React, { useState } from "react";
 import SpreadsheetUpload from "./components/SpreadsheetUpload";
 import VisulisationNagivation from "./components/VisulisationNagivation";
 import { Layout, MenuProps, Menu } from "antd";
 import GeneralSettings from "./components/Settings/GeneralSettings";
+import TargetSettings from "./components/Settings/TargetSettings";
 import Login from "./components/Login";
 import ProgramPage from "./components/ProgramPage";
 import authService from "./services/auth.service";
@@ -53,6 +55,7 @@ export default function App() {
     getItem(currentUserRole >= 2, "Spreadsheets", "2", <FileOutlined />),
     getItem(currentUserRole >= 3, "Settings", "3", <SettingOutlined />, [
       getItem(currentUserRole >= 3, "General", "6", <SlidersOutlined />),
+      getItem(currentUserRole >= 3, "Targets", "7", <RiseOutlined />),
     ]),
     getItem(currentUserRole >= 2, "Programs", "4", <ProjectOutlined />),
     { type: "divider" },
@@ -111,6 +114,7 @@ export default function App() {
               {tab == 1 ? <VisulisationNagivation /> : <></>}
               {tab == 2 ? <SpreadsheetUpload /> : <></>}
               {tab == 6 ? <GeneralSettings /> : <></>}
+              {tab == 7 ? <TargetSettings /> : <></>}
               {tab == 4 ? <ProgramPage /> : <></>}
             </Content>
             {/* <Footer > */}
