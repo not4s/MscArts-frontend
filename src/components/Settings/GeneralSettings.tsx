@@ -3,22 +3,35 @@ import React, { useState } from "react";
 
 const GeneralSettings = () => {
   const state = { visible: false };
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModal1Open, setIsModal1Open] = useState(false);
+  const [isModal2Open, setIsModal2Open] = useState(false);
 
-  const showModal = () => {
-    setIsModalOpen(true);
+  const showModal1 = () => {
+    setIsModal1Open(true);
   };
 
-  const handleOk = () => {
-    setIsModalOpen(false);
+  const handleOk1 = () => {
+    setIsModal1Open(false);
   };
 
-  const handleCancel = () => {
-    setIsModalOpen(false);
+  const handleCancel1 = () => {
+    setIsModal1Open(false);
   };
 
   const onChange = (checked: boolean) => {
     console.log(`switch to ${checked}`);
+  };
+
+  const showModal2 = () => {
+    setIsModal2Open(true);
+  };
+
+  const handleOk2 = () => {
+    setIsModal2Open(false);
+  };
+
+  const handleCancel2 = () => {
+    setIsModal2Open(false);
   };
 
   return (
@@ -50,29 +63,36 @@ const GeneralSettings = () => {
                 }}
               >
                 <>Display</>
-                <Button type="primary" onClick={showModal}>
+                <Button type="primary" onClick={showModal1}>
                   Open
                 </Button>
               </div>
-              <p
+              <div
                 style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
                   padding: "8px",
+                  marginBottom: "10px",
                   border: "solid",
                   borderColor: "gray",
                   borderWidth: "thin",
                 }}
               >
-                Option 2
-              </p>
+                <>Option 2</>
+                <Button type="primary" onClick={showModal2}>
+                  Open
+                </Button>
+              </div>
             </body>
           </Card>
         </Col>
       </Row>
       <Modal
         title="Display"
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
+        open={isModal1Open}
+        onOk={handleOk1}
+        onCancel={handleCancel1}
       >
         <div
           style={{
@@ -97,6 +117,12 @@ const GeneralSettings = () => {
           </div>
         </div>
       </Modal>
+      <Modal
+        title="Option 2"
+        open={isModal2Open}
+        onOk={handleOk2}
+        onCancel={handleCancel2}
+      ></Modal>
     </div>
   );
 };
