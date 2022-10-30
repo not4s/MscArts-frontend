@@ -15,7 +15,7 @@ const TargetSettings = () => {
       >
         <Col span={16} className="card-cols">
           <Card title="Targets" bordered={false} className="card">
-            To create drawers here
+            <TargetForm />
           </Card>
         </Col>
       </Row>
