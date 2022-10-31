@@ -1,10 +1,34 @@
-import { Card, Col, Row, Button, Modal, Switch } from "antd";
+import { Card, Col, Row, Button, Collapse, Select } from "antd";
+import { SettingOutlined } from "@ant-design/icons";
 import React, { useState } from "react";
 
 const GeneralSettings = () => {
-  const onChange = (checked: boolean) => {
-    console.log(`switch to ${checked}`);
+  const { Panel } = Collapse;
+  const { Option } = Select;
+
+  const text = "Testing Text";
+
+  type ExpandIconPosition = "start" | "end";
+
+  const [expandIconPosition, setExpandIconPosition] =
+    useState<ExpandIconPosition>("end");
+
+  const onPositionChange = (newExpandIconPosition: ExpandIconPosition) => {
+    setExpandIconPosition(newExpandIconPosition);
   };
+
+  const onChange = (key: string | string[]) => {
+    console.log(key);
+  };
+
+  const genExtra = () => (
+    <SettingOutlined
+      onClick={(event) => {
+        // If you don't want click extra trigger collapse, you can prevent this:
+        event.stopPropagation();
+      }}
+    />
+  );
 
   const styles = {
     body: {
@@ -29,14 +53,20 @@ const GeneralSettings = () => {
       <Row gutter={16} className="card-rows" style={styles.body}>
         <Col span={16} className="card-cols">
           <Card title="General" bordered={false}>
-            <body className="card-content">
-              <div className="g-settings-card" style={styles.settingsCard}>
-                <>Display</>
-                <Button type="primary" onClick={showModal}>
-                  Open
-                </Button>
-              </div>
-            </body>
+            <Collapse
+              onChange={onChange}
+              expandIconPosition={expandIconPosition}
+            >
+              <Panel header="This is panel header 1" key="1" extra={genExtra()}>
+                <div>{text}</div>
+              </Panel>
+              <Panel header="This is panel header 2" key="2" extra={genExtra()}>
+                <div>{text}</div>
+              </Panel>
+              <Panel header="This is panel header 3" key="3" extra={genExtra()}>
+                <div>{text}</div>
+              </Panel>
+            </Collapse>
           </Card>
         </Col>
       </Row>
