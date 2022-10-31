@@ -11,7 +11,13 @@ const TargetForm = () => {
 
   const submitNewTarget = (values) => {
     api.postTarget(values)
-      .then(res => console.log(res))
+      .then(res => {
+        if (res.data.message == "Exists") {
+          api.putTarget(values)
+          .then(res => console.log(res.data))
+          .catch(err => console.log(err))
+        }
+      })
       .catch(err => console.log(err))
   }
 
@@ -69,7 +75,7 @@ const TargetForm = () => {
               {
               targets.map(target => {return (
                 <div>
-                  <h3>{target.program_code}</h3>
+                  <h3>{target.program_type}</h3>
                   <Progress percent={target.target} status="active" />
                 </div>
               )})}
