@@ -1,10 +1,9 @@
-import { Card, Col, Row, Button, Collapse, Select } from "antd";
+import { Card, Col, Row, Button, Collapse, Switch } from "antd";
 import { SettingOutlined } from "@ant-design/icons";
 import React, { useState } from "react";
 
 const GeneralSettings = () => {
   const { Panel } = Collapse;
-  const { Option } = Select;
 
   const text = "Testing Text";
 
@@ -19,6 +18,10 @@ const GeneralSettings = () => {
 
   const onChange = (key: string | string[]) => {
     console.log(key);
+  };
+
+  const onSwitchChange = (checked: boolean) => {
+    console.log(`switch to ${checked}`);
   };
 
   const genExtra = () => (
@@ -53,6 +56,11 @@ const GeneralSettings = () => {
     panelContent: {
       fontWeight: "lighter",
     },
+    switchOption: {
+      display: "flex",
+      justifyContent: "space-between",
+      fontWeight: "lighter",
+    },
   };
 
   return (
@@ -65,28 +73,31 @@ const GeneralSettings = () => {
               expandIconPosition={expandIconPosition}
             >
               <Panel
-                header="This is panel header 1"
+                header="Settings 1"
                 key="1"
                 extra={genExtra()}
                 style={styles.panel}
               >
-                <div style={styles.panelContent}>{text}</div>
+                <div style={styles.switchOption}>
+                  <>Dark Mode</>
+                  <Switch defaultChecked onChange={onSwitchChange} />
+                </div>
               </Panel>
               <Panel
-                header="This is panel header 2"
+                header="Settings 2"
                 key="2"
                 extra={genExtra()}
                 style={styles.panel}
               >
-                <div style={styles.panelContent}>{text}</div>
+                <div style={styles.panelContent}>Add Settings Options Here</div>
               </Panel>
               <Panel
-                header="This is panel header 3"
+                header="Settings 3"
                 key="3"
                 extra={genExtra()}
                 style={styles.panel}
               >
-                <div style={styles.panelContent}>{text}</div>
+                <div style={styles.panelContent}>Add Settings Options Here</div>
               </Panel>
             </Collapse>
           </Card>
