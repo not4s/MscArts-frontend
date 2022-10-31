@@ -6,11 +6,11 @@ export default function ProgramEditModal(props: any) {
   const onFinish = (values: any) => {
     props.add
       ? api
-          .programChange(values.Code, values.Name, values.Level, props.active)
+          .programAdd(values.Code, values.Name, values.Level, props.active)
           .then(props.setOpen(false))
       : api
-          .programAdd(values.Code, values.Name, values.Leevl, props.active)
-          .then(props.setOpen(true));
+          .programChange(values.Code, values.Name, values.Level, props.active)
+          .then(props.setOpen(false));
   };
 
   const onFinishFailed = (errorInfo: any) => {
