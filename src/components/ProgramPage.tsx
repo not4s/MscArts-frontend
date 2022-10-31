@@ -20,6 +20,7 @@ interface DataType {
   code: string;
   academic_level: string;
   active: boolean;
+  program_type: string;
 }
 
 type DataIndex = keyof DataType;
@@ -31,6 +32,7 @@ export default function ProgramPage() {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef<InputRef>(null);
+  const [editProgramType, setEditProgramType] = useState("");
   const [editName, setEditName] = useState("");
   const [editCode, setEditCode] = useState("");
   const [editLevel, setEditLevel] = useState("");
@@ -137,6 +139,8 @@ export default function ProgramPage() {
 
   useEffect(() => {
     api.getPrograms().then((result) => {
+      console.log(result.data);
+
       setPrograms(mapToToggle(result.data));
     });
   }, [flag]);
@@ -144,6 +148,7 @@ export default function ProgramPage() {
   const mapToToggle = (data: any) => {
     return data.map((obj: any) => {
       const onClick = () => {
+        setEditProgramType(obj.program_type);
         setEditName(obj.name);
         setEditCode(obj.code);
         setEditLevel(obj.academic_level);
@@ -166,6 +171,7 @@ export default function ProgramPage() {
                 obj.code,
                 obj.name,
                 obj.academic_level,
+                obj.program_type,
                 !obj.active
               )
               .then(() => {
@@ -195,14 +201,44 @@ export default function ProgramPage() {
 
   const columns: ColumnsType<DataType> = [
     {
-      title: "Name",
-      dataIndex: "name",
-      ...getColumnSearchProps("name"),
+      title: "Program Type",
+      dataIndex: "program_type",
+      filters: [
+        {
+          text: "AIML",
+          value: "AIML",
+        },
+        {
+          text: "MAI",
+          value: "MAI",
+        },
+        {
+          text: "MAC",
+          value: "MAC",
+        },
+        {
+          text: "MCS",
+          value: "MCS",
+        },
+        {
+          text: "MCSS",
+          value: "MCSS",
+        },
+      ],
+      filterMode: "tree",
+      // @ts-ignore
+      onFilter: (value: string, record: DataType) =>
+        record.program_type === value,
     },
     {
       title: "Code",
       dataIndex: "code",
       ...getColumnSearchProps("code"),
+    },
+    {
+      title: "Name",
+      dataIndex: "name",
+      ...getColumnSearchProps("name"),
     },
     {
       title: "Academic Level",
@@ -251,6 +287,7 @@ export default function ProgramPage() {
 
   const addNewProgram = () => {
     setEditActive(true);
+    setEditProgramType("");
     setEditName("");
     setEditLevel("");
     setEditCode("");
@@ -275,6 +312,7 @@ export default function ProgramPage() {
         }}
       />
       <ProgramEditModal
+        programType={editProgramType}
         name={editName}
         code={editCode}
         level={editLevel}
