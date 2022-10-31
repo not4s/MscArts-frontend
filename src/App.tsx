@@ -55,6 +55,7 @@ export default function App() {
     getItem(currentUserRole >= 2, "Spreadsheets", "2", <FileOutlined />),
     getItem(currentUserRole >= 3, "Settings", "3", <SettingOutlined />, [
       getItem(currentUserRole >= 3, "General", "6", <SlidersOutlined />),
+      getItem(currentUserRole >= 2, "Programs", "4", <ProjectOutlined />),
       getItem(currentUserRole >= 3, "Targets", "7", <RiseOutlined />),
     ]),
     getItem(currentUserRole >= 2, "Programs", "4", <ProjectOutlined />),
