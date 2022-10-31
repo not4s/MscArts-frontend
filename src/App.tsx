@@ -98,7 +98,7 @@ export default function App() {
   };
 
   return (
-    <div className="App" style={{ display: "flex", justifyContent: "center" }}>
+    <div className="App">
       {currentUser ? (
         <Layout style={{ minHeight: "100vh" }}>
           <Sider>
