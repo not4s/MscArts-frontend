@@ -48,6 +48,10 @@ const GeneralSettings = () => {
     },
     panel: {
       backgroundColor: "rgb(204,202,200)",
+      fontWeight: "bold",
+    },
+    panelContent: {
+      fontWeight: "lighter",
     },
   };
 
@@ -66,7 +70,7 @@ const GeneralSettings = () => {
                 extra={genExtra()}
                 style={styles.panel}
               >
-                <div>{text}</div>
+                <div style={styles.panelContent}>{text}</div>
               </Panel>
               <Panel
                 header="This is panel header 2"
@@ -74,7 +78,7 @@ const GeneralSettings = () => {
                 extra={genExtra()}
                 style={styles.panel}
               >
-                <div>{text}</div>
+                <div style={styles.panelContent}>{text}</div>
               </Panel>
               <Panel
                 header="This is panel header 3"
@@ -82,7 +86,7 @@ const GeneralSettings = () => {
                 extra={genExtra()}
                 style={styles.panel}
               >
-                <div>{text}</div>
+                <div style={styles.panelContent}>{text}</div>
               </Panel>
             </Collapse>
           </Card>
