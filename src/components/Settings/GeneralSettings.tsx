@@ -2,21 +2,6 @@ import { Card, Col, Row, Button, Modal, Switch } from "antd";
 import React, { useState } from "react";
 
 const GeneralSettings = () => {
-  const state = { visible: false };
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-
   const onChange = (checked: boolean) => {
     console.log(`switch to ${checked}`);
   };
