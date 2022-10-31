@@ -113,12 +113,14 @@ export class APIService {
     code: string,
     name: string,
     academicLevel: string,
+    programType: string,
     active: boolean
   ): Promise<APIResponse> {
     return this.buildAuthRequest("PUT", "api/program", {
       code: code,
       name: name,
       academic_level: academicLevel,
+      program_type: programType,
       active: active,
     });
   }
@@ -127,12 +129,14 @@ export class APIService {
     code: string,
     name: string,
     academicLevel: string,
+    programType: string,
     active: boolean
   ): Promise<APIResponse> {
     return this.buildAuthRequest("POST", "api/program", {
       code: code,
       name: name,
       academic_level: academicLevel,
+      program_type: programType,
       active: active,
     });
   }
