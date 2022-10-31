@@ -86,10 +86,19 @@ export class APIService {
   }
 
   postTarget({ course, target, year }: any): Promise<APIResponse> {
-    return this.buildAuthRequest(
-      "POST",
-      `api/applicant/target?course=${course}&target=${target}&year=${year}`
-    );
+    return this.buildAuthRequest("POST", `api/applicant/target`, {
+      program_type: course,
+      year,
+      target,
+    });
+  }
+
+  putTarget({ course, target, year }: any): Promise<APIResponse> {
+    return this.buildAuthRequest("PUT", `api/applicant/target`, {
+      program_type: course,
+      year,
+      target,
+    });
   }
 
   getUploadedSheets(): Promise<APIResponse> {
