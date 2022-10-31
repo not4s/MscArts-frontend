@@ -34,51 +34,37 @@ const GeneralSettings = () => {
     setIsModal2Open(false);
   };
 
+  const styles = {
+    body: {
+      width: "100%",
+      justifyContent: "center",
+      marginTop: "50px",
+    },
+    settingsCard: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      padding: "8px",
+      marginBottom: "10px",
+      border: "solid",
+      borderColor: "gray",
+      borderWidth: "thin",
+    },
+  };
+
   return (
     <div className="site-card-wrapper">
-      <Row
-        gutter={16}
-        className="card-rows"
-        style={{ width: "100%", justifyContent: "center", marginTop: "50px" }}
-      >
+      <Row gutter={16} className="card-rows" style={styles.body}>
         <Col span={16} className="card-cols">
           <Card title="General" bordered={false}>
-            <body
-              className="card-content"
-              style={{
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  padding: "8px",
-                  marginBottom: "10px",
-                  border: "solid",
-                  borderColor: "gray",
-                  borderWidth: "thin",
-                }}
-              >
+            <body className="card-content">
+              <div className="g-settings-card" style={styles.settingsCard}>
                 <>Display</>
                 <Button type="primary" onClick={showModal1}>
                   Open
                 </Button>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  padding: "8px",
-                  marginBottom: "10px",
-                  border: "solid",
-                  borderColor: "gray",
-                  borderWidth: "thin",
-                }}
-              >
+              <div style={styles.settingsCard}>
                 <>Option 2</>
                 <Button type="primary" onClick={showModal2}>
                   Open
