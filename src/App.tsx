@@ -58,7 +58,9 @@ export default function App() {
       getItem(currentUserRole >= 3, "Targets", "7", <RiseOutlined />),
     ]),
     getItem(currentUserRole >= 2, "Programs", "4", <ProjectOutlined />),
-    { type: "divider" },
+  ];
+
+  const logOutItem: ItemType[] = [
     getItem(currentUserRole >= 1, "Logout", LOGOUT_KEY, <LogoutOutlined />),
   ];
 
@@ -95,19 +97,37 @@ export default function App() {
   };
 
   return (
-    <div className="App">
+    <div className="App" style={{ display: "flex", justifyContent: "center" }}>
       {currentUser ? (
         <Layout style={{ minHeight: "100vh" }}>
           <Sider>
-            <Menu
-              theme="dark"
-              defaultSelectedKeys={["1"]}
-              mode="inline"
-              items={items.filter((e: any) => e.key !== -1)}
-              onClick={(e) =>
-                e.key !== LOGOUT_KEY ? changeTab(e.key) : logout()
-              }
-            />
+            <div
+              className="styledMenuContainer"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                height: "calc(100%)",
+              }}
+            >
+              <Menu
+                theme="dark"
+                defaultSelectedKeys={["1"]}
+                mode="inline"
+                items={items.filter((e: any) => e.key !== -1)}
+                onClick={(e) =>
+                  e.key !== LOGOUT_KEY ? changeTab(e.key) : logout()
+                }
+              ></Menu>
+              <Menu
+                theme="dark"
+                mode="inline"
+                items={logOutItem}
+                onClick={(e) =>
+                  e.key !== LOGOUT_KEY ? changeTab(e.key) : logout()
+                }
+              />
+            </div>
           </Sider>
           <Layout style={{ minHeight: "100vh" }}>
             <Content>
