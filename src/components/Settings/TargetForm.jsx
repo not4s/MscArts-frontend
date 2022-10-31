@@ -75,7 +75,7 @@ const TargetForm = () => {
               {
               targets.map(target => {return (
                 <div>
-                  <h3>{target.program_type}</h3>
+                  <h3>{target.program_type} ({target.year})</h3>
                   <Progress percent={target.target} status="active" />
                 </div>
               )})}
