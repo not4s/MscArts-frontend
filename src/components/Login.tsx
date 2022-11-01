@@ -1,27 +1,32 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { APIService } from "../services/API";
 import AuthService from "../services/auth.service";
-import { Button, Checkbox, Form, Input } from "antd";
-import React from "react";
+import { Container } from "../styles/app-style";
+import { ActionButton } from "../styles/dialog-style";
+import {
+  Fieldset,
+  Form,
+  Input,
+  Label,
+  Logo,
+  Name,
+  Tagline,
+} from "../styles/login-style";
 
 export default function Login(props: any) {
-  const [form] = Form.useForm();
   const [showError, setShowError] = useState(false);
-  const username = Form.useWatch("Username", form);
-  const password = Form.useWatch("Password", form);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   const onFinish = (values: any) => {
     console.log("Success:", values);
     console.log(username);
     console.log(password);
-    handleLogin().then((r) => console.log("finish"));
   };
 
-  const onFinishFailed = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
-  };
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  const handleLogin = async () => {
     const api = new APIService();
     api.login(username, password).then((res: any) => {
       if (!res.success) {
@@ -40,45 +45,46 @@ export default function Login(props: any) {
   };
 
   return (
-    <Form
-      name="basic"
-      form={form}
-      labelCol={{ span: 8 }}
-      wrapperCol={{ span: 16 }}
-      initialValues={{ remember: true }}
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
-      autoComplete="off"
-    >
-      <Form.Item
-        label="Username"
-        name="Username"
-        rules={[{ required: true, message: "Please input your Email!" }]}
-      >
-        <Input />
-      </Form.Item>
+    <Container center expand dotted css={{ paddingTop: 0 }}>
+      <Form onSubmit={handleLogin}>
+        {/* TODO */}
+        {/* <Logo
+          alt="Scientia logo"
+          src="assets/logo-light.svg"
+          style={{ filter: `invert(${0})` }}
+        /> */}
+        <Name>MScArts</Name>
+        <Tagline style={{ marginBottom: "2rem" }}>
+          A Unified MScArts Platform
+        </Tagline>
 
-      <Form.Item
-        label="Password"
-        name="Password"
-        rules={[{ required: true, message: "Please input your password!" }]}
-      >
-        <Input.Password />
-      </Form.Item>
+        <Fieldset>
+          <Label htmlFor="Username">Username</Label>
+          <Input
+            name="Username"
+            type="username"
+            value={username}
+            placeholder="abc123"
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+        </Fieldset>
 
-      <Form.Item
-        name="remember"
-        valuePropName="checked"
-        wrapperCol={{ offset: 8, span: 16 }}
-      >
-        <Checkbox>Remember me</Checkbox>
-      </Form.Item>
+        <Fieldset>
+          <Label htmlFor="Password">Password</Label>
+          <Input
+            name="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </Fieldset>
 
-      <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-        <Button type="primary" htmlType="submit">
-          Submit
-        </Button>
-      </Form.Item>
-    </Form>
+        <ActionButton.Primary type="submit" style={{ padding: "2rem inherit" }}>
+          Login
+        </ActionButton.Primary>
+      </Form>
+    </Container>
   );
 }
