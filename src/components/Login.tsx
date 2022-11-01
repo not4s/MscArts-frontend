@@ -33,8 +33,12 @@ export default function Login(props: any) {
           props.setCurrentUserRole(res.data);
         });
       })
-      .catch(() => {
-        message.error("Incorrect username or password");
+      .catch((res) => {
+        if (res.response.status === 401) {
+          message.error("Request Access from System Administrator");
+        } else {
+          message.error("Incorrect username or password");
+        }
       });
   };
 
