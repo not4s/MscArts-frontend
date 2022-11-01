@@ -1,17 +1,20 @@
 import {
-  DesktopOutlined,
+  SettingOutlined,
   FileOutlined,
   LogoutOutlined,
   PieChartOutlined,
   ProjectOutlined,
   TeamOutlined,
   UserOutlined,
+  SlidersOutlined,
+  RiseOutlined,
 } from "@ant-design/icons";
 import React, { useState } from "react";
 import SpreadsheetUpload from "./components/SpreadsheetUpload";
 import VisulisationNagivation from "./components/VisulisationNagivation";
 import { Layout, MenuProps, Menu } from "antd";
-import Settings from "./components/Settings";
+import GeneralSettings from "./components/Settings/GeneralSettings";
+import TargetSettings from "./components/Settings/TargetSettings";
 import Login from "./components/Login";
 import ProgramPage from "./components/ProgramPage";
 import authService from "./services/auth.service";
@@ -50,9 +53,15 @@ export default function App() {
   const items: ItemType[] = [
     getItem(currentUserRole >= 1, "Visulisations", "1", <PieChartOutlined />),
     getItem(currentUserRole >= 2, "Spreadsheets", "2", <FileOutlined />),
-    getItem(currentUserRole >= 3, "Settings", "3", <DesktopOutlined />),
+    getItem(currentUserRole >= 3, "Settings", "3", <SettingOutlined />, [
+      getItem(currentUserRole >= 3, "General", "6", <SlidersOutlined />),
+      getItem(currentUserRole >= 2, "Programs", "4", <ProjectOutlined />),
+      getItem(currentUserRole >= 3, "Targets", "7", <RiseOutlined />),
+    ]),
     getItem(currentUserRole >= 2, "Programs", "4", <ProjectOutlined />),
-    { type: "divider" },
+  ];
+
+  const logOutItem: ItemType[] = [
     getItem(currentUserRole >= 1, "Logout", LOGOUT_KEY, <LogoutOutlined />),
   ];
 
@@ -93,21 +102,40 @@ export default function App() {
       {currentUser ? (
         <Layout style={{ minHeight: "100vh" }}>
           <Sider>
-            <Menu
-              theme="dark"
-              defaultSelectedKeys={["1"]}
-              mode="inline"
-              items={items.filter((e: any) => e.key !== -1)}
-              onClick={(e) =>
-                e.key !== LOGOUT_KEY ? changeTab(e.key) : logout()
-              }
-            />
+            <div
+              className="styledMenuContainer"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                height: "calc(100%)",
+              }}
+            >
+              <Menu
+                theme="dark"
+                defaultSelectedKeys={["1"]}
+                mode="inline"
+                items={items.filter((e: any) => e.key !== -1)}
+                onClick={(e) =>
+                  e.key !== LOGOUT_KEY ? changeTab(e.key) : logout()
+                }
+              ></Menu>
+              <Menu
+                theme="dark"
+                mode="inline"
+                items={logOutItem}
+                onClick={(e) =>
+                  e.key !== LOGOUT_KEY ? changeTab(e.key) : logout()
+                }
+              />
+            </div>
           </Sider>
           <Layout style={{ minHeight: "100vh" }}>
             <Content>
               {tab == 1 ? <VisulisationNagivation /> : <></>}
               {tab == 2 ? <SpreadsheetUpload /> : <></>}
-              {tab == 3 ? <Settings /> : <></>}
+              {tab == 6 ? <GeneralSettings /> : <></>}
+              {tab == 7 ? <TargetSettings /> : <></>}
               {tab == 4 ? <ProgramPage /> : <></>}
             </Content>
             {/* <Footer > */}
