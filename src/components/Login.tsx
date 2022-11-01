@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from "react";
 import { APIService } from "../services/API";
-import AuthService from "../services/auth.service";
 import { Container } from "../styles/app-style";
 import { ActionButton } from "../styles/dialog-style";
 import {
@@ -12,36 +11,31 @@ import {
   Name,
   Tagline,
 } from "../styles/login-style";
+import { message } from "antd";
 
 export default function Login(props: any) {
-  const [showError, setShowError] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
-  const onFinish = (values: any) => {
-    console.log("Success:", values);
-    console.log(username);
-    console.log(password);
-  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const api = new APIService();
-    api.login(username, password).then((res: any) => {
-      if (!res.success) {
-        setShowError(true);
-        return;
-      }
-      console.log(res);
-      sessionStorage.setItem("user", res.data.accessToken);
-      props.setCurrentUser(res.data.accessToken);
+    api
+      .login(username, password)
+      .then((res: any) => {
+        console.log(res);
+        sessionStorage.setItem("user", res.data.accessToken);
+        props.setCurrentUser(res.data.accessToken);
 
-      api.getRole().then((res) => {
-        console.log(`Role is `, res);
-        props.setCurrentUserRole(res.data);
+        api.getRole().then((res) => {
+          console.log(`Role is `, res);
+          props.setCurrentUserRole(res.data);
+        });
+      })
+      .catch(() => {
+        message.error("Incorrect username or password");
       });
-    });
   };
 
   return (
