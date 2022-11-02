@@ -58,7 +58,6 @@ export default function App() {
       getItem(currentUserRole >= 2, "Programs", "4", <ProjectOutlined />),
       getItem(currentUserRole >= 3, "Targets", "7", <RiseOutlined />),
     ]),
-    getItem(currentUserRole >= 2, "Programs", "4", <ProjectOutlined />),
   ];
 
   const logOutItem: ItemType[] = [
