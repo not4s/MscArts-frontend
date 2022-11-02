@@ -12,7 +12,7 @@ import axios from "axios";
 import Graph from "./Graph";
 
 const { Option } = Select;
-
+const degreeTypes = ["ALL", "MAC", "AIML", "MCSS", "MCS"];
 const CreateGraph = (props) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [graphType, setGraphType] = useState("");
@@ -113,6 +113,38 @@ const CreateGraph = (props) => {
           ) : (
             <></>
           )}
+
+          {graphType === "PIE" ?
+          <>
+            <Form.Item
+                name="Degree"
+                rules={[{ required: true }]}
+                extra="This is the degree from which to access the data"
+            >
+              <Select
+                  placeholder="Select Degree"
+                  style={{ width: 240 }}
+                  // onChange={(value: string) => setGraphType(value)}
+              >
+                {degreeTypes.map(type => <Option value={type}>{type}</Option>)}
+              </Select>
+            </Form.Item>
+
+            <Form.Item
+                name="Filter type"
+                rules={[{ required: true }]}
+            >
+              <Select
+                  placeholder="Select Filter"
+                  style={{ width: 240 }}
+                  // onChange={(value: string) => setGraphType(value)}
+              >
+                <Option value="ETHNICITY">Ethnicity</Option>
+                <Option value="NATIONALITY">Nationality</Option>
+              </Select>
+            </Form.Item>
+          </> :
+          <></>}
         </Form>
       </Modal>
       <Button type="dashed" onClick={() => setModalOpen(true)}>
