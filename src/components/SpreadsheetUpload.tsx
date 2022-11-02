@@ -3,6 +3,7 @@ import { FileUploader } from "react-drag-drop-files";
 import { message, Spin, Upload } from "antd";
 import axios from "axios";
 import { Modal, Input } from "antd";
+import { ApplicantTable } from "./Applicants/ApplicantTable";
 import {
   ExclamationCircleOutlined,
   InboxOutlined,
