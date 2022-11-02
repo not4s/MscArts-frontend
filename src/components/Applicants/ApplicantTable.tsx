@@ -1,7 +1,7 @@
 import { Table } from "antd";
 import { ColumnsType, TableProps } from "antd/lib/table";
 import React, { useEffect, useState } from "react";
-import { APIService } from "../services/API";
+import { APIService } from "../../services/API";
 
 export const ApplicantTable = () => {
   const [tableData, setTableData] = useState([]);

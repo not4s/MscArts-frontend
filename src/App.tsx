@@ -8,6 +8,7 @@ import {
   UserOutlined,
   SlidersOutlined,
   RiseOutlined,
+  ContactsOutlined,
 } from "@ant-design/icons";
 import React, { useState } from "react";
 import SpreadsheetUpload from "./components/SpreadsheetUpload";
@@ -20,7 +21,7 @@ import ProgramPage from "./components/ProgramPage";
 import authService from "./services/auth.service";
 import { APIService } from "./services/API";
 import { ItemType } from "antd/lib/menu/hooks/useItems";
-import ApplicantTable from "./components/ApplicantTable";
+import { ApplicantTable } from "./components/Applicants/ApplicantTable";
 
 const { Sider, Header, Footer, Content } = Layout;
 
@@ -58,6 +59,7 @@ export default function App() {
       getItem(currentUserRole >= 2, "Programs", "4", <ProjectOutlined />),
       getItem(currentUserRole >= 3, "Targets", "7", <RiseOutlined />),
     ]),
+    getItem(currentUserRole >= 1, "Candidates", "8", <ContactsOutlined />),
   ];
 
   const logOutItem: ItemType[] = [
@@ -136,6 +138,7 @@ export default function App() {
               {tab == 6 ? <GeneralSettings /> : <></>}
               {tab == 7 ? <TargetSettings /> : <></>}
               {tab == 4 ? <ProgramPage /> : <></>}
+              {tab == 8 ? <ApplicantTable /> : <></>}
             </Content>
             {/* <Footer > */}
             {/* </Footer> */}

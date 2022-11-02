@@ -61,14 +61,14 @@ const Graph = ({ preset=0 }) => {
     },
     {
       data,
-      xField: "fee_status",
+      xField: "application_folder_fee_status",
       yField: "count",
       isStack: "true",
       seriesField: "series"
     },
     {
       data,
-      xField: "fee_status",
+      xField: "application_folder_fee_status",
       yField: "count",
       isStack: "true",
       seriesField: "series",

@@ -4,7 +4,7 @@ import { message, Upload } from "antd";
 import axios from "axios";
 import { Modal, Input } from "antd";
 import { ExclamationCircleOutlined, InboxOutlined } from "@ant-design/icons";
-import { ApplicantTable } from "./ApplicantTable";
+import { ApplicantTable } from "./Applicants/ApplicantTable";
 import { RollbackTable } from "./RollbackTable";
 import { APIService } from "../services/API";
 import type { UploadProps } from "antd";
