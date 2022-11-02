@@ -7,7 +7,7 @@ import PieGraph from "./PieGraph";
 const GraphGrid = () => {
   const [graphs, setGraphs] = useState([
     <PieGraph preset={0} />,
-    <Graph preset={2} />,
+    <Graph preset={1} />,
     <Graph preset={0} />,
   ]);
 

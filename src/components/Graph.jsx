@@ -35,7 +35,10 @@ const Graph = ({ preset=0 }) => {
 
     if (configs[preset].fetchParams) {
       api.getApplicant(configs[preset].fetchParams)
-        .then(res => { setData(res.data)});
+        .then(res => { 
+          console.log(res.data);  
+          setData(res.data)
+        });
     }
     
     // if (configs[preset].stackOn) {
@@ -66,17 +69,13 @@ const Graph = ({ preset=0 }) => {
       }, 
     },
     {
-      data: graph.graphs[0].data,
-      xField: "year",
-      yField: "value",
-    },
-    {
       data,
       xField: "application_folder_fee_status",
-      yField: "value",
+      yField: "count",
       isStack: true,
+      seriesField: 'type',
       fetchParams: {
-        program_type: "MAI"
+        count: "application_folder_fee_status",
       }
     }
 ]

@@ -6,30 +6,6 @@ import { APIService } from "../services/API";
 import { ETHNICITY_MAPPING } from "../constants/ethnicity";
 
 const PieGraph = ({ preset=0 }) => {
-  const [graph, setGraph] = useState({
-    tid: 1,
-    graphs: [
-      {
-        type: "BAR",
-        x_val: "status",
-        y_type: "count",
-        data: [
-          { year: "home", value: 1, type: "cleared" },
-          { year: "away", value: 1, type: "paid" },
-          { year: "away", value: 1, type: "paid" },
-          { year: "home", value: 1, type: "cleared" },
-          { year: "away", value: 1, type: "paid" },
-          { year: "away", value: 1, type: "paid" },
-          { year: "home", value: 1, type: "paid" },
-          { year: "home", value: 1, type: "accepted" },
-          { year: "home", value: 1, type: "cleared" },
-        ],
-        pos: 0,
-      },
-      { type: "BAR", x_val: "status", y_type: "count", data: [], pos: 1 },
-    ],
-  });
-
   const [data, setData] = useState([])
 
   useEffect(() => {
@@ -52,19 +28,8 @@ const PieGraph = ({ preset=0 }) => {
                 a[ethnicity]['value'] += 1;
                 return a;
             }, {}))
-            console.log(finalData);
             setData(finalData);
-
         })    
-    // if (configs[preset].stackOn) {
-    //   api.getApplicantDataStacked(configs[preset].xField, configs[preset].stackOn)
-    //     .then(res => { console.log(res.data); setData(res.data) } )
-    // } else {
-    //   api.getApplicantData(configs[preset].xField)
-    //     .then(res => { console.log(res.data); setData(res.data) } )
-    // }
-
-
   }, [])
 
   useEffect(() => {
@@ -93,7 +58,6 @@ const PieGraph = ({ preset=0 }) => {
           },
         ],
         fetchParams: {
-            "program_type": "MAI"
         }
     }
     ]
@@ -159,7 +123,7 @@ const PieGraph = ({ preset=0 }) => {
     //  configs[preset ? preset : 0]
   return (
   <>
-    <h1>{configs[preset].fetchParams.program_type}</h1>
+    <h1>{configs[preset].fetchParams.program_type === undefined ? "All Programs" : configs[preset].fetchParams.program_type }</h1>
     <Pie {...configs[preset]} />;
   </>)
 };
