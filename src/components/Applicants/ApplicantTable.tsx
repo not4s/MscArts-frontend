@@ -7,6 +7,7 @@ export const ApplicantTable = () => {
   const [tableData, setTableData] = useState([]);
   const [nationalities, setNationalities] = useState([]);
   const [program_codes, setProgramCodes] = useState([]);
+  const [genders, setGenders] = useState([]);
 
   const api = new APIService();
 
@@ -39,10 +40,20 @@ export const ApplicantTable = () => {
     });
   }, []);
 
+  useEffect(() => {
+    api.getAllAttributes().then((res) => {
+      console.log(res.data["gender"]);
+      setGenders(res.data["gender"]);
+    });
+  }, []);
+
   interface DataType {
     key: React.Key;
     name: string;
     date: string;
+    gender: string;
+    prefix: string;
+    fee_status: string;
     nationality: string;
     program_code: string;
   }
@@ -59,6 +70,10 @@ export const ApplicantTable = () => {
     {
       title: "Gender",
       dataIndex: "gender",
+      filters: genders.map((code) => {
+        return { text: code, value: code };
+      }),
+      onFilter: (value, record) => record.gender === value,
     },
     {
       title: "Prefix",
