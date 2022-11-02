@@ -21,7 +21,7 @@ import ProgramPage from "./components/ProgramPage";
 import authService from "./services/auth.service";
 import { APIService } from "./services/API";
 import { ItemType } from "antd/lib/menu/hooks/useItems";
-import ApplicantTable from "./components/ApplicantTable";
+import ApplicantTable from "./components/Applicants/ApplicantTable";
 import UserAccessSettings from "./components/Settings/UserAccessSettings";
 
 const { Sider, Header, Footer, Content } = Layout;
