@@ -69,6 +69,10 @@ export class APIService {
     return this.buildAuthRequest("GET", "api/applicant");
   }
 
+  getAllAttributes(): Promise<APIResponse> {
+    return this.buildAuthRequest("GET", "api/applicant/attribute");
+  }
+
   login(username: string, password: string): Promise<APIResponse> {
     return this.buildRequest("POST", "api/user/login", { username, password });
   }

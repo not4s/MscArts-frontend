@@ -5,10 +5,9 @@ import { APIService } from "../../services/API";
 
 export const ApplicantTable = () => {
   const [tableData, setTableData] = useState([]);
+  const [nationalities, setNationalities] = useState([]);
 
   const api = new APIService();
-
-  useEffect(() => {}, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -25,10 +24,19 @@ export const ApplicantTable = () => {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    api.getAllAttributes().then((res) => {
+      console.log(res.data["nationality"]);
+      setNationalities(res.data["nationality"]);
+    });
+  }, []);
+
   interface DataType {
     key: React.Key;
     name: string;
     date: string;
+    nationality: string;
+    program_code: string;
   }
 
   const columns: ColumnsType<DataType> = [
@@ -59,13 +67,11 @@ export const ApplicantTable = () => {
     {
       title: "Nationality",
       dataIndex: "nationality",
+      filters: nationalities.map((nationality) => {
+        return { text: nationality, value: nationality };
+      }),
+      onFilter: (value, record) => record.nationality === value,
     },
-
-    // {
-    // title: "Date",
-    // dataIndex: "date",
-    // sorter: (a, b) => moment(a.date).unix() - moment(b.date).unix(),
-    // },
   ];
 
   const onChange: TableProps<DataType>["onChange"] = (
