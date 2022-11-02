@@ -33,48 +33,50 @@ const Graph = ({ preset=0 }) => {
   useEffect(() => {
     const api = new APIService()
 
-    if (configs[preset].stackOn) {
-      api.getApplicantDataStacked(configs[preset].xField, configs[preset].stackOn)
-        .then(res => { console.log(res.data); setData(res.data) } )
-    } else {
-      api.getApplicantData(configs[preset].xField)
-        .then(res => { console.log(res.data); setData(res.data) } )
+    if (configs[preset].fetchParams) {
+      api.getApplicant(configs[preset].fetchParams)
+        .then(res => { 
+          setData(res.data)
+        });
     }
+    
+    // if (configs[preset].stackOn) {
+    //   api.getApplicantDataStacked(configs[preset].xField, configs[preset].stackOn)
+    //     .then(res => { console.log(res.data); setData(res.data) } )
+    // } else {
+    //   api.getApplicantData(configs[preset].xField)
+    //     .then(res => { console.log(res.data); setData(res.data) } )
+    // }
+
+
   }, [])
 
-  useEffect(() => {
-    console.log(data)
-  }, [data])
+  // useEffect(() => {
+  //   console.log(data)
+  // }, [data])
 
   const configs = [
-    {
-      data: graph.graphs[0].data,
-      xField: "year",
-      yField: "value",
-    },
     {
       data,
       xField: "gender",
       yField: "count",
-      isStack: "true",
-      seriesField: "type",
+      isStack: true,
+      seriesField: 'type',
+      fetchParams: {
+        count: "gender",
+        program_type: "MAC"
+      }, 
     },
     {
       data,
       xField: "application_folder_fee_status",
       yField: "count",
-      isStack: "true",
-      seriesField: "series"
-    },
-    {
-      data,
-      xField: "application_folder_fee_status",
-      yField: "count",
-      isStack: "true",
-      seriesField: "series",
-      stackOn: "application_status"
+      isStack: true,
+      seriesField: 'type',
+      fetchParams: {
+        count: "application_folder_fee_status",
+      }
     }
-
 ]
     // annotations: [
     //   {

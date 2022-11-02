@@ -10,18 +10,28 @@ import { Button, Form, Modal, Select, Tag } from "antd";
 import FormItem from "antd/es/form/FormItem";
 import axios from "axios";
 import Graph from "./Graph";
+import PieGraph from "./PieGraph";
 
 const { Option } = Select;
+const degreeTypes = ["ALL", "MAC", "AIML", "MCSS", "MCS"];
 
 const CreateGraph = (props) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [graphType, setGraphType] = useState("");
   const [form] = Form.useForm();
 
+  const [visualType, setVisualType] = useState("");
+  const [programType, setProgramType] = useState("");
+
+
   const createBarChart = () => {
     //TODO
     props.setGraphs([...props.graphs, <Graph />]);
   };
+
+  const createPieChart = () => {
+    props.setGraphs([...props.graphs, <PieGraph programType={programType} graphType={visualType}/>]);
+  }
 
   const handleOk = () => {
     form.submit();
@@ -31,6 +41,10 @@ const CreateGraph = (props) => {
       switch (type) {
         case "BAR":
           createBarChart();
+          break;
+        case "PIE":
+          createPieChart();
+          break;
         default:
       }
     }
@@ -113,6 +127,38 @@ const CreateGraph = (props) => {
           ) : (
             <></>
           )}
+
+          {graphType === "PIE" ?
+          <>
+            <Form.Item
+                name="Degree"
+                rules={[{ required: true }]}
+                extra="This is the degree from which to access the data"
+            >
+              <Select
+                  placeholder="Select Degree"
+                  style={{ width: 240 }}
+                  onChange={(value) => setProgramType(value)}
+              >
+                {degreeTypes.map(type => <Option value={type}>{type}</Option>)}
+              </Select>
+            </Form.Item>
+
+            <Form.Item
+                name="Filter type"
+                rules={[{ required: true }]}
+            >
+              <Select
+                  placeholder="Select Filter"
+                  style={{ width: 240 }}
+                  onChange={(value) => setVisualType(value)}
+              >
+                <Option value="ETHNICITY">Ethnicity</Option>
+                <Option value="NATIONALITY">Nationality</Option>
+              </Select>
+            </Form.Item>
+          </> :
+          <></>}
         </Form>
       </Modal>
       <Button type="dashed" onClick={() => setModalOpen(true)}>

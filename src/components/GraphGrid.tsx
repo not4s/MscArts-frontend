@@ -2,11 +2,13 @@ import { Col, Row } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import CreateGraph from "./CreateGraph";
 import Graph from "./Graph";
+import PieGraph from "./PieGraph";
 
 const GraphGrid = () => {
   const [graphs, setGraphs] = useState([
-    <Graph preset={2} />,
+    <PieGraph programType="MAC" graphType="NATIONALITY" />,
     <Graph preset={1} />,
+    <Graph preset={0} />,
   ]);
 
   const allGraphs = [
@@ -35,6 +37,8 @@ const GraphGrid = () => {
 export default GraphGrid;
 
 function sliceIntoChunks(arr: any[], len: number) {
+  console.log(arr);
+
   let chunks = [],
     i = 0,
     n = arr.length;
