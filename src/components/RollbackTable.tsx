@@ -13,12 +13,11 @@ interface DataType {
   active: boolean;
 }
 
-export const RollbackTable = () => {
+export const RollbackTable = (props: any) => {
   const [sheets, setSheets] = useState(undefined);
   const api = new APIService();
 
   const { confirm } = Modal;
-
   const showConfirm = (version: Number) => {
     confirm({
       title: "Are you sure you want to rollback this spreadsheet?",
@@ -37,6 +36,7 @@ export const RollbackTable = () => {
     api.rollbackUploadedSheet(version).then((res) => {
       if (res.data.message === "Rolled Back File") {
         message.success("Successfully rolled back");
+        setSheets(undefined);
       } else {
         message.error("Failed to rollback File");
       }
@@ -47,7 +47,7 @@ export const RollbackTable = () => {
     api.getUploadedSheets().then((result) => {
       setSheets(mapToToggle(result.data));
     });
-  }, []);
+  }, [props.reload, sheets]);
 
   const mapToToggle = (data: any) => {
     return data.map((obj: any) => {
