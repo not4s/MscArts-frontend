@@ -101,6 +101,10 @@ export class APIService {
     });
   }
 
+  getUserAccess(): Promise<APIResponse> {
+    return this.buildAuthRequest("GET", "api/user/access");
+  }
+
   getUploadedSheets(): Promise<APIResponse> {
     return this.buildAuthRequest("GET", "api/upload/");
   }
