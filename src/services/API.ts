@@ -54,6 +54,16 @@ export class APIService {
     return this.buildAuthRequest("GET", `api/applicant/?count=${count}`);
   }
 
+  getApplicant(config: { [k: string]: string }): Promise<APIResponse> {
+    let url = "api/applicant/?";
+
+    for (var k in config) {
+      url += `${k}=${config[k]}&`;
+    }
+
+    return this.buildAuthRequest("GET", url);
+  }
+
   getApplicantDataStacked(count: string, series: string): Promise<APIResponse> {
     return this.buildAuthRequest(
       "GET",

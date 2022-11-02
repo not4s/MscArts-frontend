@@ -6,7 +6,8 @@ import { ApiOutlined } from '@ant-design/icons';
 
 const TargetForm = () => {
   const [targets, setTargets] = useState([])
-  const [programs, setPrograms] = useState([])
+  const [loaded, setLoaded] = useState(false)
+  const programs = ["AIML", "MAI", "MAC", "MCS", "MCSS"]
   const api = new APIService();
 
   const submitNewTarget = (values) => {
@@ -22,11 +23,8 @@ const TargetForm = () => {
   }
 
   useEffect(() => {
-    api.getPrograms()
-      .then(res => {console.log(res.data); setPrograms(res.data)})
-      .catch(err => console.log(err))
     api.getTargets()
-      .then(res => {console.log(res.data); setTargets(res.data)})
+      .then(res => {console.log(res.data); setTargets(res.data); setLoaded(true)})
       .catch(err => console.log(err))
   }, [])
   
@@ -41,8 +39,8 @@ const TargetForm = () => {
             <Select>
               {
                 programs.map(program => {return(
-                  <Select.Option value={program.code}>
-                    {program.name}
+                  <Select.Option value={program}>
+                    {program}
                   </Select.Option>
                 )})
               }
@@ -67,7 +65,7 @@ const TargetForm = () => {
         <div>
           <>
           {
-            targets.length == 0 ? 
+            !loaded ? 
             <Spin size="large"/>
             :
             <>

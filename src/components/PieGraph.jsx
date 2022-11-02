@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Column } from "@ant-design/charts";
+import { Pie } from "@ant-design/charts";
 import axios from "axios";
 import { APIService } from "../services/API";
 
-const Graph = ({ preset=0 }) => {
+import { ETHNICITY_MAPPING } from "../constants/ethnicity";
+
+const PieGraph = ({ preset=0 }) => {
   const [graph, setGraph] = useState({
     tid: 1,
     graphs: [
@@ -33,11 +35,27 @@ const Graph = ({ preset=0 }) => {
   useEffect(() => {
     const api = new APIService()
 
-    if (configs[preset].fetchParams) {
-      api.getApplicant(configs[preset].fetchParams)
-        .then(res => { setData(res.data)});
-    }
-    
+    api.getApplicant(configs[preset].fetchParams)
+        .then(res => {
+            let d = res.data;
+            for (let i = 0; i < d.length; i++) {
+                if (d[i]['ethnicity'] !== undefined) {
+                    d[i]['ethnicity'] = ETHNICITY_MAPPING[d[i]['ethnicity']]; 
+                } 
+                
+                if (d[i]['ethnicity'] === undefined) {
+                    d[i]['ethnicity'] = 'Other/Unknown';
+                }
+            }
+            let finalData = Object.values(d.reduce((a, { ethnicity }) => {
+                if (!a[ethnicity]) a[ethnicity] = { 'type': ethnicity, 'value': 0};
+                a[ethnicity]['value'] += 1;
+                return a;
+            }, {}))
+            console.log(finalData);
+            setData(finalData);
+
+        })    
     // if (configs[preset].stackOn) {
     //   api.getApplicantDataStacked(configs[preset].xField, configs[preset].stackOn)
     //     .then(res => { console.log(res.data); setData(res.data) } )
@@ -55,31 +73,30 @@ const Graph = ({ preset=0 }) => {
 
   const configs = [
     {
-      data,
-      xField: "gender",
-      yField: "count",
-      isStack: true,
-      seriesField: 'type',
-      fetchParams: {
-        count: "gender",
-        program_type: "MAC"
-      }, 
-    },
-    {
-      data: graph.graphs[0].data,
-      xField: "year",
-      yField: "value",
-    },
-    {
-      data,
-      xField: "application_folder_fee_status",
-      yField: "value",
-      isStack: true,
-      fetchParams: {
-        program_type: "MAI"
-      }
+        data,
+        appendPadding: 10,
+        angleField: 'value',
+        colorField: 'type',
+        radius: 0.9,
+        label: {
+          type: 'inner',
+          offset: '-20%',
+          content: ({ percent }) => `${(percent * 100).toFixed(0)}%`,
+          style: {
+            fontSize: 14,
+            textAlign: 'center',
+          },
+        },
+        interactions: [
+          {
+            type: 'element-active',
+          },
+        ],
+        fetchParams: {
+            "program_type": "MAI"
+        }
     }
-]
+    ]
     // annotations: [
     //   {
     //     type: 'line',
@@ -140,7 +157,11 @@ const Graph = ({ preset=0 }) => {
     //   },
     // ],
     //  configs[preset ? preset : 0]
-  return <Column {...configs[preset]} />;
+  return (
+  <>
+    <h1>{configs[preset].fetchParams.program_type}</h1>
+    <Pie {...configs[preset]} />;
+  </>)
 };
 
-export default Graph;
+export default PieGraph;

@@ -47,7 +47,7 @@ export const RollbackTable = (props: any) => {
     api.getUploadedSheets().then((result) => {
       setSheets(mapToToggle(result.data));
     });
-  }, [props.reload, sheets]);
+  }, [props.reload]);
 
   const mapToToggle = (data: any) => {
     return data.map((obj: any) => {
