@@ -6,7 +6,7 @@ import PieGraph from "./PieGraph";
 
 const GraphGrid = () => {
   const [graphs, setGraphs] = useState([
-    <PieGraph preset={0} />,
+    <PieGraph programType="MAC" graphType="NATIONALITY" />,
     <Graph preset={1} />,
     <Graph preset={0} />,
   ]);
@@ -37,6 +37,8 @@ const GraphGrid = () => {
 export default GraphGrid;
 
 function sliceIntoChunks(arr: any[], len: number) {
+  console.log(arr);
+
   let chunks = [],
     i = 0,
     n = arr.length;

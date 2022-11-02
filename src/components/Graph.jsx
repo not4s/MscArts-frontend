@@ -36,7 +36,6 @@ const Graph = ({ preset=0 }) => {
     if (configs[preset].fetchParams) {
       api.getApplicant(configs[preset].fetchParams)
         .then(res => { 
-          console.log(res.data);  
           setData(res.data)
         });
     }
@@ -52,9 +51,9 @@ const Graph = ({ preset=0 }) => {
 
   }, [])
 
-  useEffect(() => {
-    console.log(data)
-  }, [data])
+  // useEffect(() => {
+  //   console.log(data)
+  // }, [data])
 
   const configs = [
     {
