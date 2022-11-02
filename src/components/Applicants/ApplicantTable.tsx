@@ -6,6 +6,7 @@ import { APIService } from "../../services/API";
 export const ApplicantTable = () => {
   const [tableData, setTableData] = useState([]);
   const [nationalities, setNationalities] = useState([]);
+  const [program_codes, setProgramCodes] = useState([]);
 
   const api = new APIService();
 
@@ -28,6 +29,13 @@ export const ApplicantTable = () => {
     api.getAllAttributes().then((res) => {
       console.log(res.data["nationality"]);
       setNationalities(res.data["nationality"]);
+    });
+  }, []);
+
+  useEffect(() => {
+    api.getAllAttributes().then((res) => {
+      console.log(res.data["program_code"]);
+      setProgramCodes(res.data["program_code"]);
     });
   }, []);
 
@@ -59,6 +67,10 @@ export const ApplicantTable = () => {
     {
       title: "Program",
       dataIndex: "program_code",
+      filters: program_codes.map((code) => {
+        return { text: code, value: code };
+      }),
+      onFilter: (value, record) => record.program_code === value,
     },
     {
       title: "Fee Status",
