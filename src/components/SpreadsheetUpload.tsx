@@ -9,7 +9,6 @@ import {
   InboxOutlined,
   LoadingOutlined,
 } from "@ant-design/icons";
-import { ApplicantTable } from "./ApplicantTable";
 import { RollbackTable } from "./RollbackTable";
 import { APIService } from "../services/API";
 import type { UploadProps } from "antd";
