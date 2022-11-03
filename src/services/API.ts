@@ -111,6 +111,13 @@ export class APIService {
     });
   }
 
+  deleteTarget({ course, year }: any): Promise<APIResponse> {
+    return this.buildAuthRequest("DELETE", `api/target/`, {
+      program_type: course,
+      year,
+    });
+  }
+
   getUserAccess(): Promise<APIResponse> {
     return this.buildAuthRequest("GET", "api/user/access");
   }

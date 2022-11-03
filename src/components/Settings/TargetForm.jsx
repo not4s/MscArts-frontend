@@ -22,6 +22,14 @@ const TargetForm = () => {
       .catch(err => console.log(err))
   }
 
+  const handleRemove = (e, course, year) => {
+    e.preventDefault();
+
+    api.deleteTarget({course, year})
+      .then(res  => console.log(res))
+      .catch(err => console.log(err))
+  }
+
   useEffect(() => {
     api.getTargets()
       .then(res => {console.log(res.data); setTargets(res.data); setLoaded(true)})
@@ -74,6 +82,7 @@ const TargetForm = () => {
               targets.map(target => {return (
                 <div>
                   <h3>{target.program_type} ({target.year})</h3>
+                  <button onClick={e => handleRemove(e, target.program_type, target.year)}>Remove</button>
                   <Progress percent={target.target} status="active" />
                 </div>
               )})}
