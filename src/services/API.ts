@@ -164,4 +164,11 @@ export class APIService {
       code: code,
     });
   }
+
+  updateAccessLevel(username: string, level: number): Promise<APIResponse> {
+    return this.buildAuthRequest("PUT", "api/user/roles", {
+      username: username,
+      access: level,
+    });
+  }
 }
