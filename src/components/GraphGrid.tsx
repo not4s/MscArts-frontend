@@ -8,7 +8,9 @@ const GraphGrid = () => {
   const [graphs, setGraphs] = useState([
     <PieGraph programType="MAC" graphType="NATIONALITY" />,
     <Graph programType={"MAC"} graphType="gender" />,
-    <Graph programType={"ALL"} graphType="application_folder_fee_status" />,
+    <Graph programType={"ALL"} graphType="combined_fee_status" />,
+    <Graph programType={"ALL"} graphType="proposed_decision" />,
+    <Graph programType={"ALL"} graphType="status" />,
   ]);
 
   const allGraphs = [
