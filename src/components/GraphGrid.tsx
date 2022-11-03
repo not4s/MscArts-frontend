@@ -7,8 +7,10 @@ import PieGraph from "./PieGraph";
 const GraphGrid = () => {
   const [graphs, setGraphs] = useState([
     <PieGraph programType="MAC" graphType="NATIONALITY" />,
-    <Graph preset={1} />,
-    <Graph preset={0} />,
+    <Graph programType={"MAC"} graphType="gender" />,
+    <Graph programType={"ALL"} graphType="combined_fee_status" />,
+    <Graph programType={"ALL"} graphType="proposed_decision" />,
+    <Graph programType={"ALL"} graphType="status" />,
   ]);
 
   const allGraphs = [

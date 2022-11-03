@@ -89,7 +89,7 @@ export const ApplicantTable = () => {
     },
     {
       title: "Fee Status",
-      dataIndex: "fee_status",
+      dataIndex: "combined_fee_status",
     },
     {
       title: "Nationality",
