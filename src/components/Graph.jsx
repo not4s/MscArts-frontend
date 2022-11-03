@@ -11,7 +11,7 @@ const DEFAULT_CONFIG = {
   seriesField: 'type'
 }
 
-const Graph = ({ preset=0, programType, graphType }) => {
+const Graph = ({ programType, graphType, stack=true }) => {
   const [config, setConfig] = useState(DEFAULT_CONFIG);
   // const [data, setData] = useState([])
 
@@ -28,7 +28,14 @@ const Graph = ({ preset=0, programType, graphType }) => {
     fetchParams["count"] = graphType;
 
     api.getApplicant(fetchParams)
-      .then((res) => setConfig({...DEFAULT_CONFIG, data:res.data, xField: graphType}));
+      .then((res) => {
+        let data = res.data;
+        if (!stack) {
+          data = data.filter((a) => a[graphType] !== 'Combined');
+        }
+        setConfig({...DEFAULT_CONFIG, data, xField: graphType})
+      }      
+      );
   }, [])
 
   // useEffect(() => {
