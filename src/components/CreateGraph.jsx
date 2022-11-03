@@ -26,7 +26,7 @@ const CreateGraph = (props) => {
 
   const createBarChart = () => {
     //TODO
-    props.setGraphs([...props.graphs, <Graph />]);
+    props.setGraphs([...props.graphs, <Graph programType={programType} graphType={visualType} />]);
   };
 
   const createPieChart = () => {
@@ -89,6 +89,20 @@ const CreateGraph = (props) => {
               {/* ---------------------------------------- */}
 
               <Form.Item
+                name="Degree"
+                rules={[{ required: true }]}
+                extra="This is the degree from which to access the data"
+            >
+              <Select
+                  placeholder="Select Degree"
+                  style={{ width: 240 }}
+                  onChange={(value) => setProgramType(value)}
+              >
+                {degreeTypes.map(type => <Option value={type}>{type}</Option>)}
+              </Select>
+            </Form.Item>
+
+              <Form.Item
                 name="Columns"
                 rules={[{ required: true }]}
                 extra="E.g. 'Gender' will create columns for 'Male' and 'Female' respectfully"
@@ -96,17 +110,16 @@ const CreateGraph = (props) => {
                 <Select
                   placeholder="Select columns"
                   style={{ width: 240 }}
-                  // onChange={(value: string) => setGraphType(value)}
+                  onChange={(value) => setVisualType(value)}
                 >
-                  <Option value="GENDER">Gender</Option>
-                  <Option value="COURSE">Course</Option>
-                  <Option value="FEE_STATUS">Fee Status</Option>
+                  <Option value="gender">Gender</Option>
+                  <Option value="application_folder_fee_status">Fee Status</Option>
                 </Select>
               </Form.Item>
 
               {/* ---------------------------------------- */}
 
-              <Form.Item
+              {/* <Form.Item
                 name="Grouping"
                 rules={[{ required: false }]}
                 extra="E.g. 'Gender' will display the difference between 'Male' and 'Female' within a single column"
@@ -120,7 +133,7 @@ const CreateGraph = (props) => {
                   <Option value="COURSE">Course</Option>
                   <Option value="FEE_STATUS">Fee Status</Option>
                 </Select>
-              </Form.Item>
+              </Form.Item> */}
 
               {/* ---------------------------------------- */}
             </>

@@ -3,81 +3,61 @@ import { Column } from "@ant-design/charts";
 import axios from "axios";
 import { APIService } from "../services/API";
 
-const Graph = ({ preset=0 }) => {
-  const [graph, setGraph] = useState({
-    tid: 1,
-    graphs: [
-      {
-        type: "BAR",
-        x_val: "status",
-        y_type: "count",
-        data: [
-          { year: "home", value: 1, type: "cleared" },
-          { year: "away", value: 1, type: "paid" },
-          { year: "away", value: 1, type: "paid" },
-          { year: "home", value: 1, type: "cleared" },
-          { year: "away", value: 1, type: "paid" },
-          { year: "away", value: 1, type: "paid" },
-          { year: "home", value: 1, type: "paid" },
-          { year: "home", value: 1, type: "accepted" },
-          { year: "home", value: 1, type: "cleared" },
-        ],
-        pos: 0,
-      },
-      { type: "BAR", x_val: "status", y_type: "count", data: [], pos: 1 },
-    ],
-  });
+const DEFAULT_CONFIG = {
+  data: [],
+  xField: "gender",
+  yField: "count",
+  isStack: true,
+  seriesField: 'type'
+}
 
-  const [data, setData] = useState([])
+const Graph = ({ preset=0, programType, graphType }) => {
+  const [config, setConfig] = useState(DEFAULT_CONFIG);
+  // const [data, setData] = useState([])
 
   useEffect(() => {
     const api = new APIService()
 
-    if (configs[preset].fetchParams) {
-      api.getApplicant(configs[preset].fetchParams)
-        .then(res => { 
-          setData(res.data)
-        });
-    }
+    const fetchParams = {}
+
     
-    // if (configs[preset].stackOn) {
-    //   api.getApplicantDataStacked(configs[preset].xField, configs[preset].stackOn)
-    //     .then(res => { console.log(res.data); setData(res.data) } )
-    // } else {
-    //   api.getApplicantData(configs[preset].xField)
-    //     .then(res => { console.log(res.data); setData(res.data) } )
-    // }
+    if (programType !== "ALL") {
+      fetchParams["program_type"] = programType;
+    }
 
+    fetchParams["count"] = graphType;
 
+    api.getApplicant(fetchParams)
+      .then((res) => setConfig({...DEFAULT_CONFIG, data:res.data, xField: graphType}));
   }, [])
 
   // useEffect(() => {
   //   console.log(data)
   // }, [data])
 
-  const configs = [
-    {
-      data,
-      xField: "gender",
-      yField: "count",
-      isStack: true,
-      seriesField: 'type',
-      fetchParams: {
-        count: "gender",
-        program_type: "MAC"
-      }, 
-    },
-    {
-      data,
-      xField: "application_folder_fee_status",
-      yField: "count",
-      isStack: true,
-      seriesField: 'type',
-      fetchParams: {
-        count: "application_folder_fee_status",
-      }
-    }
-]
+//   const configs = [
+//     {
+//       data,
+//       xField: "gender",
+//       yField: "count",
+//       isStack: true,
+//       seriesField: 'type',
+//       fetchParams: {
+//         count: "gender",
+//         program_type: "MAC"
+//       }, 
+//     },
+//     {
+//       data,
+//       xField: "application_folder_fee_status",
+//       yField: "count",
+//       isStack: true,
+//       seriesField: 'type',
+//       fetchParams: {
+//         count: "application_folder_fee_status",
+//       }
+//     }
+// ]
     // annotations: [
     //   {
     //     type: 'line',
@@ -138,7 +118,12 @@ const Graph = ({ preset=0 }) => {
     //   },
     // ],
     //  configs[preset ? preset : 0]
-  return <Column {...configs[preset]} />;
+  return (
+    <>
+    <h1>{ `${programType} - ${graphType} graph` }</h1>
+    <Column {...config} />
+    </>
+  );
 };
 
 export default Graph;
