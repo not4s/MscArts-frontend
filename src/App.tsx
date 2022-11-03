@@ -59,12 +59,7 @@ export default function App() {
       getItem(currentUserRole >= 3, "General", "6", <SlidersOutlined />),
       getItem(currentUserRole >= 2, "Programs", "4", <ProjectOutlined />),
       getItem(currentUserRole >= 3, "Targets", "7", <RiseOutlined />),
-      getItem(
-        currentUserRole >= 3,
-        "Set Access Levels",
-        "8",
-        <SettingOutlined />
-      ),
+      getItem(currentUserRole >= 3, "User Access", "8", <SettingOutlined />),
     ]),
     getItem(currentUserRole >= 1, "Candidates", "9", <ContactsOutlined />),
   ];
