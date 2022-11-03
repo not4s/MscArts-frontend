@@ -92,11 +92,11 @@ export class APIService {
   }
 
   getTargets(): Promise<APIResponse> {
-    return this.buildAuthRequest("GET", "api/applicant/target");
+    return this.buildAuthRequest("GET", "api/target");
   }
 
   postTarget({ course, target, year }: any): Promise<APIResponse> {
-    return this.buildAuthRequest("POST", `api/applicant/target`, {
+    return this.buildAuthRequest("POST", `api/target`, {
       program_type: course,
       year,
       target,
@@ -104,7 +104,7 @@ export class APIService {
   }
 
   putTarget({ course, target, year }: any): Promise<APIResponse> {
-    return this.buildAuthRequest("PUT", `api/applicant/target`, {
+    return this.buildAuthRequest("PUT", `api/target`, {
       program_type: course,
       year,
       target,
