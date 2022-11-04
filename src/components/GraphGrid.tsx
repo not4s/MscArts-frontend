@@ -18,6 +18,7 @@ const GraphGrid = () => {
   const [graphs, setGraphs] = useState<GraphInterface[]>([
     { type: "PIE", programType: "ALL", graphType: "NATIONALITY" },
     { type: "BAR", programType: "ALL", graphType: "gender", stack: false },
+    { type: "BAR", programType: "MAC", graphType: "gender", stack: true },
   ]);
 
   const [reload, setReload] = useState<boolean>(false);
@@ -47,7 +48,9 @@ const GraphGrid = () => {
             let res = await api.getApplicant(fetchParams);
             let data = res.data;
             if (!newGraphs[i]["stack"]) {
-              data = data.filter((a: any) => a["graphType"] !== "Combined");
+              data = data.filter(
+                (a: any) => a[newGraphs[i]["graphType"]] !== "Combined"
+              );
             }
             console.log(data);
             newGraphs[i]["data"] = data;
@@ -74,18 +77,22 @@ const GraphGrid = () => {
               </Col>
             );
           })}
-          <CreateGraph
-            graphs={graphs}
-            setGraphs={setGraphs}
-            setReload={setReload}
-            reload={reload}
-          />
         </Row>
       </>
     );
   });
 
-  return <>{nodes}</>;
+  return (
+    <>
+      {nodes}
+      <CreateGraph
+        graphs={graphs}
+        setGraphs={setGraphs}
+        setReload={setReload}
+        reload={reload}
+      />{" "}
+    </>
+  );
 };
 
 export default GraphGrid;
