@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Column } from "@ant-design/charts";
 import axios from "axios";
-import { APIService } from "../services/API";
+import { APIService } from "../../services/API";
 
 const DEFAULT_CONFIG = {
   data: [],
@@ -11,60 +11,15 @@ const DEFAULT_CONFIG = {
   seriesField: 'type'
 }
 
-const Graph = ({ programType, graphType, stack=true }) => {
+const BarGraph = ({ programType, graphType, data }) => {
   const [config, setConfig] = useState(DEFAULT_CONFIG);
-  // const [data, setData] = useState([])
 
   useEffect(() => {
-    const api = new APIService()
-
-    const fetchParams = {}
-
-    
-    if (programType !== "ALL") {
-      fetchParams["program_type"] = programType;
+    if (data) {
+      setConfig({...DEFAULT_CONFIG, data, xField: graphType})
     }
+  }, [data])
 
-    fetchParams["count"] = graphType;
-
-    api.getApplicant(fetchParams)
-      .then((res) => {
-        let data = res.data;
-        if (!stack) {
-          data = data.filter((a) => a[graphType] !== 'Combined');
-        }
-        setConfig({...DEFAULT_CONFIG, data, xField: graphType})
-      }      
-      );
-  }, [])
-
-  // useEffect(() => {
-  //   console.log(data)
-  // }, [data])
-
-//   const configs = [
-//     {
-//       data,
-//       xField: "gender",
-//       yField: "count",
-//       isStack: true,
-//       seriesField: 'type',
-//       fetchParams: {
-//         count: "gender",
-//         program_type: "MAC"
-//       }, 
-//     },
-//     {
-//       data,
-//       xField: "application_folder_fee_status",
-//       yField: "count",
-//       isStack: true,
-//       seriesField: 'type',
-//       fetchParams: {
-//         count: "application_folder_fee_status",
-//       }
-//     }
-// ]
     // annotations: [
     //   {
     //     type: 'line',
@@ -133,4 +88,4 @@ const Graph = ({ programType, graphType, stack=true }) => {
   );
 };
 
-export default Graph;
+export default BarGraph;

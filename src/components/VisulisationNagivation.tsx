@@ -5,6 +5,10 @@ import GraphGrid from "./GraphGrid";
 import Cookies from "universal-cookie";
 import CreateGraph from "./CreateGraph";
 
+interface Props {
+  mock: boolean;
+}
+
 const VisulisationNagivation = () => {
   const defaultItems = [
     { label: "Male vs Female", key: "0", children: <GraphGrid /> },

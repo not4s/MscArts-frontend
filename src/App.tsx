@@ -23,6 +23,7 @@ import { APIService } from "./services/API";
 import { ItemType } from "antd/lib/menu/hooks/useItems";
 import ApplicantTable from "./components/Applicants/ApplicantTable";
 import UserAccessSettings from "./components/Settings/UserAccessSettings";
+import MockVisualisation from "./components/MockVisualization";
 
 const { Sider, Header, Footer, Content } = Layout;
 
@@ -51,6 +52,9 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [currentUserRole, setCurrentUserRole] = useState(0);
 
+  const [mockMode, setMockMode] = useState(false);
+  const [mockData, setMockData] = useState<any[]>([]);
+
   const [tab, setTab] = useState(1);
   const items: ItemType[] = [
     getItem(currentUserRole >= 1, "Visulisations", "1", <PieChartOutlined />),
@@ -61,7 +65,7 @@ export default function App() {
       getItem(currentUserRole >= 3, "Targets", "7", <RiseOutlined />),
       getItem(currentUserRole >= 3, "User Access", "8", <SettingOutlined />),
     ]),
-    getItem(currentUserRole >= 1, "Candidates", "9", <ContactsOutlined />),
+    getItem(currentUserRole >= 2, "Candidates", "9", <ContactsOutlined />),
   ];
 
   const logOutItem: ItemType[] = [
@@ -135,8 +139,24 @@ export default function App() {
           </Sider>
           <Layout style={{ minHeight: "100vh" }}>
             <Content>
-              {tab == 1 ? <VisulisationNagivation /> : <></>}
-              {tab == 2 ? <SpreadsheetUpload /> : <></>}
+              {tab == 1 ? (
+                mockMode ? (
+                  <MockVisualisation mockData={mockData} />
+                ) : (
+                  <VisulisationNagivation />
+                )
+              ) : (
+                <></>
+              )}
+              {tab == 2 ? (
+                <SpreadsheetUpload
+                  mock={currentUserRole < 3}
+                  setMock={setMockMode}
+                  setMockData={setMockData}
+                />
+              ) : (
+                <></>
+              )}
               {tab == 6 ? <GeneralSettings /> : <></>}
               {tab == 7 ? <TargetSettings /> : <></>}
               {tab == 8 ? <UserAccessSettings /> : <></>}

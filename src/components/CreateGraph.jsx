@@ -9,8 +9,8 @@ import {
 import { Button, Checkbox, Form, Modal, Select, Tag } from "antd";
 import FormItem from "antd/es/form/FormItem";
 import axios from "axios";
-import Graph from "./Graph";
-import PieGraph from "./PieGraph";
+import Graph from "./Graphs/BarGraph";
+import PieGraph from "./Graphs/PieGraph";
 
 const { Option } = Select;
 const degreeTypes = ["ALL", "MAC", "AIML", "MCSS", "MCS"];
@@ -26,11 +26,11 @@ const CreateGraph = (props) => {
 
   const createBarChart = () => {
     //TODO
-    props.setGraphs([...props.graphs, <Graph programType={programType} graphType={visualType} stack={stacked} />]);
+    props.setGraphs([...props.graphs, { type: 'BAR', programType: programType, graphType: visualType, stack: stacked}]);
   };
 
   const createPieChart = () => {
-    props.setGraphs([...props.graphs, <PieGraph programType={programType} graphType={visualType}/>]);
+    props.setGraphs([...props.graphs, { type: 'PIE', programType: programType, graphType: visualType}]);
   }
 
   const handleOk = () => {
@@ -47,6 +47,7 @@ const CreateGraph = (props) => {
           break;
         default:
       }
+      props.setReload(!props.reload);
     }
   };
 

@@ -75,6 +75,10 @@ export class APIService {
     return this.buildAuthRequest("POST", "api/upload/", data);
   }
 
+  postMockSpreadsheet(data: FormData): Promise<APIResponse> {
+    return this.buildAuthRequest("POST", "api/upload/mock", data);
+  }
+
   getAllApplicants(): Promise<APIResponse> {
     return this.buildAuthRequest("GET", "api/applicant");
   }
