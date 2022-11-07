@@ -7,7 +7,12 @@ import { Navigate } from 'react-router-dom';
 //   children: React.ReactNode;
 // }
 
-const ProtectedRoute = ({ rolePossessed, roleRequired, children }) => {
+const ProtectedRoute = ({ user, rolePossessed, roleRequired, children }) => {
+   if (user === null) {
+      return children;
+   }
+
+
    return (rolePossessed < roleRequired) ? <Navigate to="/" replace /> : children
 };
 

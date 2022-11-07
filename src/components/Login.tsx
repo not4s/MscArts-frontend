@@ -12,10 +12,18 @@ import {
   Tagline,
 } from "../styles/login-style";
 import { message } from "antd";
+import { useNavigate } from "react-router-dom";
 
 export default function Login(props: any) {
+  let navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    if (sessionStorage.getItem("user")) {
+      navigate("/");
+    }
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,11 +34,10 @@ export default function Login(props: any) {
       .then((res: any) => {
         console.log(res);
         sessionStorage.setItem("user", res.data.accessToken);
-        props.setCurrentUser(res.data.accessToken);
 
         api.getRole().then((res) => {
           console.log(`Role is `, res);
-          props.setCurrentUserRole(res.data);
+          navigate("/");
         });
       })
       .catch((res) => {

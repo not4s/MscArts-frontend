@@ -26,6 +26,7 @@ import MockVisualisation from "./components/MockVisualisation";
 import { Outlet, useNavigate } from "react-router-dom";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AuthVerification from "./services/AuthVerification";
 
 const { Sider, Header, Footer, Content } = Layout;
 
@@ -118,172 +119,164 @@ export default function App() {
 
   React.useEffect(() => {
     const accessToken = sessionStorage.getItem("user");
-    if (!accessToken) return;
-    let accessTime = JSON.parse(atob(accessToken.split(".")[1]));
-    if (accessTime.exp * 1000 < Date.now()) {
-      logout();
-      return;
-    }
-    // @ts-ignore
-    setCurrentUser(accessToken);
     const api = new APIService();
     api.getRole().then((res) => {
       if (!res.success) {
+        console.log("Logging out");
         return logout();
       }
       setCurrentUserRole(res.data);
+      // @ts-ignore
+      setCurrentUser(accessToken);
     });
   }, []);
-
-  const changeTab = (key: any) => {
-    setTab(Number(key));
-  };
 
   const logout = () => {
     sessionStorage.removeItem("user");
     setCurrentUser(null);
     setCurrentUserRole(0);
     setTab(1);
-    navigate("/");
+    navigate("/login");
   };
 
   return (
     <div className="App">
-      {currentUser ? (
-        <Layout hasSider style={{ minHeight: "100vh" }}>
-          <Sider
+      <Layout hasSider style={{ minHeight: "100vh" }}>
+        <AuthVerification logout={logout} />
+        <Sider
+          style={{
+            overflow: "auto",
+            height: "100vh",
+            position: "sticky",
+            left: 0,
+            top: 0,
+            bottom: 0,
+          }}
+        >
+          <div
+            className="styledMenuContainer"
             style={{
-              overflow: "auto",
-              height: "100vh",
-              position: "sticky",
-              left: 0,
-              top: 0,
-              bottom: 0,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              height: "calc(100%)",
             }}
           >
-            <div
-              className="styledMenuContainer"
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                height: "calc(100%)",
-              }}
-            >
-              <Menu
-                theme="dark"
-                defaultSelectedKeys={["1"]}
-                mode="inline"
-                items={items.filter((e: any) => e.key !== -1)}
-                onClick={(e) => navigate(e.key)}
-              ></Menu>
-              <Menu
-                theme="dark"
-                mode="inline"
-                items={logOutItem}
-                onClick={(e) => logout()}
+            <Menu
+              theme="dark"
+              defaultSelectedKeys={["1"]}
+              mode="inline"
+              items={items.filter((e: any) => e.key !== -1)}
+              onClick={(e) => navigate(e.key)}
+            ></Menu>
+            <Menu
+              theme="dark"
+              mode="inline"
+              items={logOutItem}
+              onClick={(e) => logout()}
+            />
+          </div>
+        </Sider>
+        <Layout style={{ minHeight: "100vh" }}>
+          <Content>
+            <Routes>
+              <Route
+                path="visuals"
+                element={
+                  <ProtectedRoute
+                    user={currentUser}
+                    roleRequired={1}
+                    rolePossessed={currentUserRole}
+                  >
+                    <VisualisationNavigation />
+                  </ProtectedRoute>
+                }
               />
-            </div>
-          </Sider>
-          <Layout style={{ minHeight: "100vh" }}>
-            <Content>
-              <Routes>
+              <Route
+                path="spreadsheets"
+                element={
+                  <ProtectedRoute
+                    user={currentUser}
+                    roleRequired={2}
+                    rolePossessed={currentUserRole}
+                  >
+                    <SpreadsheetUpload
+                      mock={currentUserRole < 3}
+                      setMock={setMockMode}
+                      setMockData={setMockData}
+                    />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="settings">
                 <Route
-                  path="visuals"
+                  path="generals"
                   element={
                     <ProtectedRoute
-                      roleRequired={1}
+                      user={currentUser}
+                      roleRequired={3}
                       rolePossessed={currentUserRole}
                     >
-                      <VisualisationNavigation />
+                      <GeneralSettings />
                     </ProtectedRoute>
                   }
                 />
                 <Route
-                  path="spreadsheets"
+                  path="programs"
                   element={
                     <ProtectedRoute
-                      roleRequired={2}
+                      user={currentUser}
+                      roleRequired={3}
                       rolePossessed={currentUserRole}
                     >
-                      <SpreadsheetUpload
-                        mock={currentUserRole < 3}
-                        setMock={setMockMode}
-                        setMockData={setMockData}
-                      />
+                      <ProgramPage />
                     </ProtectedRoute>
                   }
                 />
-                <Route path="settings">
-                  <Route
-                    path="generals"
-                    element={
-                      <ProtectedRoute
-                        roleRequired={3}
-                        rolePossessed={currentUserRole}
-                      >
-                        <GeneralSettings />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="programs"
-                    element={
-                      <ProtectedRoute
-                        roleRequired={3}
-                        rolePossessed={currentUserRole}
-                      >
-                        <ProgramPage />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="user"
-                    element={
-                      <ProtectedRoute
-                        roleRequired={3}
-                        rolePossessed={currentUserRole}
-                      >
-                        <UserAccessSettings />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="targets"
-                    element={
-                      <ProtectedRoute
-                        roleRequired={3}
-                        rolePossessed={currentUserRole}
-                      >
-                        <TargetSettings />
-                      </ProtectedRoute>
-                    }
-                  />
-                </Route>
                 <Route
-                  path="applicants"
+                  path="user"
                   element={
                     <ProtectedRoute
-                      roleRequired={2}
+                      user={currentUser}
+                      roleRequired={3}
                       rolePossessed={currentUserRole}
                     >
-                      <ApplicantTable />
+                      <UserAccessSettings />
                     </ProtectedRoute>
                   }
                 />
-              </Routes>
-              <Outlet />
-            </Content>
-            {/* <Footer > */}
-            {/* </Footer> */}
-          </Layout>
+                <Route
+                  path="targets"
+                  element={
+                    <ProtectedRoute
+                      user={currentUser}
+                      roleRequired={3}
+                      rolePossessed={currentUserRole}
+                    >
+                      <TargetSettings />
+                    </ProtectedRoute>
+                  }
+                />
+              </Route>
+              <Route
+                path="applicants"
+                element={
+                  <ProtectedRoute
+                    user={currentUser}
+                    roleRequired={2}
+                    rolePossessed={currentUserRole}
+                  >
+                    <ApplicantTable />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+            <Outlet />
+          </Content>
+          {/* <Footer > */}
+          {/* </Footer> */}
         </Layout>
-      ) : (
-        <Login
-          setCurrentUser={setCurrentUser}
-          setCurrentUserRole={setCurrentUserRole}
-        />
-      )}
+      </Layout>
     </div>
   );
 }
