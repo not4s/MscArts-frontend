@@ -82,7 +82,7 @@ const TargetForm = () => {
               targets.map(target => {return (
                 <div>
                   <h3>{target.program_type} ({target.year})</h3>
-                  <button onClick={e => handleRemove(e, target.program_type, target.year)}>Remove</button>
+                  <Button onClick={e => handleRemove(e, target.program_type, target.year)}>Remove</Button>
                   <Progress percent={target.target} status="active" />
                 </div>
               )})}
