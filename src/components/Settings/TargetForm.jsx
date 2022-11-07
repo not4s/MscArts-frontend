@@ -15,7 +15,9 @@ const TargetForm = () => {
       .then(res => {
         if (res.data.message == "Exists") {
           api.putTarget(values)
-          .then(res => console.log(res.data))
+          .then(res => api.getTargets()
+          .then(res => {console.log(res.data); setTargets(res.data); setLoaded(true)})
+          .catch(err => console.log(err)))
           .catch(err => console.log(err))
         }
       })
@@ -26,7 +28,9 @@ const TargetForm = () => {
     e.preventDefault();
 
     api.deleteTarget({course, year})
-      .then(res  => console.log(res))
+      .then(res  => api.getTargets()
+      .then(res => {console.log(res.data); setTargets(res.data); setLoaded(true)})
+      .catch(err => console.log(err)))
       .catch(err => console.log(err))
   }
 
@@ -82,6 +86,7 @@ const TargetForm = () => {
               targets.map(target => {return (
                 <div>
                   <h3>{target.program_type} ({target.year})</h3>
+                  <Button onClick={e => handleRemove(e, target.program_type, target.year)}>Remove</Button>
                   <Progress percent={100 * target.progress / target.target} status="active" />
                 </div>
               )})}
