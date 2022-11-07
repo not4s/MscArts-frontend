@@ -38,10 +38,16 @@ const PieGraph = ({ programType, graphType, data }) => {
   }, [data])
 
   return (
-  <>
+  <div style={{
+    padding: "10px",
+    margin: "10px",
+    border: "solid",
+    borderWidth: "1px",
+    borderColor: "rgba(220,220,220,0.9)",
+    }}>
     <h1>{ `${programType} - ${graphType} graph` }</h1>
     <Pie {...config} />
-  </>)
+  </div>)
 };
 
 export default PieGraph;

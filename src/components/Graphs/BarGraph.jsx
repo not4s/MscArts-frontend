@@ -81,10 +81,16 @@ const BarGraph = ({ programType, graphType, data }) => {
     // ],
     //  configs[preset ? preset : 0]
   return (
-    <>
-    <h1>{ `${programType} - ${graphType} graph` }</h1>
-    <Column {...config} />
-    </>
+    <div style={{
+      padding: "10px",
+      margin: "10px",
+      border: "solid",
+      borderWidth: "1px",
+      borderColor: "rgba(220,220,220,0.9)",
+      }}>
+      <h1>{ `${programType} - ${graphType} graph` }</h1>
+      <Column {...config} />
+    </div>
   );
 };
 
