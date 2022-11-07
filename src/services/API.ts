@@ -2,7 +2,7 @@ import axios from "axios";
 
 const apiURL = process.env.REACT_APP_API_URL
   ? process.env.REACT_APP_API_URL
-  : "";
+  : "http://localhost:3000/";
 
 export interface APIResponse {
   success: boolean;

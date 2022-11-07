@@ -37,7 +37,7 @@ const CreateGraph = (props) => {
     form.submit();
     if (!Object.values(form.getFieldsValue()).includes(undefined)) {
       setModalOpen(false);
-      var type = form.getFieldValue("Visulisation");
+      var type = form.getFieldValue("Visualisation");
       switch (type) {
         case "BAR":
           createBarChart();
@@ -60,16 +60,16 @@ const CreateGraph = (props) => {
   return (
     <>
       <Modal
-        title="Create a new visulisation"
+        title="Create a new visualisation"
         open={isModalOpen}
         onOk={handleOk}
         okText="Submit"
         onCancel={handleCancel}
       >
         <Form form={form}>
-          <Form.Item name="Visulisation" rules={[{ required: true }]}>
+          <Form.Item name="Visualisation" rules={[{ required: true }]}>
             <Select
-              placeholder="Select visulisation type"
+              placeholder="Select visualisation type"
               style={{ width: 240 }}
               onChange={(value) => setGraphType(value)}
             >

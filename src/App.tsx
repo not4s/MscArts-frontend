@@ -12,18 +12,20 @@ import {
 } from "@ant-design/icons";
 import React, { useState } from "react";
 import SpreadsheetUpload from "./components/SpreadsheetUpload";
-import VisulisationNagivation from "./components/VisulisationNagivation";
+import VisualisationNavigation from "./components/VisualisationNavigation";
 import { Layout, MenuProps, Menu } from "antd";
 import GeneralSettings from "./components/Settings/GeneralSettings";
 import TargetSettings from "./components/Settings/TargetSettings";
 import Login from "./components/Login";
 import ProgramPage from "./components/ProgramPage";
-import authService from "./services/auth.service";
 import { APIService } from "./services/API";
 import { ItemType } from "antd/lib/menu/hooks/useItems";
 import ApplicantTable from "./components/Applicants/ApplicantTable";
 import UserAccessSettings from "./components/Settings/UserAccessSettings";
-import MockVisualisation from "./components/MockVisualization";
+import MockVisualisation from "./components/MockVisualisation";
+import { Outlet, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const { Sider, Header, Footer, Content } = Layout;
 
@@ -47,6 +49,7 @@ function getItem(
 }
 
 export default function App() {
+  let navigate = useNavigate();
   const LOGOUT_KEY = "5";
 
   const [currentUser, setCurrentUser] = useState(null);
@@ -57,22 +60,61 @@ export default function App() {
 
   const [tab, setTab] = useState(1);
   const items: ItemType[] = [
-    getItem(currentUserRole >= 1, "Visulisations", "1", <PieChartOutlined />),
-    getItem(currentUserRole >= 2, "Spreadsheets", "2", <FileOutlined />),
-    getItem(currentUserRole >= 3, "Settings", "3", <SettingOutlined />, [
-      getItem(currentUserRole >= 3, "General", "6", <SlidersOutlined />),
-      getItem(currentUserRole >= 2, "Programs", "4", <ProjectOutlined />),
-      getItem(currentUserRole >= 3, "Targets", "7", <RiseOutlined />),
-      getItem(currentUserRole >= 3, "User Access", "8", <SettingOutlined />),
-    ]),
-    getItem(currentUserRole >= 2, "Candidates", "9", <ContactsOutlined />),
+    getItem(
+      currentUserRole >= 1,
+      "Visualisations",
+      "/visuals",
+      <PieChartOutlined />
+    ),
+    getItem(
+      currentUserRole >= 2,
+      "Spreadsheets",
+      "/spreadsheets",
+      <FileOutlined />
+    ),
+    getItem(
+      currentUserRole >= 3,
+      "Settings",
+      "/settings",
+      <SettingOutlined />,
+      [
+        getItem(
+          currentUserRole >= 3,
+          "General",
+          "/settings/generals",
+          <SlidersOutlined />
+        ),
+        getItem(
+          currentUserRole >= 2,
+          "Programs",
+          "/settings/programs",
+          <ProjectOutlined />
+        ),
+        getItem(
+          currentUserRole >= 3,
+          "Targets",
+          "/settings/targets",
+          <RiseOutlined />
+        ),
+        getItem(
+          currentUserRole >= 3,
+          "User Access",
+          "/settings/user",
+          <SettingOutlined />
+        ),
+      ]
+    ),
+    getItem(
+      currentUserRole >= 2,
+      "Candidates",
+      "/applicants",
+      <ContactsOutlined />
+    ),
   ];
 
   const logOutItem: ItemType[] = [
     getItem(currentUserRole >= 1, "Logout", LOGOUT_KEY, <LogoutOutlined />),
   ];
-
-  React.useEffect(() => {}, []);
 
   React.useEffect(() => {
     const accessToken = sessionStorage.getItem("user");
@@ -102,6 +144,7 @@ export default function App() {
     setCurrentUser(null);
     setCurrentUserRole(0);
     setTab(1);
+    navigate("/");
   };
 
   return (
@@ -132,45 +175,104 @@ export default function App() {
                 defaultSelectedKeys={["1"]}
                 mode="inline"
                 items={items.filter((e: any) => e.key !== -1)}
-                onClick={(e) =>
-                  e.key !== LOGOUT_KEY ? changeTab(e.key) : logout()
-                }
+                onClick={(e) => navigate(e.key)}
               ></Menu>
               <Menu
                 theme="dark"
                 mode="inline"
                 items={logOutItem}
-                onClick={(e) =>
-                  e.key !== LOGOUT_KEY ? changeTab(e.key) : logout()
-                }
+                onClick={(e) => logout()}
               />
             </div>
           </Sider>
           <Layout style={{ minHeight: "100vh" }}>
             <Content>
-              {tab == 1 ? (
-                mockMode ? (
-                  <MockVisualisation mockData={mockData} />
-                ) : (
-                  <VisulisationNagivation />
-                )
-              ) : (
-                <></>
-              )}
-              {tab == 2 ? (
-                <SpreadsheetUpload
-                  mock={currentUserRole < 3}
-                  setMock={setMockMode}
-                  setMockData={setMockData}
+              <Routes>
+                <Route
+                  path="visuals"
+                  element={
+                    <ProtectedRoute
+                      roleRequired={1}
+                      rolePossessed={currentUserRole}
+                    >
+                      <VisualisationNavigation />
+                    </ProtectedRoute>
+                  }
                 />
-              ) : (
-                <></>
-              )}
-              {tab == 6 ? <GeneralSettings /> : <></>}
-              {tab == 7 ? <TargetSettings /> : <></>}
-              {tab == 8 ? <UserAccessSettings /> : <></>}
-              {tab == 4 ? <ProgramPage /> : <></>}
-              {tab == 9 ? <ApplicantTable /> : <></>}
+                <Route
+                  path="spreadsheets"
+                  element={
+                    <ProtectedRoute
+                      roleRequired={2}
+                      rolePossessed={currentUserRole}
+                    >
+                      <SpreadsheetUpload
+                        mock={currentUserRole < 3}
+                        setMock={setMockMode}
+                        setMockData={setMockData}
+                      />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="settings">
+                  <Route
+                    path="generals"
+                    element={
+                      <ProtectedRoute
+                        roleRequired={3}
+                        rolePossessed={currentUserRole}
+                      >
+                        <GeneralSettings />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="programs"
+                    element={
+                      <ProtectedRoute
+                        roleRequired={3}
+                        rolePossessed={currentUserRole}
+                      >
+                        <ProgramPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="user"
+                    element={
+                      <ProtectedRoute
+                        roleRequired={3}
+                        rolePossessed={currentUserRole}
+                      >
+                        <UserAccessSettings />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="targets"
+                    element={
+                      <ProtectedRoute
+                        roleRequired={3}
+                        rolePossessed={currentUserRole}
+                      >
+                        <TargetSettings />
+                      </ProtectedRoute>
+                    }
+                  />
+                </Route>
+                <Route
+                  path="applicants"
+                  element={
+                    <ProtectedRoute
+                      roleRequired={2}
+                      rolePossessed={currentUserRole}
+                    >
+                      <ApplicantTable />
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
+              <Outlet />
             </Content>
             {/* <Footer > */}
             {/* </Footer> */}
