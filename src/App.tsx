@@ -112,7 +112,7 @@ export default function App() {
             style={{
               overflow: "auto",
               height: "100vh",
-              position: "fixed",
+              position: "sticky",
               left: 0,
               top: 0,
               bottom: 0,
@@ -146,7 +146,7 @@ export default function App() {
               />
             </div>
           </Sider>
-          <Layout style={{ minHeight: "100vh", marginLeft: "22vh" }}>
+          <Layout style={{ minHeight: "100vh" }}>
             <Content>
               {tab == 1 ? (
                 mockMode ? (
