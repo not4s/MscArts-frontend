@@ -9,7 +9,7 @@ interface Props {
   mock: boolean;
 }
 
-const VisulisationNagivation = () => {
+const VisualisationNavigation = () => {
   const defaultItems = [
     { label: "Male vs Female", key: "0", children: <GraphGrid /> },
     { label: "Another view", key: "1", children: "content-2" },
@@ -159,4 +159,4 @@ const VisulisationNagivation = () => {
   );
 };
 
-export default VisulisationNagivation;
+export default VisualisationNavigation;

@@ -3,26 +3,35 @@ import React, { useEffect, useRef, useState } from "react";
 import { ETHNICITY_MAPPING } from "../constants/ethnicity";
 import { APIService } from "../services/API";
 import CreateGraph from "./CreateGraph";
+import { GraphInterface } from "../constants/graphs";
 import BarGraph from "./Graphs/BarGraph";
 import PieGraph from "./Graphs/PieGraph";
 
-interface GraphInterface {
-  type: string;
-  programType: string;
-  graphType: string;
-  data?: any[];
-  stack?: boolean;
-}
-
 const GraphGrid = () => {
   const [graphs, setGraphs] = useState<GraphInterface[]>([
-    { type: "PIE", programType: "ALL", graphType: "NATIONALITY" },
-    { type: "BAR", programType: "ALL", graphType: "gender", stack: false },
-    { type: "BAR", programType: "MAC", graphType: "gender", stack: true },
+    {
+      type: "PIE",
+      programType: "ALL",
+      graphType: "NATIONALITY",
+      data: undefined,
+    },
+    {
+      type: "BAR",
+      programType: "ALL",
+      graphType: "gender",
+      stack: false,
+      data: undefined,
+    },
+    {
+      type: "BAR",
+      programType: "MAC",
+      graphType: "gender",
+      stack: true,
+      data: undefined,
+    },
   ]);
 
   const [reload, setReload] = useState<boolean>(false);
-
   const api = new APIService();
 
   React.useEffect(() => {
@@ -63,8 +72,16 @@ const GraphGrid = () => {
     init(newGraphs);
   }, [reload]);
 
+  const graphToComponent = (graphData: GraphInterface) => {
+    if (graphData.type === "PIE") {
+      return <PieGraph {...graphData} />;
+    } else if (graphData.type === "BAR") {
+      return <BarGraph {...graphData} />;
+    }
+  };
+
   const rows: JSX.Element[][] = sliceIntoChunks(graphs, 3);
-  console.log(rows);
+
   const nodes = rows.map((row, index: number) => {
     return (
       <>
@@ -72,8 +89,7 @@ const GraphGrid = () => {
           {row.map((graph: any, key: number) => {
             return (
               <Col key={key} span={24 / row.length}>
-                {" "}
-                {graphToComponent(graph)}{" "}
+                {graphToComponent(graph)}
               </Col>
             );
           })}
@@ -90,32 +106,12 @@ const GraphGrid = () => {
         setGraphs={setGraphs}
         setReload={setReload}
         reload={reload}
-      />{" "}
+      />
     </>
   );
 };
 
 export default GraphGrid;
-
-function graphToComponent(graphData: GraphInterface) {
-  if (graphData.type === "PIE") {
-    return (
-      <PieGraph
-        programType={graphData.programType}
-        graphType={graphData.graphType}
-        data={graphData.data}
-      />
-    );
-  } else if (graphData.type === "BAR") {
-    return (
-      <BarGraph
-        programType={graphData.programType}
-        graphType={graphData.graphType}
-        data={graphData.data}
-      />
-    );
-  }
-}
 
 function toPieData(response: any, graphType: string) {
   let d: any[] = response;

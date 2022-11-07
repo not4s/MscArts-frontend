@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Column } from "@ant-design/charts";
 import axios from "axios";
 import { APIService } from "../../services/API";
+import { GraphInterface } from "../../constants/graphs";
 
 const DEFAULT_CONFIG = {
   data: [],
