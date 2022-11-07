@@ -3,9 +3,17 @@ import React, { useEffect, useRef, useState } from "react";
 import { ETHNICITY_MAPPING } from "../constants/ethnicity";
 import { APIService } from "../services/API";
 import CreateGraph from "./CreateGraph";
-import { GraphInterface } from "../constants/graphs";
 import BarGraph from "./Graphs/BarGraph";
+import LineGraph from "./Graphs/LineGraph";
 import PieGraph from "./Graphs/PieGraph";
+
+interface GraphInterface {
+  type: string;
+  programType: string;
+  graphType: string;
+  data?: any[];
+  stack?: boolean;
+}
 
 const GraphGrid = () => {
   const [graphs, setGraphs] = useState<GraphInterface[]>([
@@ -29,9 +37,16 @@ const GraphGrid = () => {
       stack: true,
       data: undefined,
     },
+    {
+      type: "LINE",
+      programType: "ALL",
+      graphType: "hi",
+      data: undefined,
+    },
   ]);
 
   const [reload, setReload] = useState<boolean>(false);
+
   const api = new APIService();
 
   React.useEffect(() => {
@@ -52,6 +67,45 @@ const GraphGrid = () => {
               res.data,
               newGraphs[i]["graphType"]
             );
+          } else if (newGraphs[i].type === "LINE") {
+            newGraphs[i]["data"] = [
+              {
+                year: "1991",
+                value: 3,
+              },
+              {
+                year: "1992",
+                value: 4,
+              },
+              {
+                year: "1993",
+                value: 3.5,
+              },
+              {
+                year: "1994",
+                value: 5,
+              },
+              {
+                year: "1995",
+                value: 4.9,
+              },
+              {
+                year: "1996",
+                value: 6,
+              },
+              {
+                year: "1997",
+                value: 7,
+              },
+              {
+                year: "1998",
+                value: 9,
+              },
+              {
+                year: "1999",
+                value: 13,
+              },
+            ];
           } else {
             fetchParams["count"] = newGraphs[i]["graphType"];
             let res = await api.getApplicant(fetchParams);
@@ -72,16 +126,8 @@ const GraphGrid = () => {
     init(newGraphs);
   }, [reload]);
 
-  const graphToComponent = (graphData: GraphInterface) => {
-    if (graphData.type === "PIE") {
-      return <PieGraph {...graphData} />;
-    } else if (graphData.type === "BAR") {
-      return <BarGraph {...graphData} />;
-    }
-  };
-
   const rows: JSX.Element[][] = sliceIntoChunks(graphs, 3);
-
+  console.log(rows);
   const nodes = rows.map((row, index: number) => {
     return (
       <>
@@ -89,7 +135,8 @@ const GraphGrid = () => {
           {row.map((graph: any, key: number) => {
             return (
               <Col key={key} span={24 / row.length}>
-                {graphToComponent(graph)}
+                {" "}
+                {graphToComponent(graph)}{" "}
               </Col>
             );
           })}
@@ -106,12 +153,34 @@ const GraphGrid = () => {
         setGraphs={setGraphs}
         setReload={setReload}
         reload={reload}
-      />
+      />{" "}
     </>
   );
 };
 
 export default GraphGrid;
+
+function graphToComponent(graphData: GraphInterface) {
+  if (graphData.type === "PIE") {
+    return (
+      <PieGraph
+        programType={graphData.programType}
+        graphType={graphData.graphType}
+        data={graphData.data}
+      />
+    );
+  } else if (graphData.type === "BAR") {
+    return (
+      <BarGraph
+        programType={graphData.programType}
+        graphType={graphData.graphType}
+        data={graphData.data}
+      />
+    );
+  } else if (graphData.type === "LINE") {
+    return <LineGraph data={graphData.data} />;
+  }
+}
 
 function toPieData(response: any, graphType: string) {
   let d: any[] = response;
