@@ -1,82 +1,25 @@
-import Table from "antd/lib/table";
-import useSelection from "antd/lib/table/hooks/useSelection";
+import {
+  Radio,
+  Input,
+  Table,
+  RadioChangeEvent,
+  Button,
+  Cascader,
+  Select,
+} from "antd";
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
 import { APIService } from "../../services/API";
+import userEvent from "@testing-library/user-event";
 
-const Styles = styled.div`
-  padding: 1rem;
-
-  table {
-    border-spacing: 0;
-    border: 1px solid black;
-
-    tr {
-      :last-child {
-        td {
-          border-bottom: 0;
-        }
-      }
-    }
-
-    th,
-    td {
-      margin: 0;
-      padding: 0.5rem;
-      border-bottom: 1px solid black;
-      border-right: 1px solid black;
-
-      :last-child {
-        border-right: 0;
-      }
-    }
-  }
-`;
-
-// function Table({ columns, data }:{columns:any, data:any}) {
-//   // Use the state and functions returned from useTable to build your UI
-//   const {
-//     getTableProps,
-//     getTableBodyProps,
-//     headerGroups,
-//     rows,
-//     prepareRow,
-//   } = useTable({
-//     columns,
-//     data,
-//   })
-
-//   // Render the UI for your table
-//   return (
-//     <table {...getTableProps()}>
-//       <thead>
-//         {headerGroups.map(headerGroup => (
-//           <tr {...headerGroup.getHeaderGroupProps()}>
-//             {headerGroup.headers.map(column => (
-//               <th {...column.getHeaderProps()}>{column.render('Header')}</th>
-//             ))}
-//           </tr>
-//         ))}
-//       </thead>
-//       <tbody {...getTableBodyProps()}>
-//         {rows.map((row, i) => {
-//           prepareRow(row)
-//           return (
-//             <tr {...row.getRowProps()}>
-//               {row.cells.map(cell => {
-//                 return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-//               })}
-//             </tr>
-//           )
-//         })}
-//       </tbody>
-//     </table>
-//   )
-// }
+interface Option {
+  value: number;
+  label: string;
+  children?: Option[];
+}
 
 const UserAccessSettings = (props: any) => {
-  const [data, setData] = useState(undefined);
-
+  const [data, setData] = useState<any[]>([]);
+  const api = new APIService();
   const columns = [
     {
       title: "ShortCode",
@@ -85,22 +28,66 @@ const UserAccessSettings = (props: any) => {
     },
     {
       title: "Access Level",
-      dataIndex: "access",
+      dataIndex: "radio-field",
       key: "access",
     },
   ];
 
-  const api = new APIService();
+  const options: Option[] = [
+    {
+      value: 0,
+      label: "No Access",
+    },
+    {
+      value: 1,
+      label: "Read Access",
+    },
+    {
+      value: 2,
+      label: "Write Access",
+    },
+    {
+      value: 3,
+      label: "Admin",
+    },
+  ];
+
   useEffect(() => {
     api.getUserAccess().then((result) => {
       console.log(result.data);
+      setData(result.data);
+
+      result.data.map((user: any, index: number) => {
+        user["radio-field"] = (
+          <Select
+            options={options}
+            defaultValue={user["access"]}
+            onSelect={(value: number) => {
+              api
+                .updateAccessLevel(user["username"], value)
+                .then(() => {
+                  updateAccess(value, index);
+                  return true;
+                })
+                .catch(() => false);
+            }}
+          />
+        );
+      });
     });
   }, []);
 
+  const updateAccess = (value: number, index: number) => {
+    const temp = [...data];
+    console.log(temp);
+    temp[index]["access"] = value;
+    setData(temp);
+  };
+
   return (
-    <Styles>
-      <Table dataSource={data} columns={columns} />;
-    </Styles>
+    <>
+      <Table dataSource={data} columns={columns} />
+    </>
   );
 };
 

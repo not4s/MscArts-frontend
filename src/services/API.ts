@@ -75,6 +75,10 @@ export class APIService {
     return this.buildAuthRequest("POST", "api/upload/", data);
   }
 
+  postMockSpreadsheet(data: FormData): Promise<APIResponse> {
+    return this.buildAuthRequest("POST", "api/upload/mock", data);
+  }
+
   getAllApplicants(): Promise<APIResponse> {
     return this.buildAuthRequest("GET", "api/applicant");
   }
@@ -169,6 +173,13 @@ export class APIService {
   programDelete(code: string): Promise<APIResponse> {
     return this.buildAuthRequest("DELETE", "api/program", {
       code: code,
+    });
+  }
+
+  updateAccessLevel(username: string, level: number): Promise<APIResponse> {
+    return this.buildAuthRequest("PUT", "api/user/roles", {
+      username: username,
+      access: level,
     });
   }
 }

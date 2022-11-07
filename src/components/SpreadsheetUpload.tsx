@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FileUploader } from "react-drag-drop-files";
-import { message, Spin, Upload } from "antd";
+import { Alert, message, Spin, Upload } from "antd";
 import axios from "axios";
 import { Modal, Input } from "antd";
 import { ApplicantTable } from "./Applicants/ApplicantTable";
@@ -16,7 +16,13 @@ import type { UploadProps } from "antd";
 const FILE_TYPES = ["CSV", "XLS", "XML", "XLSX"];
 const { Dragger } = Upload;
 
-const SpreadsheetUpload = () => {
+interface Props {
+  mock: boolean;
+  setMock: React.Dispatch<React.SetStateAction<boolean>>;
+  setMockData: React.Dispatch<React.SetStateAction<any[]>>;
+}
+
+const SpreadsheetUpload: React.FC<Props> = ({ mock, setMock, setMockData }) => {
   // const [file, setFile] = useState("");
   const { confirm } = Modal;
   const [showSpin, setShowSpin] = useState(false);
@@ -45,15 +51,29 @@ const SpreadsheetUpload = () => {
     formData.append("file", file);
     console.log("POSTING");
     setShowSpin(true);
-    api
-      .postSpreadsheet(formData)
-      .then(() => {
-        console.log("success");
-        message.success("Upload successful");
-        setReload(true);
-        setShowSpin(false);
-      })
-      .catch(() => console.log("failure"));
+    if (mock) {
+      api
+        .postMockSpreadsheet(formData)
+        .then((res) => {
+          console.log(res);
+          message.success("Uploaded Mock Data Successfully");
+          setReload(true);
+          setShowSpin(false);
+          setMock(true);
+          setMockData(res.data);
+        })
+        .catch(() => console.log("failure"));
+    } else {
+      api
+        .postSpreadsheet(formData)
+        .then(() => {
+          console.log("success");
+          message.success("Upload successful");
+          setReload(true);
+          setShowSpin(false);
+        })
+        .catch(() => console.log("failure"));
+    }
   };
 
   const props: UploadProps = {
@@ -78,12 +98,20 @@ const SpreadsheetUpload = () => {
         spinning={showSpin}
         indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
       >
+        {mock ? (
+          <Alert
+            description="Any files uploaded will result in visualizing mock data"
+            banner
+            type="warning"
+          />
+        ) : (
+          <></>
+        )}
         <Dragger
           showUploadList={false}
           {...props}
           disabled={showSpin}
           beforeUpload={(file: File) => {
-            console.log(file.type);
             const correctFileType =
               file.type ===
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
@@ -104,7 +132,7 @@ const SpreadsheetUpload = () => {
             Click or drag file to this area to upload
           </p>
         </Dragger>
-        <RollbackTable reload={reload} />
+        {!mock ? <RollbackTable reload={reload} /> : <></>}
       </Spin>
     </div>
   );
