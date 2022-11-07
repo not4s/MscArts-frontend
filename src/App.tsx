@@ -107,8 +107,17 @@ export default function App() {
   return (
     <div className="App">
       {currentUser ? (
-        <Layout style={{ minHeight: "100vh" }}>
-          <Sider>
+        <Layout hasSider style={{ minHeight: "100vh" }}>
+          <Sider
+            style={{
+              overflow: "auto",
+              height: "100vh",
+              position: "fixed",
+              left: 0,
+              top: 0,
+              bottom: 0,
+            }}
+          >
             <div
               className="styledMenuContainer"
               style={{
@@ -137,7 +146,7 @@ export default function App() {
               />
             </div>
           </Sider>
-          <Layout style={{ minHeight: "100vh" }}>
+          <Layout style={{ minHeight: "100vh", marginLeft: "22vh" }}>
             <Content>
               {tab == 1 ? (
                 mockMode ? (
