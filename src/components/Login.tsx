@@ -35,10 +35,14 @@ export default function Login(props: any) {
         console.log(res);
         sessionStorage.setItem("user", res.data.accessToken);
 
-        api.getRole().then((res) => {
-          console.log(`Role is `, res);
-          navigate("/");
-        });
+        api
+          .getRole()
+          .then((res) => {
+            console.log(`Role is `, res);
+          })
+          .then(() => {
+            navigate("/visuals");
+          });
       })
       .catch((res) => {
         if (res.response.status === 401) {

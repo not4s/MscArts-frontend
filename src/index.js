@@ -5,6 +5,7 @@ import "antd/dist/antd.css";
 import "./components/Settings/GeneralSettings.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./components/Login";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -15,11 +16,9 @@ root.render(
         <Route
           path="/*"
           element={
-            sessionStorage.getItem("user") ? (
+            <ProtectedRoute user={sessionStorage.getItem("user")}>
               <App />
-            ) : (
-              <Navigate to="/login" replace />
-            )
+            </ProtectedRoute>
           }
         />
       </Routes>
