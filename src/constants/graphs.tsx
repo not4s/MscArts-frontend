@@ -7,4 +7,5 @@ export interface GraphInterface {
   graphType: string;
   data: any[] | undefined;
   stack?: boolean;
+  top?: number;
 }

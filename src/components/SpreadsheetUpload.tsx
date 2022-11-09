@@ -56,19 +56,27 @@ const SpreadsheetUpload: React.FC<Props> = ({ mock, setMock, setMockData }) => {
         .postMockSpreadsheet(formData)
         .then((res) => {
           console.log(res);
-          message.success("Uploaded Mock Data Successfully");
+          if (res.success) {
+            message.success("Uploaded Mock Data Successfully");
+          } else {
+            message.error("Failed to upload Mock Data");
+          }
           setReload(true);
           setShowSpin(false);
-          setMock(true);
+          setMock(res.success);
           setMockData(res.data);
         })
         .catch(() => console.log("failure"));
     } else {
       api
         .postSpreadsheet(formData)
-        .then(() => {
+        .then((res) => {
           console.log("success");
-          message.success("Upload successful");
+          if (res.success) {
+            message.success("Upload Successful");
+          } else {
+            message.error("Upload Failed");
+          }
           setReload(true);
           setShowSpin(false);
         })
