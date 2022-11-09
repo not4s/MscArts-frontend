@@ -7,38 +7,15 @@ import { GraphInterface } from "../constants/graphs";
 import BarGraph from "./Graphs/BarGraph";
 import PieGraph from "./Graphs/PieGraph";
 
-const GraphGrid = () => {
-  const [graphs, setGraphs] = useState<GraphInterface[]>([
-    {
-      title: "Nationality Pie Chart",
-      type: "PIE",
-      programType: "ALL",
-      graphType: "NATIONALITY",
-      data: undefined,
-    },
-    {
-      title: "Gender Bar Chart (ALL)",
-      type: "BAR",
-      programType: "ALL",
-      graphType: "gender",
-      stack: false,
-      data: undefined,
-    },
-    {
-      title: "Gender Bar Chart (MAC)",
-      type: "BAR",
-      programType: "MAC",
-      graphType: "gender",
-      stack: true,
-      data: undefined,
-    },
-  ]);
+const GraphGrid = (props: any) => {
+  // const [graphs, setGraphs] = useState<GraphInterface[]>(props.graphContent[props.key]);
 
   const [reload, setReload] = useState<boolean>(false);
   const api = new APIService();
-
+  // console.log(props)
   React.useEffect(() => {
-    const newGraphs = [...graphs];
+    const newGraphContent = props.graphContent;
+    const newGraphs = [...props.graphContent[props.graphKey]];
 
     const init = async (newGraphs: GraphInterface[]) => {
       for (let i = 0; i < newGraphs.length; i++) {
@@ -64,26 +41,34 @@ const GraphGrid = () => {
                 (a: any) => a[newGraphs[i]["graphType"]] !== "Combined"
               );
             }
-            console.log(data);
+            // console.log(data);
             newGraphs[i]["data"] = data;
           }
         }
       }
-      setGraphs(newGraphs);
+      // console.log(newGraphs)
+      newGraphContent[props.graphKey] = newGraphs;
+      props.setGraphContent(newGraphContent);
     };
 
     init(newGraphs);
   }, [reload]);
 
   const graphToComponent = (graphData: GraphInterface) => {
+    console.log(graphData);
     if (graphData.type === "PIE") {
       return <PieGraph {...graphData} />;
     } else if (graphData.type === "BAR") {
       return <BarGraph {...graphData} />;
     }
   };
-
-  const rows: JSX.Element[][] = sliceIntoChunks(graphs, 3);
+  // console.log(props.key);
+  // console.log(props.graphContent);
+  // console.log(props.graphContent[props.key]);
+  const rows: JSX.Element[][] = sliceIntoChunks(
+    props.graphContent[props.graphKey],
+    3
+  );
 
   const nodes = rows.map((row, index: number) => {
     return (
@@ -105,8 +90,9 @@ const GraphGrid = () => {
     <>
       {nodes}
       <CreateGraph
-        graphs={graphs}
-        setGraphs={setGraphs}
+        graphs={props.graphContent}
+        setGraphs={props.setGraphContent}
+        graphKey={props.graphKey}
         setReload={setReload}
         reload={reload}
       />
@@ -166,7 +152,7 @@ function toPieData(response: any, graphType: string) {
 }
 
 function sliceIntoChunks(arr: any[], len: number) {
-  console.log(arr);
+  // console.log(arr);
 
   let chunks = [],
     i = 0,

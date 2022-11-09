@@ -10,15 +10,68 @@ interface Props {
 }
 
 const VisualisationNavigation = () => {
+  const [graphContent, setGraphContent] = useState<any>({
+    "0": [
+      {
+        type: "PIE",
+        programType: "ALL",
+        graphType: "NATIONALITY",
+        data: undefined,
+      },
+      {
+        type: "BAR",
+        programType: "ALL",
+        graphType: "gender",
+        stack: false,
+        data: undefined,
+      },
+      {
+        type: "BAR",
+        programType: "MAC",
+        graphType: "gender",
+        stack: true,
+        data: undefined,
+      },
+    ],
+  });
   const defaultItems = [
-    { label: "Male vs Female", key: "0", children: <GraphGrid /> },
-    { label: "Another view", key: "1", children: "content-2" },
-    { label: "Pie chart", key: "2", children: "content-3" },
+    {
+      label: "Male vs Female",
+      key: "0",
+      children: (
+        <GraphGrid
+          graphKey={"0"}
+          graphContent={graphContent}
+          setGraphContent={setGraphContent}
+        />
+      ),
+    },
+    {
+      label: "Another view",
+      key: "1",
+      children: (
+        <GraphGrid
+          graphKey={"1"}
+          graphContent={graphContent}
+          setGraphContent={setGraphContent}
+        />
+      ),
+    },
+    {
+      label: "Pie chart",
+      key: "2",
+      children: (
+        <GraphGrid
+          graphKey={"2"}
+          graphContent={graphContent}
+          setGraphContent={setGraphContent}
+        />
+      ),
+    },
   ];
   const cookies = new Cookies();
   const [items, setItems] = useState(defaultItems);
   const newTabIndex = useRef(3);
-  const firstUpdate = useRef(true);
 
   const [activeKey, setActiveKey] = useState("item-1");
   const [isModalOpen, setModalOpen] = useState(false);
@@ -60,7 +113,7 @@ const VisualisationNavigation = () => {
       ...items,
       {
         label: "Untitled",
-        children: <GraphGrid />,
+        children: <GraphGrid key={newActiveKey} graphContent={graphContent} />,
         key: newActiveKey,
       },
     ]);
@@ -78,6 +131,7 @@ const VisualisationNavigation = () => {
       setActiveKey(key);
     }
     setItems(newPanes);
+    setGraphContent([...graphContent, delete graphContent[targetIndex]]);
   };
 
   const onEdit = (targetKey: string) => {

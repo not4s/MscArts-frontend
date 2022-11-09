@@ -27,11 +27,11 @@ const CreateGraph = (props) => {
 
   const createBarChart = () => {
     //TODO
-    props.setGraphs([...props.graphs, { title: title, type: 'BAR', programType: programType, graphType: visualType, stack: stacked}]);
+    props.setGraphs([...props.graphs, [...props.graphs[props.graphKey], { type: 'BAR', programType: programType, graphType: visualType, stack: stacked}]]);
   };
 
   const createPieChart = () => {
-    props.setGraphs([...props.graphs, { title: title, type: 'PIE', programType: programType, graphType: visualType, top: top}]);
+    props.setGraphs([...props.graphs, [...props.graphs[props.graphKey], { type: 'PIE', programType: programType, graphType: visualType}]]);
   }
 
   const handleOk = () => {
