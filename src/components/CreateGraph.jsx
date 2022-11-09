@@ -6,7 +6,7 @@ import {
   PlusOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
-import { Button, Checkbox, Form, Modal, Select, Tag } from "antd";
+import { Button, Checkbox, Form, Modal, Select, Input, Tag } from "antd";
 import FormItem from "antd/es/form/FormItem";
 import axios from "axios";
 import Graph from "./Graphs/BarGraph";
@@ -22,15 +22,16 @@ const CreateGraph = (props) => {
   const [stacked, setStacked] = useState(true);
   const [visualType, setVisualType] = useState("");
   const [programType, setProgramType] = useState("");
+  const [title, setTitle] = useState("");
 
 
   const createBarChart = () => {
     //TODO
-    props.setGraphs([...props.graphs, { type: 'BAR', programType: programType, graphType: visualType, stack: stacked}]);
+    props.setGraphs([...props.graphs, { title: title, type: 'BAR', programType: programType, graphType: visualType, stack: stacked}]);
   };
 
   const createPieChart = () => {
-    props.setGraphs([...props.graphs, { type: 'PIE', programType: programType, graphType: visualType}]);
+    props.setGraphs([...props.graphs, { title: title, type: 'PIE', programType: programType, graphType: visualType}]);
   }
 
   const handleOk = () => {
@@ -119,6 +120,11 @@ const CreateGraph = (props) => {
               </Form.Item>
 
               <Form.Item>
+                <Input placeholder="Chart Title (Optional)"
+                       onChange={(e) => setTitle(e.target.value)}/>
+              </Form.Item>
+
+              <Form.Item>
                 <Checkbox onChange={e => setStacked(e.target.checked)} checked={stacked}>
                   Show Combined?
                 </Checkbox>
@@ -177,6 +183,12 @@ const CreateGraph = (props) => {
                 <Option value="NATIONALITY">Nationality</Option>
               </Select>
             </Form.Item>
+
+            <Form.Item>
+                <Input placeholder="Chart Title (Optional)"
+                       onChange={(e) => setTitle(e.target.value)}/>
+            </Form.Item>
+
           </> :
           <></>}
         </Form>
