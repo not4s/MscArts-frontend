@@ -4,19 +4,21 @@ import { ExclamationCircleOutlined } from "@ant-design/icons";
 import GraphGrid from "./GraphGrid";
 import Cookies from "universal-cookie";
 import CreateGraph from "./CreateGraph";
+import { GraphInterface } from "../constants/graphs";
 
 interface Props {
   mock: boolean;
 }
 
 const VisualisationNavigation = () => {
-  const [graphContent, setGraphContent] = useState<any>({
-    "0": [
+  const [graphContent, setGraphContent] = useState<GraphInterface[][]>([
+    [
       {
         type: "PIE",
         programType: "ALL",
         graphType: "NATIONALITY",
         data: undefined,
+        title: "Nationality Pie Chart",
       },
       {
         type: "BAR",
@@ -24,6 +26,7 @@ const VisualisationNavigation = () => {
         graphType: "gender",
         stack: false,
         data: undefined,
+        title: "Gender Bar Chart (ALL)",
       },
       {
         type: "BAR",
@@ -31,45 +34,50 @@ const VisualisationNavigation = () => {
         graphType: "gender",
         stack: true,
         data: undefined,
+        title: "Gender Bar Chart (MAC)",
       },
     ],
-  });
+    [],
+    [],
+  ]);
+
+  const setGraphContentByKey = (
+    key: number,
+    newGraphs: GraphInterface[]
+  ): void => {
+    let newGraphContent = [...graphContent];
+    newGraphContent[key] = newGraphs;
+    setGraphContent(newGraphContent);
+  };
+
+  const makeGraphGrid = (index: number, graph: GraphInterface[][]) => {
+    return (
+      <GraphGrid
+        graphContent={graph}
+        graphIndex={index}
+        setGraphContent={setGraphContentByKey}
+      />
+    );
+  };
+
   const defaultItems = [
     {
       label: "Male vs Female",
       key: "0",
-      children: (
-        <GraphGrid
-          graphKey={"0"}
-          graphContent={graphContent}
-          setGraphContent={setGraphContent}
-        />
-      ),
+      children: makeGraphGrid(0, graphContent),
     },
     {
       label: "Another view",
       key: "1",
-      children: (
-        <GraphGrid
-          graphKey={"1"}
-          graphContent={graphContent}
-          setGraphContent={setGraphContent}
-        />
-      ),
+      children: makeGraphGrid(1, graphContent),
     },
     {
       label: "Pie chart",
       key: "2",
-      children: (
-        <GraphGrid
-          graphKey={"2"}
-          graphContent={graphContent}
-          setGraphContent={setGraphContent}
-        />
-      ),
+      children: makeGraphGrid(2, graphContent),
     },
   ];
-  const cookies = new Cookies();
+
   const [items, setItems] = useState(defaultItems);
   const newTabIndex = useRef(3);
 
@@ -78,51 +86,49 @@ const VisualisationNavigation = () => {
   const [newName, setNewName] = useState("");
   const { confirm } = Modal;
 
-  const setCookie = () => {
-    // cookies.set("items", items, { path: "/" });
-  };
-
-  useEffect(() => {
-    let cookieItems = cookies.get("items");
-    if (cookieItems) {
-      console.log(items);
-      console.log("Getting cookie");
-      console.log(cookieItems);
-      setItems(cookieItems);
-      newTabIndex.current += Number(cookieItems[cookieItems.length - 1].key);
-    }
-  }, []);
-
-  // useEffect(() => {
-  //   if (firstUpdate.current) {
-  //     firstUpdate.current = false;
-  //     return;
-  //   }
-  //   console.log("Updating cookie");
-  //   console.log(items);
-  //   setCookie();
-  // }, [items]);
-
   const onChange = (key: string) => {
     setActiveKey(key);
   };
 
+  React.useEffect(() => {
+    let newItems = [...items];
+
+    for (let i = 0; i < items.length; i++) {
+      newItems[i]["children"] = makeGraphGrid(i, graphContent);
+    }
+
+    setItems(newItems);
+  }, [graphContent]);
+
   const add = () => {
-    const newActiveKey = `${newTabIndex.current++}`;
+    setGraphContent([...graphContent, []]);
+    const newActiveKey: number = newTabIndex.current++;
+    const newActiveKeyString: string = String(newActiveKey);
     setItems([
       ...items,
       {
         label: "Untitled",
-        children: <GraphGrid key={newActiveKey} graphContent={graphContent} />,
-        key: newActiveKey,
+        children: (
+          <GraphGrid
+            graphIndex={newActiveKey}
+            graphContent={graphContent}
+            setGraphContent={setGraphContentByKey}
+          />
+        ),
+        key: newActiveKeyString,
       },
     ]);
-    setActiveKey(newActiveKey);
+    setActiveKey(newActiveKeyString);
   };
 
   const remove = (targetKey: string) => {
     const targetIndex = items.findIndex((pane) => pane.key === targetKey);
     const newPanes = items.filter((pane) => pane.key !== targetKey);
+    let newGraphContent = [...graphContent];
+    delete newGraphContent[targetIndex];
+
+    setGraphContent(newGraphContent);
+
     if (newPanes.length && targetKey === activeKey) {
       const { key } =
         newPanes[
@@ -131,7 +137,6 @@ const VisualisationNavigation = () => {
       setActiveKey(key);
     }
     setItems(newPanes);
-    setGraphContent([...graphContent, delete graphContent[targetIndex]]);
   };
 
   const onEdit = (targetKey: string) => {

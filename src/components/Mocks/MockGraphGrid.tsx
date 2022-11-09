@@ -93,12 +93,12 @@ const MockGraphGrid: React.FC<Props> = ({ mockData }) => {
   return (
     <>
       {nodes}
-      <CreateGraph
+      {/* <CreateGraph
         graphs={graphs}
         setGraphs={setGraphs}
         setReload={setReload}
         reload={reload}
-      />
+      /> */}
     </>
   );
 };

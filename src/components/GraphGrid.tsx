@@ -7,19 +7,33 @@ import { GraphInterface } from "../constants/graphs";
 import BarGraph from "./Graphs/BarGraph";
 import PieGraph from "./Graphs/PieGraph";
 
-const GraphGrid = (props: any) => {
-  // const [graphs, setGraphs] = useState<GraphInterface[]>(props.graphContent[props.key]);
+interface Props {
+  graphIndex: number;
+  graphContent: GraphInterface[][];
+  setGraphContent: (key: number, graph: GraphInterface[]) => void;
+}
+
+const GraphGrid: React.FC<Props> = ({
+  graphIndex,
+  graphContent,
+  setGraphContent,
+}) => {
+  const [graphs, setGraphs] = useState<GraphInterface[]>([]);
 
   const [reload, setReload] = useState<boolean>(false);
   const api = new APIService();
   // console.log(props)
   React.useEffect(() => {
-    const newGraphContent = props.graphContent;
-    const newGraphs = [...props.graphContent[props.graphKey]];
+    const newG = graphContent[graphIndex];
+
+    const newGraphs = newG ? [...graphContent[graphIndex]] : [];
+    console.log("Inside GraphGrid", newGraphs);
 
     const init = async (newGraphs: GraphInterface[]) => {
+      let change = false;
       for (let i = 0; i < newGraphs.length; i++) {
         if (newGraphs[i]["data"] === undefined) {
+          change = true;
           const fetchParams: any = {};
 
           if (newGraphs[i]["programType"] !== "ALL") {
@@ -46,29 +60,25 @@ const GraphGrid = (props: any) => {
           }
         }
       }
-      // console.log(newGraphs)
-      newGraphContent[props.graphKey] = newGraphs;
-      props.setGraphContent(newGraphContent);
+
+      if (change) {
+        setGraphContent(graphIndex, newGraphs);
+        setGraphs(newGraphs);
+      }
     };
 
     init(newGraphs);
-  }, [reload]);
+  }, [graphContent]);
 
   const graphToComponent = (graphData: GraphInterface) => {
-    console.log(graphData);
     if (graphData.type === "PIE") {
       return <PieGraph {...graphData} />;
     } else if (graphData.type === "BAR") {
       return <BarGraph {...graphData} />;
     }
   };
-  // console.log(props.key);
-  // console.log(props.graphContent);
-  // console.log(props.graphContent[props.key]);
-  const rows: JSX.Element[][] = sliceIntoChunks(
-    props.graphContent[props.graphKey],
-    3
-  );
+
+  const rows: JSX.Element[][] = sliceIntoChunks(graphs, 3);
 
   const nodes = rows.map((row, index: number) => {
     return (
@@ -90,9 +100,9 @@ const GraphGrid = (props: any) => {
     <>
       {nodes}
       <CreateGraph
-        graphs={props.graphContent}
-        setGraphs={props.setGraphContent}
-        graphKey={props.graphKey}
+        graphs={graphs}
+        setGraphs={setGraphContent}
+        graphIndex={graphIndex}
         setReload={setReload}
         reload={reload}
       />
@@ -153,6 +163,9 @@ function toPieData(response: any, graphType: string) {
 
 function sliceIntoChunks(arr: any[], len: number) {
   // console.log(arr);
+  if (arr === undefined) {
+    return [];
+  }
 
   let chunks = [],
     i = 0,

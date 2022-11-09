@@ -15,7 +15,7 @@ import PieGraph from "./Graphs/PieGraph";
 const { Option } = Select;
 const degreeTypes = ["ALL", "MAC", "AIML", "MCSS", "MCS"];
 
-const CreateGraph = (props) => {
+const CreateGraph = ({ graphs, setGraphs, graphIndex, setReload, reload}) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [graphType, setGraphType] = useState("");
   const [form] = Form.useForm();
@@ -27,11 +27,11 @@ const CreateGraph = (props) => {
 
   const createBarChart = () => {
     //TODO
-    props.setGraphs([...props.graphs, [...props.graphs[props.graphKey], { type: 'BAR', programType: programType, graphType: visualType, stack: stacked}]]);
+    setGraphs(graphIndex, [...graphs, { title: title, type: 'BAR', programType: programType, graphType: visualType, stack: stacked}]);
   };
 
   const createPieChart = () => {
-    props.setGraphs([...props.graphs, [...props.graphs[props.graphKey], { type: 'PIE', programType: programType, graphType: visualType}]]);
+    setGraphs(graphIndex, [...graphs, { title: title, type: 'PIE', programType: programType, graphType: visualType}]);
   }
 
   const handleOk = () => {
@@ -48,7 +48,6 @@ const CreateGraph = (props) => {
           break;
         default:
       }
-      props.setReload(!props.reload);
     }
   };
 
