@@ -110,7 +110,14 @@ export const ApplicantTable = () => {
     console.log("params", filters, sorter, extra);
   };
 
-  return <Table columns={columns} dataSource={tableData} onChange={onChange} />;
+  return (
+    <Table
+      columns={columns}
+      dataSource={tableData}
+      onChange={onChange}
+      scroll={{ y: "calc(90vh - 4em)" }}
+    />
+  );
 };
 
 export default ApplicantTable;

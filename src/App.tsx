@@ -107,7 +107,7 @@ export default function App() {
     ),
     getItem(
       currentUserRole >= 2,
-      "Candidates",
+      "Applicants",
       "/applicants",
       <ContactsOutlined />
     ),
