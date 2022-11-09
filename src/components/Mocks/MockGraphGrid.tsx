@@ -19,13 +19,15 @@ const MockGraphGrid: React.FC<Props> = ({ mockData }) => {
       graphType: "nationality",
       data: undefined,
       top: 5,
+      title: "Nationality Pie Chart",
     },
     {
       type: "BAR",
-      programType: "ALL",
+      programType: "MAC",
       graphType: "gender",
       data: undefined,
       stack: true,
+      title: "Gender Bar Chart (MAC)",
     },
   ]);
 
@@ -185,6 +187,7 @@ const toBarData = (
 };
 
 function sliceIntoChunks(arr: any[], len: number) {
+  console.log(arr);
   let chunks = [],
     i = 0,
     n = arr.length;

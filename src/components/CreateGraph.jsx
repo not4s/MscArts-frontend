@@ -6,7 +6,7 @@ import {
   PlusOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
-import { Button, Checkbox, Form, Modal, Select, Input, Tag } from "antd";
+import { Button, Checkbox, Form, Modal, Select, Input, Tag, InputNumber } from "antd";
 import FormItem from "antd/es/form/FormItem";
 import axios from "axios";
 import Graph from "./Graphs/BarGraph";
@@ -23,7 +23,7 @@ const CreateGraph = (props) => {
   const [visualType, setVisualType] = useState("");
   const [programType, setProgramType] = useState("");
   const [title, setTitle] = useState("");
-
+  const [top, setTop] = useState(0);
 
   const createBarChart = () => {
     //TODO
@@ -31,7 +31,7 @@ const CreateGraph = (props) => {
   };
 
   const createPieChart = () => {
-    props.setGraphs([...props.graphs, { title: title, type: 'PIE', programType: programType, graphType: visualType}]);
+    props.setGraphs([...props.graphs, { title: title, type: 'PIE', programType: programType, graphType: visualType, top: top}]);
   }
 
   const handleOk = () => {
@@ -179,9 +179,15 @@ const CreateGraph = (props) => {
                   style={{ width: 240 }}
                   onChange={(value) => setVisualType(value)}
               >
-                <Option value="ETHNICITY">Ethnicity</Option>
-                <Option value="NATIONALITY">Nationality</Option>
+                <Option value="ethnicity">Ethnicity</Option>
+                <Option value="nationality">Nationality</Option>
               </Select>
+            </Form.Item>
+
+            <Form.Item
+                name="Display Top X"
+                label="Display Top">  
+              <InputNumber value={top} onChange={(e) => { setTop(e) }}/> 
             </Form.Item>
 
             <Form.Item>
