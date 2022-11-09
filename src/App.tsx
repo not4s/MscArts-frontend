@@ -22,7 +22,7 @@ import { APIService } from "./services/API";
 import { ItemType } from "antd/lib/menu/hooks/useItems";
 import ApplicantTable from "./components/Applicants/ApplicantTable";
 import UserAccessSettings from "./components/Settings/UserAccessSettings";
-import MockVisualisation from "./components/MockVisualisation";
+import MockVisualisation from "./components/Mocks/MockVisualisation";
 import { Outlet, useNavigate } from "react-router-dom";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -188,7 +188,11 @@ export default function App() {
                     roleRequired={1}
                     rolePossessed={currentUserRole}
                   >
-                    <VisualisationNavigation />
+                    {!mockMode ? (
+                      <VisualisationNavigation />
+                    ) : (
+                      <MockVisualisation mockData={mockData} />
+                    )}
                   </ProtectedRoute>
                 }
               />
