@@ -10,12 +10,14 @@ import PieGraph from "./Graphs/PieGraph";
 const GraphGrid = () => {
   const [graphs, setGraphs] = useState<GraphInterface[]>([
     {
+      title: "Nationality Pie Chart",
       type: "PIE",
       programType: "ALL",
       graphType: "NATIONALITY",
       data: undefined,
     },
     {
+      title: "Gender Bar Chart (ALL)",
       type: "BAR",
       programType: "ALL",
       graphType: "gender",
@@ -23,6 +25,7 @@ const GraphGrid = () => {
       data: undefined,
     },
     {
+      title: "Gender Bar Chart (MAC)",
       type: "BAR",
       programType: "MAC",
       graphType: "gender",

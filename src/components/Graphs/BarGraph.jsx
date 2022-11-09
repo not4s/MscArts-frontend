@@ -12,7 +12,7 @@ const DEFAULT_CONFIG = {
   seriesField: 'type'
 }
 
-const BarGraph = ({ programType, graphType, data }) => {
+const BarGraph = ({ programType, graphType, data, title }) => {
   const [config, setConfig] = useState(DEFAULT_CONFIG);
 
   useEffect(() => {
@@ -81,6 +81,7 @@ const BarGraph = ({ programType, graphType, data }) => {
     //   },
     // ],
     //  configs[preset ? preset : 0]
+
   return (
     <div style={{
       padding: "10px",
@@ -89,7 +90,7 @@ const BarGraph = ({ programType, graphType, data }) => {
       borderWidth: "1px",
       borderColor: "rgba(220,220,220,0.9)",
       }}>
-      <h1>{ `${programType} - ${graphType} graph` }</h1>
+      <h1>{ `${title} Graph` }</h1>
       <Column {...config} />
     </div>
   );
