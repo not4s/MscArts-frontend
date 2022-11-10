@@ -12,6 +12,7 @@ const MockVisualisation: React.FC<Props> = ({ mockData }) => {
       label: "Mock Data Visuals",
       key: "0",
       children: <MockGraphGrid mockData={mockData} />,
+      closable: false,
     },
   ];
 
@@ -34,6 +35,7 @@ const MockVisualisation: React.FC<Props> = ({ mockData }) => {
         activeKey={activeKey}
         type="editable-card"
         items={items}
+        hideAdd
       />
     </div>
   );

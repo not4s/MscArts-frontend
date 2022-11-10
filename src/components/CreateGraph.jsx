@@ -48,6 +48,7 @@ const CreateGraph = ({ graphs, setGraphs, graphIndex, setReload, reload}) => {
           break;
         default:
       }
+      setReload(!reload);
     }
   };
 
