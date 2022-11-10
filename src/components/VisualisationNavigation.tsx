@@ -16,9 +16,10 @@ const VisualisationNavigation = () => {
       {
         type: "PIE",
         programType: "ALL",
-        graphType: "NATIONALITY",
+        graphType: "nationality",
         data: undefined,
         title: "Nationality Pie Chart",
+        top: 0,
       },
       {
         type: "BAR",

@@ -44,7 +44,8 @@ const GraphGrid: React.FC<Props> = ({
             let res = await api.getApplicant(fetchParams);
             newGraphs[i]["data"] = toPieData(
               res.data,
-              newGraphs[i]["graphType"]
+              newGraphs[i]["graphType"],
+              newGraphs[i]["top"]
             );
           } else {
             fetchParams["count"] = newGraphs[i]["graphType"];
@@ -112,57 +113,47 @@ const GraphGrid: React.FC<Props> = ({
 
 export default GraphGrid;
 
-function toPieData(response: any, graphType: string) {
-  let d: any[] = response;
-  if (graphType === "ETHNICITY") {
-    // Ethnicity
-    for (let i = 0; i < d.length; i++) {
-      if (d[i]["ethnicity"] !== undefined) {
+const toPieData = (data: any, graphType: string, top: number = 0): any[] => {
+  if (graphType === "ethnicity") {
+    for (let i = 0; i < data.length; i++) {
+      if (data[i][graphType] !== undefined) {
         // @ts-ignore
-        d[i]["ethnicity"] = ETHNICITY_MAPPING[d[i]["ethnicity"]];
+        data[i][graphType] = ETHNICITY_MAPPING[data[i][graphType]];
       }
 
-      if (d[i]["ethnicity"] === undefined) {
-        d[i]["ethnicity"] = "Other/Unknown";
+      if (data[i][graphType] === undefined) {
+        data[i][graphType] = "Other/Unknown";
       }
     }
-    let finalData = Object.values(
-      d.reduce((a, { ethnicity }) => {
-        if (!a[ethnicity]) a[ethnicity] = { type: ethnicity, value: 0 };
-        a[ethnicity]["value"] += 1;
-        return a;
-      }, {})
-    );
-    return finalData;
-  } else if (graphType === "NATIONALITY") {
-    let nationalityCount = Object.values(
-      d.reduce((a, { nationality }) => {
-        if (!a[nationality]) a[nationality] = { type: nationality, value: 0 };
-        a[nationality]["value"] += 1;
-        return a;
-      }, {})
-    );
+  }
 
-    nationalityCount.sort((a: any, b: any) => b.value - a.value);
-    let finalData = nationalityCount.slice(0, 9);
-    let others: any = nationalityCount.slice(9);
+  let finalData = Object.values(
+    data.reduce((a: any, d: any) => {
+      if (!a[d[graphType]]) a[d[graphType]] = { type: d[graphType], value: 0 };
+      a[d[graphType]]["value"] += 1;
+      return a;
+    }, {})
+  );
+
+  if (top > 0) {
+    finalData.sort((a: any, b: any) => b.value - a.value);
+    let topN = finalData.slice(0, top);
+    let others: any = finalData.slice(top);
 
     let othersDict = Object.values(
-      others.reduce((a: any, { nationality, value }: any) => {
-        if (!a[nationality]) a[nationality] = { type: "Others", value: 0 };
-        a[nationality]["value"] += value;
+      others.reduce((a: any, d: any) => {
+        if (!a[d[graphType]]) a[d[graphType]] = { type: "Others", value: 0 };
+        a[d[graphType]]["value"] += d["value"];
         return a;
       }, {})
     );
 
-    finalData = finalData.concat(othersDict);
-
-    return finalData;
+    return topN.concat(othersDict);
   }
-}
+  return finalData;
+};
 
 function sliceIntoChunks(arr: any[], len: number) {
-  // console.log(arr);
   if (arr === undefined) {
     return [];
   }

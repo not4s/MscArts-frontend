@@ -31,7 +31,7 @@ const CreateGraph = ({ graphs, setGraphs, graphIndex, setReload, reload}) => {
   };
 
   const createPieChart = () => {
-    setGraphs(graphIndex, [...graphs, { title: title, type: 'PIE', programType: programType, graphType: visualType}]);
+    setGraphs(graphIndex, [...graphs, { title: title, type: 'PIE', programType: programType, graphType: visualType, top: top}]);
   }
 
   const handleOk = () => {
@@ -185,8 +185,9 @@ const CreateGraph = ({ graphs, setGraphs, graphIndex, setReload, reload}) => {
 
             <Form.Item
                 name="Display Top X"
-                label="Display Top">  
-              <InputNumber value={top} onChange={(e) => { setTop(e) }}/> 
+                label="Display Top"
+                initialValue={0}>  
+              <InputNumber min={0} value={top} onChange={(e) => { setTop(e) }}/> 
             </Form.Item>
 
             <Form.Item>
