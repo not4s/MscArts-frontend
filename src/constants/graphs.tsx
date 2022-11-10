@@ -8,4 +8,11 @@ export interface GraphInterface {
   data: any[] | undefined;
   stack?: boolean;
   top?: number;
+  position?: GraphPanelInterface;
+}
+
+export interface GraphPanelInterface {
+  w: number;
+  x: number;
+  y: number;
 }

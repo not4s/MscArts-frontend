@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Pie } from "@ant-design/charts";
-import axios from "axios";
-import { APIService } from "../../services/API";
-
-import { ETHNICITY_MAPPING } from "../../constants/ethnicity";
+import { GraphSize } from "./styles";
 
 const DEFAULT_CONFIG = {
     data: [],
@@ -13,6 +10,7 @@ const DEFAULT_CONFIG = {
     radius: 0.9,
     label: {
       type: 'inner',
+      // labelHeight: 28,
       offset: '-20%',
       content: ({ percent }) => `${(percent * 100).toFixed(0)}%`,
       style: {
@@ -27,7 +25,7 @@ const DEFAULT_CONFIG = {
     ]
 }
 
-const PieGraph = ({ programType, graphType, data, title }) => {
+const PieGraph = ({ programType, graphType, data, title, layoutKey }) => {
 
   const [config, setConfig] = useState(DEFAULT_CONFIG);
 
@@ -38,16 +36,10 @@ const PieGraph = ({ programType, graphType, data, title }) => {
   }, [data])
 
   return (
-  <div style={{
-    padding: "10px",
-    margin: "10px",
-    border: "solid",
-    borderWidth: "1px",
-    borderColor: "rgba(220,220,220,0.9)",
-    }}>
+  <GraphSize>
     <h1>{ `${title} Graph` }</h1>
     <Pie {...config} />
-  </div>)
+  </GraphSize>)
 };
 
 export default PieGraph;

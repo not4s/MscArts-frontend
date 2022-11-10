@@ -6,6 +6,10 @@ import CreateGraph from "./CreateGraph";
 import { GraphInterface } from "../constants/graphs";
 import BarGraph from "./Graphs/BarGraph";
 import PieGraph from "./Graphs/PieGraph";
+import RGL, { WidthProvider } from "react-grid-layout";
+import { GraphSize } from "./Graphs/styles";
+
+const ReactGridLayout = WidthProvider(RGL);
 
 interface Props {
   graphIndex: number;
@@ -71,43 +75,84 @@ const GraphGrid: React.FC<Props> = ({
     init(newGraphs);
   }, [graphContent]);
 
-  const graphToComponent = (graphData: GraphInterface) => {
+  const graphToComponent = (graphData: GraphInterface, key: string) => {
     if (graphData.type === "PIE") {
-      return <PieGraph {...graphData} />;
+      return (
+        <GraphSize key={`layout-${key}`}>
+          <PieGraph key={key} layoutKey={key} {...graphData} />
+        </GraphSize>
+      );
+      // return <PieGraph key={`layout-${key}`} layoutKey={key} {...graphData} />;
     } else if (graphData.type === "BAR") {
-      return <BarGraph {...graphData} />;
+      return (
+        <GraphSize key={`layout-${key}`}>
+          <BarGraph key={key} layoutKey={key} {...graphData} />
+        </GraphSize>
+      );
+      // return <BarGraph key={`layout-${key}`} layoutKey={key} {...graphData} />;
     }
   };
 
   const rows: JSX.Element[][] = sliceIntoChunks(graphs, 3);
 
-  const nodes = rows.map((row, index: number) => {
-    return (
-      <>
-        <Row key={index}>
-          {row.map((graph: any, key: number) => {
-            return (
-              <Col key={key} span={24 / row.length}>
-                {graphToComponent(graph)}
-              </Col>
-            );
-          })}
-        </Row>
-      </>
-    );
-  });
+  // const nodes = rows.map((row, index: number) => {
+  //   return (
+  //     <>
+  //       <Row key={index}>
+  //         {row.map((graph: any, key: number) => {
+  //           return (
+  //             <Col key={key} span={24 / row.length}>
+  //               {graphToComponent(graph)}
+  //             </Col>
+  //           );
+  //         })}
+  //       </Row>
+  //     </>
+  //   );
+  // });
+
+  const [layout, setLayout] = useState([
+    { i: "layout-0", x: 0, y: 0, w: 10, h: 10 },
+    { i: "layout-1", x: 2, y: 0, w: 10, h: 10 },
+    { i: "layout-2", x: 4, y: 0, w: 10, h: 10 },
+  ]);
+
+  // return (
+  //   <>
+  //     {nodes}
+  //     <CreateGraph
+  //       graphs={graphs}
+  //       setGraphs={setGraphContent}
+  //       graphIndex={graphIndex}
+  //       setReload={setReload}
+  //       reload={reload}
+  //     />
+  //   </>
+  // );
 
   return (
-    <>
-      {nodes}
-      <CreateGraph
-        graphs={graphs}
-        setGraphs={setGraphContent}
-        graphIndex={graphIndex}
-        setReload={setReload}
-        reload={reload}
-      />
-    </>
+    <ReactGridLayout
+      className="layout"
+      layout={layout}
+      cols={12}
+      width={800}
+      rowHeight={30}
+      onLayoutChange={setLayout}
+    >
+      {graphs.map((k, index) => {
+        console.log(`My Layout key is ${index}`);
+        return graphToComponent(k, index.toString());
+      })}
+      {/* <div key="0">
+          <span className="text">0</span>
+        </div>
+      <div key="1">
+          <span className="text">1</span>
+        </div>
+      <div key="2">
+          <span className="text">2</span>
+        </div> */}
+    </ReactGridLayout>
   );
 };
 

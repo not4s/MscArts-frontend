@@ -4,13 +4,9 @@ import {
   PieChartOutlined,
   TableOutlined,
   PlusOutlined,
-  ExclamationCircleOutlined,
 } from "@ant-design/icons";
-import { Button, Checkbox, Form, Modal, Select, Input, Tag, InputNumber } from "antd";
-import FormItem from "antd/es/form/FormItem";
-import axios from "axios";
-import Graph from "./Graphs/BarGraph";
-import PieGraph from "./Graphs/PieGraph";
+import { Button, Checkbox, Form, Modal, Select, Input, InputNumber } from "antd";
+import { APPLICANT_COLUMN_MAPPING } from "../constants/applicant";
 
 const { Option } = Select;
 const degreeTypes = ["ALL", "MAC", "AIML", "MCSS", "MCS"];
@@ -33,6 +29,7 @@ const CreateGraph = ({ graphs, setGraphs, graphIndex, setReload, reload}) => {
   const createPieChart = () => {
     setGraphs(graphIndex, [...graphs, { title: title, type: 'PIE', programType: programType, graphType: visualType, top: top}]);
   }
+
 
   const handleOk = () => {
     form.submit();
@@ -100,7 +97,7 @@ const CreateGraph = ({ graphs, setGraphs, graphIndex, setReload, reload}) => {
                   style={{ width: 240 }}
                   onChange={(value) => setProgramType(value)}
               >
-                {degreeTypes.map(type => <Option value={type}>{type}</Option>)}
+                {degreeTypes.map((type, index) => <Option key={`degree-${index}`} value={type}>{type}</Option>)}
               </Select>
             </Form.Item>
 
@@ -114,8 +111,11 @@ const CreateGraph = ({ graphs, setGraphs, graphIndex, setReload, reload}) => {
                   style={{ width: 240 }}
                   onChange={(value) => setVisualType(value)}
                 >
-                  <Option value="gender">Gender</Option>
-                  <Option value="application_folder_fee_status">Fee Status</Option>
+                  {
+                    Object.keys(APPLICANT_COLUMN_MAPPING).map((k, index) => {
+                      return <Option key={index} value={APPLICANT_COLUMN_MAPPING[k]}>{k}</Option>
+                    })
+                  }
                 </Select>
               </Form.Item>
 
@@ -166,7 +166,7 @@ const CreateGraph = ({ graphs, setGraphs, graphIndex, setReload, reload}) => {
                   style={{ width: 240 }}
                   onChange={(value) => setProgramType(value)}
               >
-                {degreeTypes.map(type => <Option value={type}>{type}</Option>)}
+                {degreeTypes.map((type, index) => <Option key={`degree-${index}`} value={type}>{type}</Option>)}
               </Select>
             </Form.Item>
 
@@ -179,8 +179,11 @@ const CreateGraph = ({ graphs, setGraphs, graphIndex, setReload, reload}) => {
                   style={{ width: 240 }}
                   onChange={(value) => setVisualType(value)}
               >
-                <Option value="ethnicity">Ethnicity</Option>
-                <Option value="nationality">Nationality</Option>
+                {
+                    Object.keys(APPLICANT_COLUMN_MAPPING).map((k, index) => {
+                      return <Option key={index} value={APPLICANT_COLUMN_MAPPING[k]}>{k}</Option>
+                    })
+                }
               </Select>
             </Form.Item>
 

@@ -1,14 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { Tabs, Modal, Input } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import GraphGrid from "./GraphGrid";
-import Cookies from "universal-cookie";
-import CreateGraph from "./CreateGraph";
 import { GraphInterface } from "../constants/graphs";
-
-interface Props {
-  mock: boolean;
-}
 
 const VisualisationNavigation = () => {
   const [graphContent, setGraphContent] = useState<GraphInterface[][]>([
@@ -19,7 +13,7 @@ const VisualisationNavigation = () => {
         graphType: "nationality",
         data: undefined,
         title: "Nationality Pie Chart",
-        top: 0,
+        top: 10,
       },
       {
         type: "BAR",
@@ -152,7 +146,7 @@ const VisualisationNavigation = () => {
     confirm({
       title:
         "Are you sure delete '" +
-        items.find((i) => i.key == targetKey)?.label +
+        items.find((i) => i.key === targetKey)?.label +
         "'?",
       icon: <ExclamationCircleOutlined />,
       content: "This cannot be undone.",
@@ -177,7 +171,7 @@ const VisualisationNavigation = () => {
   };
 
   const handleOk = () => {
-    let item = items.find((i: any) => i.key == activeKey);
+    let item = items.find((i: any) => i.key === activeKey);
     if (item != null) {
       item.label = newName;
     }
@@ -193,7 +187,7 @@ const VisualisationNavigation = () => {
     <div>
       <Modal
         title={
-          "Rename '" + items.find((i: any) => i.key == activeKey)?.label + "'"
+          "Rename '" + items.find((i: any) => i.key === activeKey)?.label + "'"
         }
         open={isModalOpen}
         onOk={handleOk}

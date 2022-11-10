@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Column } from "@ant-design/charts";
-import axios from "axios";
-import { APIService } from "../../services/API";
-import { GraphInterface } from "../../constants/graphs";
+import { GraphSize } from "./styles";
 
 const DEFAULT_CONFIG = {
   data: [],
@@ -12,7 +10,7 @@ const DEFAULT_CONFIG = {
   seriesField: 'type'
 }
 
-const BarGraph = ({ programType, graphType, data, title }) => {
+const BarGraph = ({ programType, graphType, data, title, layoutKey }) => {
   const [config, setConfig] = useState(DEFAULT_CONFIG);
 
   useEffect(() => {
@@ -81,18 +79,13 @@ const BarGraph = ({ programType, graphType, data, title }) => {
     //   },
     // ],
     //  configs[preset ? preset : 0]
+  
 
   return (
-    <div style={{
-      padding: "10px",
-      margin: "10px",
-      border: "solid",
-      borderWidth: "1px",
-      borderColor: "rgba(220,220,220,0.9)",
-      }}>
+    <GraphSize>
       <h1>{ `${title} Graph` }</h1>
       <Column {...config} />
-    </div>
+    </GraphSize>
   );
 };
 
