@@ -15,7 +15,7 @@ import PieGraph from "./Graphs/PieGraph";
 const { Option } = Select;
 const degreeTypes = ["ALL", "MAC", "AIML", "MCSS", "MCS"];
 
-const CreateGraph = (props) => {
+const CreateGraph = ({ graphs, setGraphs, graphIndex, setReload, reload}) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [graphType, setGraphType] = useState("");
   const [form] = Form.useForm();
@@ -27,11 +27,11 @@ const CreateGraph = (props) => {
 
   const createBarChart = () => {
     //TODO
-    props.setGraphs([...props.graphs, { title: title, type: 'BAR', programType: programType, graphType: visualType, stack: stacked}]);
+    setGraphs(graphIndex, [...graphs, { title: title, type: 'BAR', programType: programType, graphType: visualType, stack: stacked}]);
   };
 
   const createPieChart = () => {
-    props.setGraphs([...props.graphs, { title: title, type: 'PIE', programType: programType, graphType: visualType, top: top}]);
+    setGraphs(graphIndex, [...graphs, { title: title, type: 'PIE', programType: programType, graphType: visualType, top: top}]);
   }
 
   const handleOk = () => {
@@ -48,7 +48,7 @@ const CreateGraph = (props) => {
           break;
         default:
       }
-      props.setReload(!props.reload);
+      setReload(!reload);
     }
   };
 
@@ -186,8 +186,9 @@ const CreateGraph = (props) => {
 
             <Form.Item
                 name="Display Top X"
-                label="Display Top">  
-              <InputNumber value={top} onChange={(e) => { setTop(e) }}/> 
+                label="Display Top"
+                initialValue={0}>  
+              <InputNumber min={0} value={top} onChange={(e) => { setTop(e) }}/> 
             </Form.Item>
 
             <Form.Item>
