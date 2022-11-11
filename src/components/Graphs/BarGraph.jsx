@@ -10,7 +10,7 @@ const DEFAULT_CONFIG = {
   seriesField: 'type'
 }
 
-const BarGraph = ({ programType, graphType, data, title, layoutKey }) => {
+const BarGraph = ({ programType, graphType, data, title }) => {
   const [config, setConfig] = useState(DEFAULT_CONFIG);
 
   useEffect(() => {
@@ -82,10 +82,10 @@ const BarGraph = ({ programType, graphType, data, title, layoutKey }) => {
   
 
   return (
-    <GraphSize>
+    <>
       <h1>{ `${title} Graph` }</h1>
       <Column {...config} />
-    </GraphSize>
+    </>
   );
 };
 

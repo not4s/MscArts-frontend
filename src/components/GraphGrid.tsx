@@ -75,18 +75,18 @@ const GraphGrid: React.FC<Props> = ({
     init(newGraphs);
   }, [graphContent]);
 
-  const graphToComponent = (graphData: GraphInterface, key: string) => {
+  const graphToComponent = (graphData: GraphInterface) => {
     if (graphData.type === "PIE") {
       return (
-        <GraphSize key={`layout-${key}`}>
-          <PieGraph key={key} layoutKey={key} {...graphData} />
+        <GraphSize key={graphData.layout.i} data-grid={graphData.layout}>
+          <PieGraph {...graphData} />
         </GraphSize>
       );
       // return <PieGraph key={`layout-${key}`} layoutKey={key} {...graphData} />;
     } else if (graphData.type === "BAR") {
       return (
-        <GraphSize key={`layout-${key}`}>
-          <BarGraph key={key} layoutKey={key} {...graphData} />
+        <GraphSize key={graphData.layout.i} data-grid={graphData.layout}>
+          <BarGraph {...graphData} />
         </GraphSize>
       );
       // return <BarGraph key={`layout-${key}`} layoutKey={key} {...graphData} />;
@@ -111,11 +111,13 @@ const GraphGrid: React.FC<Props> = ({
   //   );
   // });
 
-  const [layout, setLayout] = useState([
-    { i: "layout-0", x: 0, y: 0, w: 10, h: 10 },
-    { i: "layout-1", x: 2, y: 0, w: 10, h: 10 },
-    { i: "layout-2", x: 4, y: 0, w: 10, h: 10 },
+  const [layout, setLayout] = useState<RGL.Layout[]>([
+    { i: "layout-0", x: 0, y: 0, w: 4, h: 2, minW: 4 },
+    { i: "layout-1", x: 4, y: 0, w: 4, h: 2, minW: 4 },
+    { i: "layout-2", x: 8, y: 0, w: 4, h: 2, minW: 4 },
   ]);
+
+  const [layoutCounter, setLayoutCounter] = useState(4);
 
   // return (
   //   <>
@@ -129,30 +131,41 @@ const GraphGrid: React.FC<Props> = ({
   //     />
   //   </>
   // );
+  const setLayoutAndIncrement = (layout: RGL.Layout[]): void => {
+    console.log("NEW LAYOUT", layout);
+    setLayout(layout);
+    setLayoutCounter((old) => old + 1);
+  };
 
   return (
-    <ReactGridLayout
-      className="layout"
-      layout={layout}
-      cols={12}
-      width={800}
-      rowHeight={30}
-      onLayoutChange={setLayout}
-    >
-      {graphs.map((k, index) => {
-        console.log(`My Layout key is ${index}`);
-        return graphToComponent(k, index.toString());
-      })}
-      {/* <div key="0">
-          <span className="text">0</span>
-        </div>
-      <div key="1">
-          <span className="text">1</span>
-        </div>
-      <div key="2">
-          <span className="text">2</span>
-        </div> */}
-    </ReactGridLayout>
+    <>
+      <CreateGraph
+        graphs={graphs}
+        setGraphs={setGraphContent}
+        layout={layout}
+        layoutCounter={layoutCounter}
+        setLayout={setLayoutAndIncrement}
+        graphIndex={graphIndex}
+        setReload={setReload}
+        reload={reload}
+      />
+      <ReactGridLayout
+        className="layout"
+        style={{ marginRight: "10px" }}
+        cols={12}
+        rowHeight={150}
+        verticalCompact={false}
+        isBounded={true}
+        onLayoutChange={(layout) => {
+          console.log(layout);
+          setLayout(layout);
+        }}
+      >
+        {graphs.map((k, index) => {
+          return graphToComponent(k);
+        })}
+      </ReactGridLayout>
+    </>
   );
 };
 

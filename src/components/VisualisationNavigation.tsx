@@ -10,6 +10,13 @@ const VisualisationNavigation = () => {
       {
         type: "PIE",
         programType: "ALL",
+        layout: {
+          i: "layout-1",
+          w: 4,
+          h: 2,
+          x: 0,
+          y: 0,
+        },
         graphType: "nationality",
         data: undefined,
         title: "Nationality Pie Chart",
@@ -17,6 +24,13 @@ const VisualisationNavigation = () => {
       },
       {
         type: "BAR",
+        layout: {
+          i: "layout-2",
+          w: 4,
+          h: 2,
+          x: 4,
+          y: 0,
+        },
         programType: "ALL",
         graphType: "gender",
         stack: false,
@@ -25,6 +39,13 @@ const VisualisationNavigation = () => {
       },
       {
         type: "BAR",
+        layout: {
+          i: "layout-3",
+          w: 4,
+          h: 2,
+          x: 8,
+          y: 2,
+        },
         programType: "MAC",
         graphType: "gender",
         stack: true,
