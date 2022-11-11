@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Pie } from "@ant-design/charts";
-import { GraphSize } from "./styles";
+import { DraggableHandle, GraphSize } from "./styles";
 
 const DEFAULT_CONFIG = {
     data: [],
@@ -36,10 +36,10 @@ const PieGraph = ({ programType, graphType, data, title, layoutKey }) => {
   }, [data])
 
   return (
-  <GraphSize>
-    <h1>{ `${title} Graph` }</h1>
+  <div>
+    <DraggableHandle className="myDragHandleClassName">{ `${title} Graph` }</DraggableHandle>
     <Pie {...config} />
-  </GraphSize>)
+  </div>)
 };
 
 export default PieGraph;

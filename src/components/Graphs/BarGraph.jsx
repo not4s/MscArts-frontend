@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Column } from "@ant-design/charts";
-import { GraphSize } from "./styles";
+import { GraphSize, DraggableHandle } from "./styles";
 
 const DEFAULT_CONFIG = {
   data: [],
@@ -82,10 +82,12 @@ const BarGraph = ({ programType, graphType, data, title, layoutKey }) => {
   
 
   return (
-    <GraphSize>
-      <h1>{ `${title} Graph` }</h1>
+    <>
+      <DraggableHandle className="myDragHandleClassName">
+        { `${title} Graph` }
+        </DraggableHandle>
       <Column {...config} />
-    </GraphSize>
+    </>
   );
 };
 

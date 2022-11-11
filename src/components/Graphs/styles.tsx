@@ -7,3 +7,10 @@ export const GraphSize = styled.div`
   borderwidth: 1px;
   bordercolor: rgba(220, 220, 220, 0.9);
 `;
+
+export const DraggableHandle = styled.div`
+  cursor: move;
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+`;

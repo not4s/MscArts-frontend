@@ -138,6 +138,7 @@ const GraphGrid: React.FC<Props> = ({
       width={800}
       rowHeight={30}
       onLayoutChange={setLayout}
+      draggableHandle=".myDragHandleClassName"
     >
       {graphs.map((k, index) => {
         console.log(`My Layout key is ${index}`);
