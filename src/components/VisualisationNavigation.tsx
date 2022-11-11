@@ -11,36 +11,53 @@ interface Props {
 }
 
 const VisualisationNavigation = () => {
-  const [graphContent, setGraphContent] = useState<GraphInterface[][]>([
-    [
-      {
-        type: "PIE",
-        programType: "ALL",
-        graphType: "nationality",
-        data: undefined,
-        title: "Nationality Pie Chart",
-        top: 0,
-      },
-      {
-        type: "BAR",
-        programType: "ALL",
-        graphType: "gender",
-        stack: false,
-        data: undefined,
-        title: "Gender Bar Chart (ALL)",
-      },
-      {
-        type: "BAR",
-        programType: "MAC",
-        graphType: "gender",
-        stack: true,
-        data: undefined,
-        title: "Gender Bar Chart (MAC)",
-      },
-    ],
-    [],
-    [],
-  ]);
+  const cookies = new Cookies();
+  const [graphContent, setGraphContent] = useState<GraphInterface[][]>(
+    cookies.get("visualisations") || [
+      [
+        {
+          type: "PIE",
+          programType: "ALL",
+          graphType: "nationality",
+          data: undefined,
+          title: "Nationality Pie Chart",
+          top: 0,
+        },
+        {
+          type: "BAR",
+          programType: "ALL",
+          graphType: "gender",
+          stack: false,
+          data: undefined,
+          title: "Gender Bar Chart (ALL)",
+        },
+        {
+          type: "BAR",
+          programType: "MAC",
+          graphType: "gender",
+          stack: true,
+          data: undefined,
+          title: "Gender Bar Chart (MAC)",
+        },
+      ],
+      [],
+      [],
+    ]
+  );
+
+  const setGraphContentWithCookie = (content: GraphInterface[][]) => {
+    cookies.set(
+      "visualisations",
+      content.map((tab) => {
+        tab.map((graph) => {
+          graph.data = undefined;
+          return graph;
+        });
+        return tab;
+      })
+    );
+    setGraphContent(content);
+  };
 
   const setGraphContentByKey = (
     key: number,
@@ -48,7 +65,7 @@ const VisualisationNavigation = () => {
   ): void => {
     let newGraphContent = [...graphContent];
     newGraphContent[key] = newGraphs;
-    setGraphContent(newGraphContent);
+    setGraphContentWithCookie(newGraphContent);
   };
 
   const makeGraphGrid = (index: number, graph: GraphInterface[][]) => {
@@ -102,7 +119,7 @@ const VisualisationNavigation = () => {
   }, [graphContent]);
 
   const add = () => {
-    setGraphContent([...graphContent, []]);
+    setGraphContentWithCookie([...graphContent, []]);
     const newActiveKey: number = newTabIndex.current++;
     const newActiveKeyString: string = String(newActiveKey);
     setItems([
@@ -128,7 +145,7 @@ const VisualisationNavigation = () => {
     let newGraphContent = [...graphContent];
     delete newGraphContent[targetIndex];
 
-    setGraphContent(newGraphContent);
+    setGraphContentWithCookie(newGraphContent);
 
     if (newPanes.length && targetKey === activeKey) {
       const { key } =
