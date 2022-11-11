@@ -111,8 +111,7 @@ const MockGraphGrid: React.FC<Props> = ({ mockData }) => {
     <>
       {nodes}
       <CreateGraph
-        layout={[]}
-        setLayout={[]}
+        setLayoutCounter={[]}
         graphs={graphs}
         graphIndex={-1}
         setGraphs={setGraphsByIndex}

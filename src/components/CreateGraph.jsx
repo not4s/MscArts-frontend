@@ -11,7 +11,7 @@ import { APPLICANT_COLUMN_MAPPING } from "../constants/applicant";
 const { Option } = Select;
 const degreeTypes = ["ALL", "MAC", "AIML", "MCSS", "MCS"];
 
-const CreateGraph = ({ graphs, setGraphs, layout, layoutCounter = 0, setLayout, graphIndex, setReload, reload}) => {
+const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, graphIndex, setReload, reload }) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [graphType, setGraphType] = useState("");
   const [form] = Form.useForm();
@@ -23,11 +23,32 @@ const CreateGraph = ({ graphs, setGraphs, layout, layoutCounter = 0, setLayout, 
 
   const createBarChart = () => {
     //TODO
-    setGraphs(graphIndex, [...graphs, { title: title, type: 'BAR', programType: programType, graphType: visualType, stack: stacked}]);
+    setGraphs(graphIndex, [...graphs, 
+      { title: title, 
+        layout: {
+          i: `layout-${layoutCounter}`,
+          w: 4,
+          h: 2,
+          x: 0,
+          y: 0
+        },
+        type: 'BAR', 
+        programType: programType, 
+        graphType: visualType, 
+        stack: stacked 
+      }]);
   };
 
   const createPieChart = () => {
-    setGraphs(graphIndex, [...graphs, { title: title, type: 'PIE', programType: programType, graphType: visualType, top: top}]);
+    setGraphs(graphIndex, [...graphs, { title: title, 
+      layout: {
+        i: `layout-${layoutCounter}`,
+        w: 4,
+        h: 2,
+        x: 0,
+        y: 0
+      },
+      type: 'PIE', programType: programType, graphType: visualType, top: top }]);
   }
 
 
@@ -46,7 +67,7 @@ const CreateGraph = ({ graphs, setGraphs, layout, layoutCounter = 0, setLayout, 
         default:
       }
       setReload(!reload);
-      setLayout([...layout, { i: `layout-${layoutCounter}`, x:0, y:0, w:4, h:4 }])
+      setLayoutCounter((old) => old + 1);
     }
   };
 
@@ -92,15 +113,15 @@ const CreateGraph = ({ graphs, setGraphs, layout, layoutCounter = 0, setLayout, 
                 name="Degree"
                 rules={[{ required: true }]}
                 extra="This is the degree from which to access the data"
-            >
-              <Select
+              >
+                <Select
                   placeholder="Select Degree"
                   style={{ width: 240 }}
                   onChange={(value) => setProgramType(value)}
-              >
-                {degreeTypes.map((type, index) => <Option key={`degree-${index}`} value={type}>{type}</Option>)}
-              </Select>
-            </Form.Item>
+                >
+                  {degreeTypes.map((type, index) => <Option key={`degree-${index}`} value={type}>{type}</Option>)}
+                </Select>
+              </Form.Item>
 
               <Form.Item
                 name="Columns"
@@ -122,7 +143,7 @@ const CreateGraph = ({ graphs, setGraphs, layout, layoutCounter = 0, setLayout, 
 
               <Form.Item>
                 <Input placeholder="Chart Title (Optional)"
-                       onChange={(e) => setTitle(e.target.value)}/>
+                  onChange={(e) => setTitle(e.target.value)} />
               </Form.Item>
 
               <Form.Item>
@@ -156,52 +177,52 @@ const CreateGraph = ({ graphs, setGraphs, layout, layoutCounter = 0, setLayout, 
           )}
 
           {graphType === "PIE" ?
-          <>
-            <Form.Item
+            <>
+              <Form.Item
                 name="Degree"
                 rules={[{ required: true }]}
                 extra="This is the degree from which to access the data"
-            >
-              <Select
+              >
+                <Select
                   placeholder="Select Degree"
                   style={{ width: 240 }}
                   onChange={(value) => setProgramType(value)}
-              >
-                {degreeTypes.map((type, index) => <Option key={`degree-${index}`} value={type}>{type}</Option>)}
-              </Select>
-            </Form.Item>
+                >
+                  {degreeTypes.map((type, index) => <Option key={`degree-${index}`} value={type}>{type}</Option>)}
+                </Select>
+              </Form.Item>
 
-            <Form.Item
+              <Form.Item
                 name="Filter type"
                 rules={[{ required: true }]}
-            >
-              <Select
+              >
+                <Select
                   placeholder="Select Filter"
                   style={{ width: 240 }}
                   onChange={(value) => setVisualType(value)}
-              >
-                {
+                >
+                  {
                     Object.keys(APPLICANT_COLUMN_MAPPING).map((k, index) => {
                       return <Option key={index} value={APPLICANT_COLUMN_MAPPING[k]}>{k}</Option>
                     })
-                }
-              </Select>
-            </Form.Item>
+                  }
+                </Select>
+              </Form.Item>
 
-            <Form.Item
+              <Form.Item
                 name="Display Top X"
                 label="Display Top"
-                initialValue={0}>  
-              <InputNumber min={0} value={top} onChange={(e) => { setTop(e) }}/> 
-            </Form.Item>
+                initialValue={0}>
+                <InputNumber min={0} value={top} onChange={(e) => { setTop(e) }} />
+              </Form.Item>
 
-            <Form.Item>
+              <Form.Item>
                 <Input placeholder="Chart Title (Optional)"
-                       onChange={(e) => setTitle(e.target.value)}/>
-            </Form.Item>
+                  onChange={(e) => setTitle(e.target.value)} />
+              </Form.Item>
 
-          </> :
-          <></>}
+            </> :
+            <></>}
         </Form>
       </Modal>
       <Button type="dashed" onClick={() => setModalOpen(true)}>

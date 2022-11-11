@@ -111,40 +111,15 @@ const GraphGrid: React.FC<Props> = ({
   //   );
   // });
 
-  const [layout, setLayout] = useState<RGL.Layout[]>([
-    { i: "layout-0", x: 0, y: 0, w: 4, h: 2, minW: 4 },
-    { i: "layout-1", x: 4, y: 0, w: 4, h: 2, minW: 4 },
-    { i: "layout-2", x: 8, y: 0, w: 4, h: 2, minW: 4 },
-  ]);
-
   const [layoutCounter, setLayoutCounter] = useState(4);
-
-  // return (
-  //   <>
-  //     {nodes}
-  //     <CreateGraph
-  //       graphs={graphs}
-  //       setGraphs={setGraphContent}
-  //       graphIndex={graphIndex}
-  //       setReload={setReload}
-  //       reload={reload}
-  //     />
-  //   </>
-  // );
-  const setLayoutAndIncrement = (layout: RGL.Layout[]): void => {
-    console.log("NEW LAYOUT", layout);
-    setLayout(layout);
-    setLayoutCounter((old) => old + 1);
-  };
 
   return (
     <>
       <CreateGraph
         graphs={graphs}
         setGraphs={setGraphContent}
-        layout={layout}
         layoutCounter={layoutCounter}
-        setLayout={setLayoutAndIncrement}
+        setLayoutCounter={setLayoutCounter}
         graphIndex={graphIndex}
         setReload={setReload}
         reload={reload}
@@ -156,11 +131,6 @@ const GraphGrid: React.FC<Props> = ({
         rowHeight={150}
         verticalCompact={false}
         isBounded={true}
-        draggableHandle=".myDragHandleClassName"
-        onLayoutChange={(layout) => {
-          console.log(layout);
-          setLayout(layout);
-        }}
       >
         {graphs.map((k, index) => {
           return graphToComponent(k);
