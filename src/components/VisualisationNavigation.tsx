@@ -54,6 +54,13 @@ const VisualisationNavigation = () => {
       },
       {
         type: "LINE",
+        layout: {
+          i: "layout-4",
+          w: 4,
+          h: 2,
+          x: 4,
+          y: 2,
+        },
         programType: "ALL",
         graphType: "hi",
         data: undefined,
