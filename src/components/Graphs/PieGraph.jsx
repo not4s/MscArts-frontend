@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { EditText, EditTextArea } from 'react-edit-text';
+import 'react-edit-text/dist/index.css'
 import { Pie } from "@ant-design/charts";
 import axios from "axios";
 import { APIService } from "../../services/API";
