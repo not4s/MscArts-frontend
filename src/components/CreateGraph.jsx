@@ -5,8 +5,8 @@ import {
   TableOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { Button, Checkbox, Form, Modal, Select, Input, InputNumber } from "antd";
-import { APPLICANT_COLUMN_MAPPING } from "../constants/applicant";
+import { Button, Checkbox, Form, Modal, Select, Input, InputNumber, Radio } from "antd";
+import { APPLICANT_COLUMN_MAPPING, DECISION_STATUS_OPTIONS } from "../constants/applicant";
 
 const { Option } = Select;
 const degreeTypes = ["ALL", "MAC", "AIML", "MCSS", "MCS"];
@@ -18,29 +18,16 @@ const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, g
   const [stacked, setStacked] = useState(true);
   const [visualType, setVisualType] = useState("");
   const [programType, setProgramType] = useState("");
+  const [stackType, setStackType] = useState("");
+  const [decisionStatus, setDecisionStatus] = useState("ALL");
   const [title, setTitle] = useState("");
   const [top, setTop] = useState(0);
 
   const createBarChart = () => {
     //TODO
-    setGraphs(graphIndex, [...graphs, 
-      { title: title, 
-        layout: {
-          i: `layout-${layoutCounter}`,
-          w: 4,
-          h: 2,
-          x: 0,
-          y: 0
-        },
-        type: 'BAR', 
-        programType: programType, 
-        graphType: visualType, 
-        stack: stacked 
-      }]);
-  };
-
-  const createPieChart = () => {
-    setGraphs(graphIndex, [...graphs, { title: title, 
+    setGraphs(graphIndex, [...graphs,
+    {
+      title: title,
       layout: {
         i: `layout-${layoutCounter}`,
         w: 4,
@@ -48,7 +35,28 @@ const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, g
         x: 0,
         y: 0
       },
-      type: 'PIE', programType: programType, graphType: visualType, top: top }]);
+      type: 'BAR',
+      decisionStatus: decisionStatus,
+      programType: programType,
+      graphType: visualType,
+      stack: stackType === "" ? undefined : stackType,
+      combined: stacked
+    }]);
+  };
+
+  const createPieChart = () => {
+    setGraphs(graphIndex, [...graphs, {
+      title: title,
+      layout: {
+        i: `layout-${layoutCounter}`,
+        w: 4,
+        h: 2,
+        x: 0,
+        y: 0
+      },
+      decisionStatus: decisionStatus,
+      type: 'PIE', programType: programType, graphType: visualType, top: top
+    }]);
   }
 
 
@@ -74,6 +82,8 @@ const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, g
   const handleCancel = () => {
     setModalOpen(false);
     form.resetFields();
+    setStackType("");
+    setDecisionStatus("ALL");
     setGraphType("");
   };
 
@@ -140,6 +150,63 @@ const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, g
                   }
                 </Select>
               </Form.Item>
+
+              <Form.Item
+                name="Stack Type"
+                hasFeedback
+                validateStatus={stackType !== "" && stackType === visualType ? "error" : ""}
+                initialValue=""
+                help={stackType !== "" && stackType === visualType ? "Columns and Stack Type cannot be the same!" : "E.g. 'Fee Status' will breakdown the Genders into their fee statuses"}
+              >
+                <Select
+                  placeholder="Select Stack Type"
+                  style={{ width: 240 }}
+                  defaultValue={""}
+                  onChange={(value) => setStackType(value)}
+                >
+                  <Option value={""}>None</Option>
+                  {
+                    Object.keys(APPLICANT_COLUMN_MAPPING).map((k, index) => {
+                      return <Option key={index} value={APPLICANT_COLUMN_MAPPING[k]}>{k}</Option>
+                    })
+                  }
+                </Select>
+              </Form.Item>
+
+              <br></br>
+
+              <Form.Item label="Decision Status" name="decisionStatus"
+              initialValue={"ALL"}>
+                <Radio.Group
+                  defaultValue="ALL"
+                  onChange={(e) => setDecisionStatus(e.target.value)} 
+                >
+                  <Radio.Button value="ALL">All</Radio.Button>
+                  <Radio.Button value="live">Live</Radio.Button>
+                  <Radio.Button value="not_live">Not Live</Radio.Button>
+                  <Radio.Button value="custom">Custom</Radio.Button>
+                </Radio.Group>
+              </Form.Item>
+
+              {
+                decisionStatus === "custom" ?
+                (
+                  <Form.Item name="customDecisions">
+                    <Select 
+                      mode="multiple"
+                      placeholder="Select Decision Status to filter"
+                      onChange={(e) => console.log(e)}
+                      options={DECISION_STATUS_OPTIONS.map((v) => ({
+                        label: v,
+                        value: v
+                      }))}
+                    >
+                    </Select>
+                  </Form.Item>
+                ) 
+                :
+                <></>
+              }
 
               <Form.Item>
                 <Input placeholder="Chart Title (Optional)"

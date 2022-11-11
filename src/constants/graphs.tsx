@@ -7,8 +7,10 @@ export interface GraphInterface {
   layout: RGL.Layout;
   type: GraphType;
   programType: string;
+  decisionStatus: string;
+  stack?: string;
   graphType: string;
   data: any[] | undefined;
-  stack?: boolean;
+  combined?: boolean;
   top?: number;
 }

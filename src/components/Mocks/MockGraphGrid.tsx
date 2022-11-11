@@ -23,6 +23,7 @@ const MockGraphGrid: React.FC<Props> = ({ mockData }) => {
         y: 0,
       },
       programType: "ALL",
+      decisionStatus: "ALL",
       graphType: "nationality",
       data: undefined,
       top: 5,
@@ -38,9 +39,10 @@ const MockGraphGrid: React.FC<Props> = ({ mockData }) => {
         y: 0,
       },
       programType: "MAC",
+      decisionStatus: "ALL",
       graphType: "gender",
       data: undefined,
-      stack: true,
+      combined: true,
       title: "Gender Bar Chart (MAC)",
     },
   ]);
@@ -66,7 +68,7 @@ const MockGraphGrid: React.FC<Props> = ({ mockData }) => {
               mockData,
               newGraphs[i]["graphType"],
               newGraphs[i]["programType"],
-              newGraphs[i]["stack"]
+              newGraphs[i]["combined"]
             );
             newGraphs[i]["data"] = data;
           }

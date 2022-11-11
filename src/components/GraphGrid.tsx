@@ -46,6 +46,10 @@ const GraphGrid: React.FC<Props> = ({
             fetchParams["program_type"] = newGraphs[i]["programType"];
           }
 
+          if (newGraphs[i]["decisionStatus"] !== "ALL") {
+            fetchParams["decision_status"] = newGraphs[i]["decisionStatus"];
+          }
+
           if (newGraphs[i].type === "PIE") {
             let res = await api.getApplicant(fetchParams);
             newGraphs[i]["data"] = toPieData(
@@ -58,14 +62,17 @@ const GraphGrid: React.FC<Props> = ({
             newGraphs[i]["data"] = res.data;
           } else {
             fetchParams["count"] = newGraphs[i]["graphType"];
+            if (newGraphs[i]["stack"] !== undefined) {
+              fetchParams["series"] = newGraphs[i]["stack"];
+            }
+
             let res = await api.getApplicant(fetchParams);
             let data = res.data;
-            if (!newGraphs[i]["stack"]) {
+            if (!newGraphs[i]["combined"]) {
               data = data.filter(
                 (a: any) => a[newGraphs[i]["graphType"]] !== "Combined"
               );
             }
-            // console.log(data);
             newGraphs[i]["data"] = data;
           }
         }
@@ -154,7 +161,7 @@ const toPieData = (data: any, graphType: string, top: number = 0): any[] => {
   );
 
   if (top > 0) {
-    finalData.sort((a: any, b: any) => b.value - a.value);
+    finalData = finalData.sort((a: any, b: any) => b.value - a.value);
     let topN = finalData.slice(0, top);
     let others: any = finalData.slice(top);
 
