@@ -1,14 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { Tabs, Modal, Input } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import GraphGrid from "./GraphGrid";
-import Cookies from "universal-cookie";
-import CreateGraph from "./CreateGraph";
 import { GraphInterface } from "../constants/graphs";
-
-interface Props {
-  mock: boolean;
-}
 
 const VisualisationNavigation = () => {
   const [graphContent, setGraphContent] = useState<GraphInterface[][]>([
@@ -16,13 +10,27 @@ const VisualisationNavigation = () => {
       {
         type: "PIE",
         programType: "ALL",
+        layout: {
+          i: "layout-1",
+          w: 4,
+          h: 2,
+          x: 0,
+          y: 0,
+        },
         graphType: "nationality",
         data: undefined,
         title: "Nationality Pie Chart",
-        top: 0,
+        top: 10,
       },
       {
         type: "BAR",
+        layout: {
+          i: "layout-2",
+          w: 4,
+          h: 2,
+          x: 4,
+          y: 0,
+        },
         programType: "ALL",
         graphType: "gender",
         stack: false,
@@ -31,6 +39,13 @@ const VisualisationNavigation = () => {
       },
       {
         type: "BAR",
+        layout: {
+          i: "layout-3",
+          w: 4,
+          h: 2,
+          x: 8,
+          y: 2,
+        },
         programType: "MAC",
         graphType: "gender",
         stack: true,
@@ -159,7 +174,7 @@ const VisualisationNavigation = () => {
     confirm({
       title:
         "Are you sure delete '" +
-        items.find((i) => i.key == targetKey)?.label +
+        items.find((i) => i.key === targetKey)?.label +
         "'?",
       icon: <ExclamationCircleOutlined />,
       content: "This cannot be undone.",
@@ -184,7 +199,7 @@ const VisualisationNavigation = () => {
   };
 
   const handleOk = () => {
-    let item = items.find((i: any) => i.key == activeKey);
+    let item = items.find((i: any) => i.key === activeKey);
     if (item != null) {
       item.label = newName;
     }
@@ -200,7 +215,7 @@ const VisualisationNavigation = () => {
     <div>
       <Modal
         title={
-          "Rename '" + items.find((i: any) => i.key == activeKey)?.label + "'"
+          "Rename '" + items.find((i: any) => i.key === activeKey)?.label + "'"
         }
         open={isModalOpen}
         onOk={handleOk}

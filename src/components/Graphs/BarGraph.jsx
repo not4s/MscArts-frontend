@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import { EditText, EditTextArea } from 'react-edit-text';
 import 'react-edit-text/dist/index.css'
 import { Column } from "@ant-design/charts";
-import axios from "axios";
-import { APIService } from "../../services/API";
-import { GraphInterface } from "../../constants/graphs";
+import { GraphSize, DraggableHandle } from "./styles";
 
 const DEFAULT_CONFIG = {
   data: [],
@@ -83,9 +81,11 @@ const BarGraph = ({ programType, graphType, data, title }) => {
     //   },
     // ],
     //  configs[preset ? preset : 0]
+  
 
   return (
-    <div style={{
+    <>
+    <DraggableHandle className="myDragHandleClassName" style={{
       padding: "10px",
       margin: "10px",
       border: "solid",
@@ -97,8 +97,9 @@ const BarGraph = ({ programType, graphType, data, title }) => {
                 inputClassName='bg-success'>
         { `${title} Graph` }
       </EditText>
-      <Column {...config} />
-    </div>
+    </DraggableHandle>
+    <Column {...config} />
+    </>
   );
 };
 

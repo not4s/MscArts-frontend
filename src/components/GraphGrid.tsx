@@ -7,6 +7,10 @@ import CreateGraph from "./CreateGraph";
 import BarGraph from "./Graphs/BarGraph";
 import LineGraph from "./Graphs/LineGraph";
 import PieGraph from "./Graphs/PieGraph";
+import RGL, { WidthProvider } from "react-grid-layout";
+import { GraphSize } from "./Graphs/styles";
+
+const ReactGridLayout = WidthProvider(RGL);
 
 interface Props {
   graphIndex: number;
@@ -78,43 +82,49 @@ const GraphGrid: React.FC<Props> = ({
 
   const graphToComponent = (graphData: GraphInterface) => {
     if (graphData.type === "PIE") {
-      return <PieGraph {...graphData} />;
+      return (
+        <GraphSize key={graphData.layout.i} data-grid={graphData.layout}>
+          <PieGraph {...graphData} />
+        </GraphSize>
+      );
+      // return <PieGraph key={`layout-${key}`} layoutKey={key} {...graphData} />;
     } else if (graphData.type === "BAR") {
-      return <BarGraph {...graphData} />;
-    } else if (graphData.type === "LINE") {
-      return <LineGraph data={graphData.data} />;
+      return (
+        <GraphSize key={graphData.layout.i} data-grid={graphData.layout}>
+          <BarGraph {...graphData} />
+        </GraphSize>
+      );
+      // return <BarGraph key={`layout-${key}`} layoutKey={key} {...graphData} />;
     }
   };
 
   const rows: JSX.Element[][] = sliceIntoChunks(graphs, 3);
-  console.log(rows);
-  const nodes = rows.map((row, index: number) => {
-    return (
-      <>
-        <Row key={index}>
-          {row.map((graph: any, key: number) => {
-            return (
-              <Col key={key} span={24 / row.length}>
-                {" "}
-                {graphToComponent(graph)}{" "}
-              </Col>
-            );
-          })}
-        </Row>
-      </>
-    );
-  });
+
+  const [layoutCounter, setLayoutCounter] = useState(4);
 
   return (
     <>
-      {nodes}
       <CreateGraph
         graphs={graphs}
         setGraphs={setGraphContent}
+        layoutCounter={layoutCounter}
+        setLayoutCounter={setLayoutCounter}
         graphIndex={graphIndex}
         setReload={setReload}
         reload={reload}
-      />{" "}
+      />
+      <ReactGridLayout
+        className="layout"
+        style={{ marginRight: "10px" }}
+        cols={12}
+        rowHeight={150}
+        verticalCompact={false}
+        isBounded={true}
+      >
+        {graphs.map((k, index) => {
+          return graphToComponent(k);
+        })}
+      </ReactGridLayout>
     </>
   );
 };
