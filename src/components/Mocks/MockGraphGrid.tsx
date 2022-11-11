@@ -1,51 +1,197 @@
 import { Col, Row } from "antd";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
+import { ETHNICITY_MAPPING } from "../../constants/ethnicity";
+import { APIService } from "../../services/API";
 import CreateGraph from "../CreateGraph";
-import Graph from "../Graphs/BarGraph";
+import { GraphInterface } from "../../constants/graphs";
+import BarGraph from "../Graphs/BarGraph";
 import PieGraph from "../Graphs/PieGraph";
 
 interface Props {
   mockData: any[];
 }
 
-interface GraphInterface {
-  type: string;
-  programType: string;
-  graphType: string;
-  data: [];
-}
-
 const MockGraphGrid: React.FC<Props> = ({ mockData }) => {
-  const [graphs, setGraphs] = useState<GraphInterface[]>([]);
+  const [graphs, setGraphs] = useState<GraphInterface[]>([
+    {
+      type: "PIE",
+      programType: "ALL",
+      graphType: "nationality",
+      data: undefined,
+      top: 5,
+      title: "Nationality Pie Chart",
+    },
+    {
+      type: "BAR",
+      programType: "MAC",
+      graphType: "gender",
+      data: undefined,
+      stack: true,
+      title: "Gender Bar Chart (MAC)",
+    },
+  ]);
 
-  const allGraphs = [
-    ...graphs,
-    <CreateGraph graphs={graphs} setGraphs={setGraphs} />,
-  ];
+  const [reload, setReload] = useState<boolean>(false);
+  const api = new APIService();
 
-  const rows: JSX.Element[][] = sliceIntoChunks(allGraphs, 3);
-  console.log(rows);
-  const nodes = rows.map((row) => {
+  React.useEffect(() => {
+    const newGraphs = [...graphs];
+
+    const init = async (newGraphs: GraphInterface[]) => {
+      for (let i = 0; i < newGraphs.length; i++) {
+        if (newGraphs[i]["data"] === undefined) {
+          if (newGraphs[i].type === "PIE") {
+            let top = newGraphs[i]["top"] || 0;
+            newGraphs[i]["data"] = toPieData(
+              mockData,
+              newGraphs[i]["graphType"],
+              top
+            );
+          } else {
+            let data: any[] = toBarData(
+              mockData,
+              newGraphs[i]["graphType"],
+              newGraphs[i]["programType"],
+              newGraphs[i]["stack"]
+            );
+            newGraphs[i]["data"] = data;
+          }
+        }
+      }
+      setGraphs(newGraphs);
+    };
+
+    init(newGraphs);
+  }, [mockData, reload]);
+
+  const graphToComponent = (graphData: GraphInterface) => {
+    if (graphData.type === "PIE") {
+      return <PieGraph {...graphData} />;
+    } else if (graphData.type === "BAR") {
+      return <BarGraph {...graphData} />;
+    }
+  };
+
+  const rows: JSX.Element[][] = sliceIntoChunks(graphs, 3);
+
+  const setGraphsByIndex = (key: number, newGraph: GraphInterface[]) =>
+    setGraphs(newGraph);
+
+  const nodes = rows.map((row, index: number) => {
     return (
       <>
-        <Row>
-          {row.map((graph) => {
-            return <Col span={24 / row.length}> {graph} </Col>;
+        <Row key={index}>
+          {row.map((graph: any, key: number) => {
+            return (
+              <Col key={key} span={24 / row.length}>
+                {graphToComponent(graph)}
+              </Col>
+            );
           })}
         </Row>
       </>
     );
   });
-  console.log(nodes);
 
-  return <>{nodes}</>;
+  return (
+    <>
+      {nodes}
+      <CreateGraph
+        graphs={graphs}
+        graphIndex={-1}
+        setGraphs={setGraphsByIndex}
+        setReload={setReload}
+        reload={reload}
+      />
+    </>
+  );
 };
 
 export default MockGraphGrid;
 
+const toPieData = (data: any, graphType: string, top: number = 0): any[] => {
+  if (graphType === "ethnicity") {
+    for (let i = 0; i < data.length; i++) {
+      if (data[i][graphType] !== undefined) {
+        // @ts-ignore
+        data[i][graphType] = ETHNICITY_MAPPING[data[i][graphType]];
+      }
+
+      if (data[i][graphType] === undefined) {
+        data[i][graphType] = "Other/Unknown";
+      }
+    }
+  }
+
+  let finalData = Object.values(
+    data.reduce((a: any, d: any) => {
+      if (!a[d[graphType]]) a[d[graphType]] = { type: d[graphType], value: 0 };
+      a[d[graphType]]["value"] += 1;
+      return a;
+    }, {})
+  );
+
+  if (top > 0) {
+    finalData.sort((a: any, b: any) => b.value - a.value);
+    let topN = finalData.slice(0, top - 1);
+    let others: any = finalData.slice(top - 1);
+
+    let othersDict = Object.values(
+      others.reduce((a: any, d: any) => {
+        if (!a[d[graphType]]) a[d[graphType]] = { type: "Others", value: 0 };
+        a[d[graphType]]["value"] += d["value"];
+        return a;
+      }, {})
+    );
+
+    return topN.concat(othersDict);
+  }
+  return finalData;
+};
+
+const toBarData = (
+  data: any,
+  graphType: string,
+  programType: string,
+  stack?: boolean
+): any[] => {
+  if (programType !== "ALL") {
+    data = data.filter((a: any) => a["program_type"] === programType);
+  }
+  console.log(data);
+
+  let finalData: any[] = Object.values(
+    data.reduce((a: any, d: any) => {
+      if (!a[d[graphType]])
+        a[d[graphType]] = {
+          [graphType]: d[graphType],
+          count: 0,
+          type: d[graphType],
+        };
+      a[d[graphType]]["count"] += 1;
+      return a;
+    }, {})
+  );
+
+  finalData = finalData.sort((a, b) => b["count"] - a["count"]);
+
+  if (stack) {
+    let newData: any[] = [];
+    for (let i = 0; i < finalData.length; i++) {
+      let stacked = { ...finalData[i] };
+      stacked[graphType] = "Combined";
+      newData.push(stacked);
+    }
+    newData.sort((a, b) => a["count"] - b["count"]);
+    finalData = newData.concat(finalData);
+  }
+  console.log(finalData);
+
+  return finalData;
+};
+
 function sliceIntoChunks(arr: any[], len: number) {
   console.log(arr);
-
   let chunks = [],
     i = 0,
     n = arr.length;

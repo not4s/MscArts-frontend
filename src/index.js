@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import "antd/dist/antd.css";
 import "./components/Settings/GeneralSettings.css";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./components/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 

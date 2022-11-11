@@ -6,7 +6,7 @@ import {
   PlusOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
-import { Button, Checkbox, Form, Modal, Select, Tag } from "antd";
+import { Button, Checkbox, Form, Modal, Select, Input, Tag, InputNumber } from "antd";
 import FormItem from "antd/es/form/FormItem";
 import axios from "axios";
 import Graph from "./Graphs/BarGraph";
@@ -15,22 +15,23 @@ import PieGraph from "./Graphs/PieGraph";
 const { Option } = Select;
 const degreeTypes = ["ALL", "MAC", "AIML", "MCSS", "MCS"];
 
-const CreateGraph = (props) => {
+const CreateGraph = ({ graphs, setGraphs, graphIndex, setReload, reload}) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [graphType, setGraphType] = useState("");
   const [form] = Form.useForm();
   const [stacked, setStacked] = useState(true);
   const [visualType, setVisualType] = useState("");
   const [programType, setProgramType] = useState("");
-
+  const [title, setTitle] = useState("");
+  const [top, setTop] = useState(0);
 
   const createBarChart = () => {
     //TODO
-    props.setGraphs([...props.graphs, { type: 'BAR', programType: programType, graphType: visualType, stack: stacked}]);
+    setGraphs(graphIndex, [...graphs, { title: title, type: 'BAR', programType: programType, graphType: visualType, stack: stacked}]);
   };
 
   const createPieChart = () => {
-    props.setGraphs([...props.graphs, { type: 'PIE', programType: programType, graphType: visualType}]);
+    setGraphs(graphIndex, [...graphs, { title: title, type: 'PIE', programType: programType, graphType: visualType, top: top}]);
   }
 
   const handleOk = () => {
@@ -47,7 +48,7 @@ const CreateGraph = (props) => {
           break;
         default:
       }
-      props.setReload(!props.reload);
+      setReload(!reload);
     }
   };
 
@@ -119,6 +120,11 @@ const CreateGraph = (props) => {
               </Form.Item>
 
               <Form.Item>
+                <Input placeholder="Chart Title (Optional)"
+                       onChange={(e) => setTitle(e.target.value)}/>
+              </Form.Item>
+
+              <Form.Item>
                 <Checkbox onChange={e => setStacked(e.target.checked)} checked={stacked}>
                   Show Combined?
                 </Checkbox>
@@ -173,10 +179,23 @@ const CreateGraph = (props) => {
                   style={{ width: 240 }}
                   onChange={(value) => setVisualType(value)}
               >
-                <Option value="ETHNICITY">Ethnicity</Option>
-                <Option value="NATIONALITY">Nationality</Option>
+                <Option value="ethnicity">Ethnicity</Option>
+                <Option value="nationality">Nationality</Option>
               </Select>
             </Form.Item>
+
+            <Form.Item
+                name="Display Top X"
+                label="Display Top"
+                initialValue={0}>  
+              <InputNumber min={0} value={top} onChange={(e) => { setTop(e) }}/> 
+            </Form.Item>
+
+            <Form.Item>
+                <Input placeholder="Chart Title (Optional)"
+                       onChange={(e) => setTitle(e.target.value)}/>
+            </Form.Item>
+
           </> :
           <></>}
         </Form>

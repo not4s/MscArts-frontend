@@ -1,9 +1,6 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Tabs, Modal, Input, Alert } from "antd";
-import { ExclamationCircleOutlined } from "@ant-design/icons";
-import GraphGrid from "./GraphGrid";
-import Cookies from "universal-cookie";
-import CreateGraph from "./CreateGraph";
+import React, { useState } from "react";
+import { Tabs, Alert } from "antd";
+import MockGraphGrid from "./MockGraphGrid";
 
 interface Props {
   mockData: any[];
@@ -11,7 +8,12 @@ interface Props {
 
 const MockVisualisation: React.FC<Props> = ({ mockData }) => {
   const items = [
-    { label: "Mock Data Visuals", key: "0", children: <GraphGrid /> },
+    {
+      label: "Mock Data Visuals",
+      key: "0",
+      children: <MockGraphGrid mockData={mockData} />,
+      closable: false,
+    },
   ];
 
   const [activeKey, setActiveKey] = useState("item-1");
@@ -33,6 +35,7 @@ const MockVisualisation: React.FC<Props> = ({ mockData }) => {
         activeKey={activeKey}
         type="editable-card"
         items={items}
+        hideAdd
       />
     </div>
   );
