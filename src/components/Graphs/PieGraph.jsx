@@ -25,7 +25,7 @@ const DEFAULT_CONFIG = {
     ]
 }
 
-const PieGraph = ({ programType, graphType, data, title, layoutKey }) => {
+const PieGraph = ({ programType, graphType, data, title }) => {
 
   const [config, setConfig] = useState(DEFAULT_CONFIG);
 

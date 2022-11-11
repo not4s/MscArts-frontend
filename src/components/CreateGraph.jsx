@@ -11,7 +11,7 @@ import { APPLICANT_COLUMN_MAPPING } from "../constants/applicant";
 const { Option } = Select;
 const degreeTypes = ["ALL", "MAC", "AIML", "MCSS", "MCS"];
 
-const CreateGraph = ({ graphs, setGraphs, graphIndex, setReload, reload}) => {
+const CreateGraph = ({ graphs, setGraphs, layout, layoutCounter = 0, setLayout, graphIndex, setReload, reload}) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [graphType, setGraphType] = useState("");
   const [form] = Form.useForm();
@@ -46,6 +46,7 @@ const CreateGraph = ({ graphs, setGraphs, graphIndex, setReload, reload}) => {
         default:
       }
       setReload(!reload);
+      setLayout([...layout, { i: `layout-${layoutCounter}`, x:0, y:0, w:4, h:4 }])
     }
   };
 

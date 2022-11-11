@@ -10,7 +10,7 @@ const DEFAULT_CONFIG = {
   seriesField: 'type'
 }
 
-const BarGraph = ({ programType, graphType, data, title, layoutKey }) => {
+const BarGraph = ({ programType, graphType, data, title }) => {
   const [config, setConfig] = useState(DEFAULT_CONFIG);
 
   useEffect(() => {
@@ -86,6 +86,7 @@ const BarGraph = ({ programType, graphType, data, title, layoutKey }) => {
       <DraggableHandle className="myDragHandleClassName">
         { `${title} Graph` }
         </DraggableHandle>
+      <h1>{ `${title} Graph` }</h1>
       <Column {...config} />
     </>
   );
