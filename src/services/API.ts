@@ -182,4 +182,8 @@ export class APIService {
       access: level,
     });
   }
+
+  getTrends() {
+    return this.buildAuthRequest("GET", "api/trends");
+  }
 }

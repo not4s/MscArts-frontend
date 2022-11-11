@@ -6,7 +6,7 @@ const LineGraph = ({ data }) => {
   const config = {
     data,
     xField: 'year',
-    yField: 'value',
+    yField: 'count',
     label: {},
     point: {
       size: 5,
