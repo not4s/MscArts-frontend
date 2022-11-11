@@ -86,7 +86,6 @@ const BarGraph = ({ programType, graphType, data, title }) => {
       <DraggableHandle className="myDragHandleClassName">
         { `${title} Graph` }
         </DraggableHandle>
-      <h1>{ `${title} Graph` }</h1>
       <Column {...config} />
     </>
   );
