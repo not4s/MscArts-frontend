@@ -1,4 +1,4 @@
-type GraphType = "BAR" | "PIE";
+type GraphType = "BAR" | "PIE" | "LINE";
 
 export interface GraphInterface {
   title: string;

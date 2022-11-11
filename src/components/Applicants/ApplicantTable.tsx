@@ -73,6 +73,7 @@ export const ApplicantTable = () => {
       filters: genders.map((code) => {
         return { text: code, value: code };
       }),
+      filterSearch: true,
       onFilter: (value, record) => record.gender === value,
     },
     {
@@ -85,6 +86,7 @@ export const ApplicantTable = () => {
       filters: program_codes.map((code) => {
         return { text: code, value: code };
       }),
+      filterSearch: true,
       onFilter: (value, record) => record.program_code === value,
     },
     {
@@ -97,6 +99,7 @@ export const ApplicantTable = () => {
       filters: nationalities.map((nationality) => {
         return { text: nationality, value: nationality };
       }),
+      filterSearch: true,
       onFilter: (value, record) => record.nationality === value,
     },
   ];

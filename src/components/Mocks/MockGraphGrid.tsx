@@ -74,6 +74,9 @@ const MockGraphGrid: React.FC<Props> = ({ mockData }) => {
 
   const rows: JSX.Element[][] = sliceIntoChunks(graphs, 3);
 
+  const setGraphsByIndex = (key: number, newGraph: GraphInterface[]) =>
+    setGraphs(newGraph);
+
   const nodes = rows.map((row, index: number) => {
     return (
       <>
@@ -95,7 +98,8 @@ const MockGraphGrid: React.FC<Props> = ({ mockData }) => {
       {nodes}
       <CreateGraph
         graphs={graphs}
-        setGraphs={setGraphs}
+        graphIndex={-1}
+        setGraphs={setGraphsByIndex}
         setReload={setReload}
         reload={reload}
       />

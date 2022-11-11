@@ -1,63 +1,41 @@
 import { Col, Row } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import { ETHNICITY_MAPPING } from "../constants/ethnicity";
+import { GraphInterface } from "../constants/graphs";
 import { APIService } from "../services/API";
 import CreateGraph from "./CreateGraph";
 import BarGraph from "./Graphs/BarGraph";
 import LineGraph from "./Graphs/LineGraph";
 import PieGraph from "./Graphs/PieGraph";
 
-interface GraphInterface {
-  type: string;
-  programType: string;
-  graphType: string;
-  data?: any[];
-  stack?: boolean;
+interface Props {
+  graphIndex: number;
+  graphContent: GraphInterface[][];
+  setGraphContent: (key: number, graph: GraphInterface[]) => void;
 }
 
-const GraphGrid = () => {
-  const [graphs, setGraphs] = useState<GraphInterface[]>([
-    {
-      title: "Nationality Pie Chart",
-      type: "PIE",
-      programType: "ALL",
-      graphType: "NATIONALITY",
-      data: undefined,
-    },
-    {
-      title: "Gender Bar Chart (ALL)",
-      type: "BAR",
-      programType: "ALL",
-      graphType: "gender",
-      stack: false,
-      data: undefined,
-    },
-    {
-      title: "Gender Bar Chart (MAC)",
-      type: "BAR",
-      programType: "MAC",
-      graphType: "gender",
-      stack: true,
-      data: undefined,
-    },
-    {
-      type: "LINE",
-      programType: "ALL",
-      graphType: "hi",
-      data: undefined,
-    },
-  ]);
+const GraphGrid: React.FC<Props> = ({
+  graphIndex,
+  graphContent,
+  setGraphContent,
+}) => {
+  const [graphs, setGraphs] = useState<GraphInterface[]>([]);
 
   const [reload, setReload] = useState<boolean>(false);
 
   const api = new APIService();
-
+  // console.log(props)
   React.useEffect(() => {
-    const newGraphs = [...graphs];
+    const newG = graphContent[graphIndex];
+
+    const newGraphs = newG ? [...graphContent[graphIndex]] : [];
+    console.log("Inside GraphGrid", newGraphs);
 
     const init = async (newGraphs: GraphInterface[]) => {
+      let change = false;
       for (let i = 0; i < newGraphs.length; i++) {
         if (newGraphs[i]["data"] === undefined) {
+          change = true;
           const fetchParams: any = {};
 
           if (newGraphs[i]["programType"] !== "ALL") {
@@ -68,7 +46,8 @@ const GraphGrid = () => {
             let res = await api.getApplicant(fetchParams);
             newGraphs[i]["data"] = toPieData(
               res.data,
-              newGraphs[i]["graphType"]
+              newGraphs[i]["graphType"],
+              newGraphs[i]["top"]
             );
           } else if (newGraphs[i].type === "LINE") {
             let res = await api.getTrends();
@@ -82,16 +61,30 @@ const GraphGrid = () => {
                 (a: any) => a[newGraphs[i]["graphType"]] !== "Combined"
               );
             }
-            console.log(data);
+            // console.log(data);
             newGraphs[i]["data"] = data;
           }
         }
       }
-      setGraphs(newGraphs);
+
+      if (change) {
+        setGraphContent(graphIndex, newGraphs);
+        setGraphs(newGraphs);
+      }
     };
 
     init(newGraphs);
-  }, [reload]);
+  }, [graphContent]);
+
+  const graphToComponent = (graphData: GraphInterface) => {
+    if (graphData.type === "PIE") {
+      return <PieGraph {...graphData} />;
+    } else if (graphData.type === "BAR") {
+      return <BarGraph {...graphData} />;
+    } else if (graphData.type === "LINE") {
+      return <LineGraph data={graphData.data} />;
+    }
+  };
 
   const rows: JSX.Element[][] = sliceIntoChunks(graphs, 3);
   console.log(rows);
@@ -117,7 +110,8 @@ const GraphGrid = () => {
       {nodes}
       <CreateGraph
         graphs={graphs}
-        setGraphs={setGraphs}
+        setGraphs={setGraphContent}
+        graphIndex={graphIndex}
         setReload={setReload}
         reload={reload}
       />{" "}
@@ -127,79 +121,50 @@ const GraphGrid = () => {
 
 export default GraphGrid;
 
-function graphToComponent(graphData: GraphInterface) {
-  if (graphData.type === "PIE") {
-    return (
-      <PieGraph
-        programType={graphData.programType}
-        graphType={graphData.graphType}
-        data={graphData.data}
-      />
-    );
-  } else if (graphData.type === "BAR") {
-    return (
-      <BarGraph
-        programType={graphData.programType}
-        graphType={graphData.graphType}
-        data={graphData.data}
-      />
-    );
-  } else if (graphData.type === "LINE") {
-    return <LineGraph data={graphData.data} />;
-  }
-}
-
-function toPieData(response: any, graphType: string) {
-  let d: any[] = response;
-  if (graphType === "ETHNICITY") {
-    // Ethnicity
-    for (let i = 0; i < d.length; i++) {
-      if (d[i]["ethnicity"] !== undefined) {
+const toPieData = (data: any, graphType: string, top: number = 0): any[] => {
+  if (graphType === "ethnicity") {
+    for (let i = 0; i < data.length; i++) {
+      if (data[i][graphType] !== undefined) {
         // @ts-ignore
-        d[i]["ethnicity"] = ETHNICITY_MAPPING[d[i]["ethnicity"]];
+        data[i][graphType] = ETHNICITY_MAPPING[data[i][graphType]];
       }
 
-      if (d[i]["ethnicity"] === undefined) {
-        d[i]["ethnicity"] = "Other/Unknown";
+      if (data[i][graphType] === undefined) {
+        data[i][graphType] = "Other/Unknown";
       }
     }
-    let finalData = Object.values(
-      d.reduce((a, { ethnicity }) => {
-        if (!a[ethnicity]) a[ethnicity] = { type: ethnicity, value: 0 };
-        a[ethnicity]["value"] += 1;
-        return a;
-      }, {})
-    );
-    return finalData;
-  } else if (graphType === "NATIONALITY") {
-    let nationalityCount = Object.values(
-      d.reduce((a, { nationality }) => {
-        if (!a[nationality]) a[nationality] = { type: nationality, value: 0 };
-        a[nationality]["value"] += 1;
-        return a;
-      }, {})
-    );
+  }
 
-    nationalityCount.sort((a: any, b: any) => b.value - a.value);
-    let finalData = nationalityCount.slice(0, 9);
-    let others: any = nationalityCount.slice(9);
+  let finalData = Object.values(
+    data.reduce((a: any, d: any) => {
+      if (!a[d[graphType]]) a[d[graphType]] = { type: d[graphType], value: 0 };
+      a[d[graphType]]["value"] += 1;
+      return a;
+    }, {})
+  );
+
+  if (top > 0) {
+    finalData.sort((a: any, b: any) => b.value - a.value);
+    let topN = finalData.slice(0, top);
+    let others: any = finalData.slice(top);
 
     let othersDict = Object.values(
-      others.reduce((a: any, { nationality, value }: any) => {
-        if (!a[nationality]) a[nationality] = { type: "Others", value: 0 };
-        a[nationality]["value"] += value;
+      others.reduce((a: any, d: any) => {
+        if (!a[d[graphType]]) a[d[graphType]] = { type: "Others", value: 0 };
+        a[d[graphType]]["value"] += d["value"];
         return a;
       }, {})
     );
 
-    finalData = finalData.concat(othersDict);
-
-    return finalData;
+    return topN.concat(othersDict);
   }
-}
+  return finalData;
+};
 
 function sliceIntoChunks(arr: any[], len: number) {
-  console.log(arr);
+  if (arr === undefined) {
+    return [];
+  }
 
   let chunks = [],
     i = 0,
