@@ -102,6 +102,12 @@ const GraphGrid: React.FC<Props> = ({
         </GraphSize>
       );
       // return <BarGraph key={`layout-${key}`} layoutKey={key} {...graphData} />;
+    } else if (graphData.type === "LINE") {
+      return (
+        <GraphSize key={graphData.layout.i} data-grid={graphData.layout}>
+          <LineGraph data={graphData.data} />
+        </GraphSize>
+      );
     }
   };
 
