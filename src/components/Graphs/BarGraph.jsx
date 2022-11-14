@@ -9,7 +9,10 @@ const DEFAULT_CONFIG = {
   xField: "gender",
   yField: "count",
   isStack: true,
-  seriesField: 'type'
+  seriesField: 'type',
+  tooltip: {
+    showTitle: true
+  }
 }
 
 const BarGraph = ({ programType, graphType, data, title }) => {

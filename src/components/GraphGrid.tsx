@@ -123,8 +123,8 @@ const GraphGrid: React.FC<Props> = ({
       <ReactGridLayout
         className="layout"
         style={{ marginRight: "10px" }}
-        cols={12}
-        rowHeight={200}
+        cols={24}
+        rowHeight={50}
         isBounded={true}
       >
         {graphs.map((k, index) => {

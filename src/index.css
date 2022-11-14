@@ -9,6 +9,6 @@
   flex-direction: column;
 }
 
-.our-chart div {
+.our-chart > div {
   position: absolute !important;
 }
