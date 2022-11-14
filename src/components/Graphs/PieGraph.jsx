@@ -38,10 +38,15 @@ const PieGraph = ({ programType, graphType, data, title }) => {
   }, [data])
 
   return (
-  <div>
-    <DraggableHandle className="myDragHandleClassName">{ `${title} Graph` }</DraggableHandle>
-    <Pie {...config} />
-  </div>)
+  <>
+    <DraggableHandle className="myDragHandleClassName">
+      <EditText name='textbox3'
+                defaultValue={ `${title} Graph` }
+                inputClassName='bg-success'>
+        { `${title} Graph` }
+      </EditText></DraggableHandle>
+    <Pie className="our-chart" {...config} />
+  </>)
 };
 
 export default PieGraph;

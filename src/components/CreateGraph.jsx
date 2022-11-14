@@ -25,7 +25,7 @@ const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, g
 
   const createBarChart = () => {
     //TODO
-    setGraphs(graphIndex, [...graphs,
+    setGraphs(graphIndex, [
     {
       title: title,
       layout: {
@@ -41,11 +41,11 @@ const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, g
       graphType: visualType,
       stack: stackType === "" ? undefined : stackType,
       combined: stacked
-    }]);
+    }, ...graphs]);
   };
 
   const createPieChart = () => {
-    setGraphs(graphIndex, [...graphs, {
+    setGraphs(graphIndex, [{
       title: title,
       layout: {
         i: `layout-${layoutCounter}`,
@@ -56,7 +56,7 @@ const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, g
       },
       decisionStatus: decisionStatus,
       type: 'PIE', programType: programType, graphType: visualType, top: top
-    }]);
+    }, ...graphs]);
   }
 
 
@@ -282,6 +282,39 @@ const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, g
                 initialValue={0}>
                 <InputNumber min={0} value={top} onChange={(e) => { setTop(e) }} />
               </Form.Item>
+
+              <Form.Item label="Decision Status" name="decisionStatus"
+              initialValue={"ALL"}>
+                <Radio.Group
+                  defaultValue="ALL"
+                  onChange={(e) => setDecisionStatus(e.target.value)} 
+                >
+                  <Radio.Button value="ALL">All</Radio.Button>
+                  <Radio.Button value="live">Live</Radio.Button>
+                  <Radio.Button value="not_live">Not Live</Radio.Button>
+                  <Radio.Button value="custom">Custom</Radio.Button>
+                </Radio.Group>
+              </Form.Item>
+
+              {
+                decisionStatus === "custom" ?
+                (
+                  <Form.Item name="customDecisions">
+                    <Select 
+                      mode="multiple"
+                      placeholder="Select Decision Status to filter"
+                      onChange={(e) => console.log(e)}
+                      options={DECISION_STATUS_OPTIONS.map((v) => ({
+                        label: v,
+                        value: v
+                      }))}
+                    >
+                    </Select>
+                  </Form.Item>
+                ) 
+                :
+                <></>
+              }
 
               <Form.Item>
                 <Input placeholder="Chart Title (Optional)"
