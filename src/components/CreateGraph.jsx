@@ -30,8 +30,8 @@ const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, g
       title: title,
       layout: {
         i: `layout-${layoutCounter}`,
-        w: 4,
-        h: 2,
+        w: 10,
+        h: 6,
         x: 0,
         y: 0
       },
@@ -49,8 +49,8 @@ const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, g
       title: title,
       layout: {
         i: `layout-${layoutCounter}`,
-        w: 4,
-        h: 2,
+        w: 10,
+        h: 6,
         x: 0,
         y: 0
       },
