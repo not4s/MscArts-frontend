@@ -125,7 +125,6 @@ const GraphGrid: React.FC<Props> = ({
         style={{ marginRight: "10px" }}
         cols={12}
         rowHeight={200}
-        verticalCompact={false}
         isBounded={true}
       >
         {graphs.map((k, index) => {

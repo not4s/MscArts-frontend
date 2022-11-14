@@ -1,0 +1,14 @@
+.react-grid-item.react-grid-placeholder {
+  background-color: #001529 !important;
+  opacity: 0.2 !important;
+}
+
+.react-grid-item {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.our-chart div {
+  position: absolute !important;
+}

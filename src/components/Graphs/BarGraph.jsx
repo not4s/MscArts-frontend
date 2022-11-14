@@ -98,7 +98,7 @@ const BarGraph = ({ programType, graphType, data, title }) => {
         { `${title} Graph` }
       </EditText>
     </DraggableHandle>
-    <Column {...config} />
+    <Column className="our-chart" {...config} />
     </>
   );
 };
