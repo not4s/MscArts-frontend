@@ -183,7 +183,10 @@ export class APIService {
     });
   }
 
-  getTrends() {
-    return this.buildAuthRequest("GET", "api/trends");
+  getTrends({ breakdown, frequency }: any) {
+    return this.buildAuthRequest(
+      "GET",
+      `api/trends/?unit=${frequency}&period=${breakdown}`
+    );
   }
 }

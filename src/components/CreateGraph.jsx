@@ -4,6 +4,7 @@ import {
   PieChartOutlined,
   TableOutlined,
   PlusOutlined,
+  LineChartOutlined,
 } from "@ant-design/icons";
 import { Button, Checkbox, Form, Modal, Select, Input, InputNumber, Radio } from "antd";
 import { APPLICANT_COLUMN_MAPPING, DECISION_STATUS_OPTIONS } from "../constants/applicant";
@@ -22,6 +23,8 @@ const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, g
   const [decisionStatus, setDecisionStatus] = useState("ALL");
   const [title, setTitle] = useState("");
   const [top, setTop] = useState(0);
+  const [breakdown, setBreakdown] = useState("Year");
+  const [frequency, setFrequency] = useState(3);
 
   const createBarChart = () => {
     //TODO
@@ -59,6 +62,20 @@ const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, g
     }, ...graphs]);
   }
 
+  const createLineChart = () => {
+    setGraphs(graphIndex, [{
+      title: title,
+      layout: {
+        i: `layout-${layoutCounter}`,
+        w: 10,
+        h: 6,
+        x: 0,
+        y: 0
+      },
+      type: 'LINE', breakdown, frequency
+    }, ...graphs])
+  }
+
 
   const handleOk = () => {
     form.submit();
@@ -71,6 +88,9 @@ const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, g
           break;
         case "PIE":
           createPieChart();
+          break;
+        case "LINE":
+          createLineChart();
           break;
         default:
       }
@@ -108,6 +128,9 @@ const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, g
               </Option>
               <Option value="PIE">
                 <PieChartOutlined /> Pie Chart
+              </Option>
+              <Option value="LINE">
+                <LineChartOutlined /> Line Trend
               </Option>
               <Option value="TABLE">
                 <TableOutlined /> Table{" "}
@@ -321,6 +344,35 @@ const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, g
                   onChange={(e) => setTitle(e.target.value)} />
               </Form.Item>
 
+            </> :
+            <></>}
+          {graphType === "LINE" ?
+            <>
+              <Form.Item
+                name="Time Period"
+                rules={[{ required: true }]}
+              >
+                <Select
+                  placeholder="Time Period"
+                  style={{ width: 240 }}
+                  onChange={(value) => setBreakdown(value)}
+                >
+                  {["Day", "Week", "Month", "Year"].map((type) => <Option key={`${type}`} value={type}>{type}</Option>)}
+                </Select>
+              </Form.Item>
+              <Form.Item
+                name="Time Frame"
+                rules={[{ required: true }]}
+              >
+                <Select
+                  placeholder="Time Frame"
+                  style={{ width: 240 }}
+                  onChange={(value) => setFrequency(value)}
+                  extra="Return the trend for the previous (frame) number of (period)s i.e. 3 weeks"
+                >
+                  {[...Array(24).keys()].map((type) => <Option key={`${type}`} value={type}>{type}</Option>)}
+                </Select>
+              </Form.Item>
             </> :
             <></>}
         </Form>

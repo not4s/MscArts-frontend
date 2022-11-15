@@ -40,7 +40,7 @@ const GraphGrid: React.FC<Props> = ({
       for (let i = 0; i < newGraphs.length; i++) {
         if (newGraphs[i]["data"] === undefined) {
           change = true;
-          const fetchParams: any = {};
+          let fetchParams: any = {};
 
           if (newGraphs[i]["programType"] !== "ALL") {
             fetchParams["program_type"] = newGraphs[i]["programType"];
@@ -58,7 +58,13 @@ const GraphGrid: React.FC<Props> = ({
               newGraphs[i]["top"]
             );
           } else if (newGraphs[i].type === "LINE") {
-            let res = await api.getTrends();
+            fetchParams = {
+              ...fetchParams,
+              breakdown: newGraphs[i]["breakdown"],
+              frequency: newGraphs[i]["frequency"],
+            };
+            let res = await api.getTrends(fetchParams);
+            console.log(res.data);
             newGraphs[i]["data"] = res.data;
           } else {
             fetchParams["count"] = newGraphs[i]["graphType"];

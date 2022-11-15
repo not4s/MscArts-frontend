@@ -13,4 +13,6 @@ export interface GraphInterface {
   data: any[] | undefined;
   combined?: boolean;
   top?: number;
+  frequency?: number;
+  breakdown?: string;
 }

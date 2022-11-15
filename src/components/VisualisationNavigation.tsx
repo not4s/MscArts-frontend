@@ -70,6 +70,8 @@ const VisualisationNavigation = () => {
         graphType: "hi",
         data: undefined,
         title: "Line graph",
+        frequency: 10,
+        breakdown: "year",
       },
     ],
     [],

@@ -5,7 +5,7 @@ const LineGraph = ({ data }) => {
 
   const config = {
     data,
-    xField: 'year',
+    xField: 'period',
     yField: 'count',
     label: {},
     point: {
