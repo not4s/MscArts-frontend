@@ -52,21 +52,25 @@ const PieGraph: React.FC<PieGraphProps> = ({ data, title, setTitle }) => {
 
   return (
     <>
-      <DraggableHandle
-        className="myDragHandleClassName"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <EditText
-          name="textbox3"
-          defaultValue={title}
-          inputClassName="bg-success"
-          onSave={(e) => setTitle(e.value)}
-        />
-        <Dropdown.Button type="primary" overlay={userMenu}></Dropdown.Button>
+      <DraggableHandle className="myDragHandleClassName">
+        <table>
+          <tr>
+            <td className="a" style={{ width: "calc(100%)" }}>
+              <EditText
+                name="textbox3"
+                defaultValue={title}
+                inputClassName="bg-success"
+                onSave={(e) => setTitle(e.value)}
+              />
+            </td>
+            <td>
+              <Dropdown.Button
+                type="primary"
+                overlay={userMenu}
+              ></Dropdown.Button>
+            </td>
+          </tr>
+        </table>
       </DraggableHandle>
 
       <Pie className="our-chart" {...config} />
