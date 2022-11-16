@@ -64,6 +64,7 @@
     ]
   },
   "devDependencies": {
+    "@types/react-edit-text": "^5.0.1",
     "@types/react-highlight-words": "^0.16.4",
     "@types/styled-components": "^5.1.26",
     "husky": "^8.0.1",

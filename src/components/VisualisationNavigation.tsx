@@ -95,16 +95,13 @@ const VisualisationNavigation = () => {
     setGraphContent(content);
   };
 
-  const setGraphContentByKey = (
-    key: number,
-    newGraphs: GraphInterface[]
-  ): void => {
+  const setGraphContentByKey = (key: number, newGraphs: Graph[]): void => {
     let newGraphContent = [...graphContent];
     newGraphContent[key] = newGraphs;
     setGraphContentWithCookie(newGraphContent);
   };
 
-  const makeGraphGrid = (index: number, graph: GraphInterface[][]) => {
+  const makeGraphGrid = (index: number, graph: Graph[][]) => {
     return (
       <GraphGrid
         graphContent={graph}

@@ -1,7 +1,13 @@
 import { Col, Row } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import { ETHNICITY_MAPPING } from "../constants/ethnicity";
-import { GraphInterface, TargetInterface } from "../constants/graphs";
+import {
+  BarGraphInterface,
+  Graph,
+  LineGraphInterface,
+  PieGraphInterface,
+  TargetInterface,
+} from "../constants/graphs";
 import { APIService } from "../services/API";
 import CreateGraph from "./CreateGraph";
 import BarGraph from "./Graphs/BarGraph";
@@ -14,8 +20,8 @@ const ReactGridLayout = WidthProvider(RGL);
 
 interface Props {
   graphIndex: number;
-  graphContent: GraphInterface[][];
-  setGraphContent: (key: number, graph: GraphInterface[]) => void;
+  graphContent: Graph[][];
+  setGraphContent: (key: number, graph: Graph[]) => void;
 }
 
 const GraphGrid: React.FC<Props> = ({
@@ -23,7 +29,7 @@ const GraphGrid: React.FC<Props> = ({
   graphContent,
   setGraphContent,
 }) => {
-  const [graphs, setGraphs] = useState<GraphInterface[]>([]);
+  const [graphs, setGraphs] = useState<Graph[]>([]);
 
   const [reload, setReload] = useState<boolean>(false);
 
@@ -35,7 +41,7 @@ const GraphGrid: React.FC<Props> = ({
     const newGraphs = newG ? [...graphContent[graphIndex]] : [];
     // console.log("Inside GraphGrid", newGraphs);
 
-    const init = async (newGraphs: GraphInterface[]) => {
+    const init = async (newGraphs: Graph[]) => {
       let change = false;
       for (let i = 0; i < newGraphs.length; i++) {
         if (newGraphs[i]["data"] === undefined) {
@@ -51,39 +57,42 @@ const GraphGrid: React.FC<Props> = ({
           }
 
           if (newGraphs[i].type === "PIE") {
+            let pieGraph: PieGraphInterface = newGraphs[i];
             let res = await api.getApplicant(fetchParams);
-            newGraphs[i]["data"] = toPieData(
+            pieGraph["data"] = toPieData(
               res.data,
-              newGraphs[i]["graphType"],
-              newGraphs[i]["top"]
+              pieGraph.graphType,
+              pieGraph.top
             );
           } else if (newGraphs[i].type === "LINE") {
+            let lineGraph: LineGraphInterface = newGraphs[i];
             fetchParams = {
               ...fetchParams,
-              breakdown: newGraphs[i]["breakdown"],
-              frequency: newGraphs[i]["frequency"],
+              breakdown: lineGraph.breakdown,
+              frequency: lineGraph.frequency,
             };
             let res = await api.getTrends(fetchParams);
             let data = res.data.reverse();
             console.log(data);
             newGraphs[i]["data"] = data;
           } else {
+            let barGraph: BarGraphInterface = newGraphs[i];
             fetchParams["count"] = newGraphs[i]["graphType"];
-            if (newGraphs[i]["stack"] !== undefined) {
-              fetchParams["series"] = newGraphs[i]["stack"];
+            if (barGraph.stack !== undefined) {
+              fetchParams["series"] = barGraph.stack;
             }
 
             let res = await api.getApplicant(fetchParams);
             let data = res.data;
-            if (!newGraphs[i]["combined"]) {
+            if (!barGraph.combined) {
               data = data.filter(
-                (a: any) => a[newGraphs[i]["graphType"]] !== "Combined"
+                (a: any) => a[barGraph.graphType] !== "Combined"
               );
             }
-            newGraphs[i]["data"] = data;
+            barGraph.data = data;
 
-            if (newGraphs[i]["target"] !== undefined) {
-              let res = await api.getTarget(newGraphs[i].programType, 2022);
+            if (barGraph.target !== undefined) {
+              let res = await api.getTarget(barGraph.programType, 2022);
 
               const combinedTarget = res.data.reduce(
                 (a: TargetInterface, b: TargetInterface) => {
@@ -92,11 +101,12 @@ const GraphGrid: React.FC<Props> = ({
                 },
                 { fee_status: "Combined", target: 0 }
               );
+
               const allTargets = [...res.data, combinedTarget].sort(
                 (a, b) => b["target"] - a["target"]
               );
 
-              newGraphs[i]["target"] = allTargets;
+              barGraph.target = allTargets;
             }
           }
         }
@@ -111,7 +121,7 @@ const GraphGrid: React.FC<Props> = ({
     init(newGraphs);
   }, [graphContent]);
 
-  const graphToComponent = (graphData: GraphInterface) => {
+  const graphToComponent = (graphData: Graph) => {
     if (graphData.type === "PIE") {
       return (
         <GraphSize key={graphData.layout.i} data-grid={graphData.layout}>

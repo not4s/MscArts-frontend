@@ -1,0 +1,58 @@
+import React, { useEffect, useState } from "react";
+import { EditText } from "react-edit-text";
+import "react-edit-text/dist/index.css";
+import { Pie, PieConfig } from "@ant-design/charts";
+import { DraggableHandle } from "./styles";
+
+const DEFAULT_CONFIG: PieConfig = {
+  data: [],
+  appendPadding: 10,
+  angleField: "value",
+  colorField: "type",
+  radius: 0.9,
+  label: {
+    type: "inner",
+    // labelHeight: 28,
+    offset: "-20%",
+    content: ({ percent }) => `${(percent * 100).toFixed(0)}%`,
+    style: {
+      fontSize: 14,
+      textAlign: "center",
+    },
+  },
+  interactions: [
+    {
+      type: "element-active",
+    },
+  ],
+};
+
+interface PieGraphProps {
+  data: any[] | undefined;
+  title: string;
+}
+
+const PieGraph: React.FC<PieGraphProps> = ({ data, title }) => {
+  const [config, setConfig] = useState<PieConfig>(DEFAULT_CONFIG);
+
+  useEffect(() => {
+    if (data) {
+      setConfig({ ...DEFAULT_CONFIG, data });
+    }
+  }, [data]);
+
+  return (
+    <>
+      <DraggableHandle className="myDragHandleClassName">
+        <EditText
+          name="textbox3"
+          defaultValue={`${title} Graph`}
+          inputClassName="bg-success"
+        />
+      </DraggableHandle>
+      <Pie className="our-chart" {...config} />
+    </>
+  );
+};
+
+export default PieGraph;

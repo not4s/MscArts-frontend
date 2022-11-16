@@ -1,9 +1,13 @@
-import { Line } from '@ant-design/charts';
+import { Line, LineConfig } from '@ant-design/charts';
 import React from 'react'
 
-const LineGraph = ({ data }) => {
+interface LineGraphProps {
+  data: any
+}
 
-  const config = {
+const LineGraph: React.FC<LineGraphProps> = ({ data }) => {
+
+  const config: LineConfig = {
     data,
     xField: 'period',
     yField: 'count',
