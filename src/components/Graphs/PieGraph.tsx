@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { EditText } from "react-edit-text";
 import "react-edit-text/dist/index.css";
 import { Pie, PieConfig } from "@ant-design/charts";
-import { EditOutlined } from "@ant-design/icons";
 import { DraggableHandle } from "./styles";
+import { Menu, Dropdown } from "antd";
 
 const DEFAULT_CONFIG: PieConfig = {
   data: [],
@@ -43,22 +43,32 @@ const PieGraph: React.FC<PieGraphProps> = ({ data, title, setTitle }) => {
     }
   }, [data]);
 
+  const userMenu = (
+    <Menu>
+      <Menu.Item key="1">Edit</Menu.Item>
+      <Menu.Item key="2">Delete</Menu.Item>
+    </Menu>
+  );
+
   return (
     <>
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <DraggableHandle
-          className="myDragHandleClassName"
-          style={{ width: "calc(85%)" }}
-        >
-          <EditText
-            name="textbox3"
-            defaultValue={title}
-            inputClassName="bg-success"
-            onSave={(e) => setTitle(e.value)}
-          />
-        </DraggableHandle>
-        <EditOutlined />
-      </div>
+      <DraggableHandle
+        className="myDragHandleClassName"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <EditText
+          name="textbox3"
+          defaultValue={title}
+          inputClassName="bg-success"
+          onSave={(e) => setTitle(e.value)}
+        />
+        <Dropdown.Button type="primary" overlay={userMenu}></Dropdown.Button>
+      </DraggableHandle>
+
       <Pie className="our-chart" {...config} />
     </>
   );
