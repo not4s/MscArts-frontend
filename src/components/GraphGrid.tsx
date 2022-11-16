@@ -64,8 +64,9 @@ const GraphGrid: React.FC<Props> = ({
               frequency: newGraphs[i]["frequency"],
             };
             let res = await api.getTrends(fetchParams);
-            console.log(res.data);
-            newGraphs[i]["data"] = res.data;
+            let data = res.data.reverse();
+            console.log(data);
+            newGraphs[i]["data"] = data;
           } else {
             fetchParams["count"] = newGraphs[i]["graphType"];
             if (newGraphs[i]["stack"] !== undefined) {
