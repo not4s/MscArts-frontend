@@ -1,7 +1,7 @@
 import { Col, Row } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import { ETHNICITY_MAPPING } from "../constants/ethnicity";
-import { GraphInterface } from "../constants/graphs";
+import { GraphInterface, TargetInterface } from "../constants/graphs";
 import { APIService } from "../services/API";
 import CreateGraph from "./CreateGraph";
 import BarGraph from "./Graphs/BarGraph";
@@ -81,6 +81,23 @@ const GraphGrid: React.FC<Props> = ({
               );
             }
             newGraphs[i]["data"] = data;
+
+            if (newGraphs[i]["target"] !== undefined) {
+              let res = await api.getTarget(newGraphs[i].programType, 2022);
+
+              const combinedTarget = res.data.reduce(
+                (a: TargetInterface, b: TargetInterface) => {
+                  a["target"] += b["target"];
+                  return a;
+                },
+                { fee_status: "Combined", target: 0 }
+              );
+              const allTargets = [...res.data, combinedTarget].sort(
+                (a, b) => b["target"] - a["target"]
+              );
+
+              newGraphs[i]["target"] = allTargets;
+            }
           }
         }
       }

@@ -2,6 +2,13 @@ import RGL from "react-grid-layout";
 
 type GraphType = "BAR" | "PIE" | "LINE";
 
+type FeeStatus = "Combined" | "Overseas" | "Home";
+
+export interface TargetInterface {
+  fee_status: FeeStatus;
+  target: number;
+}
+
 export interface GraphInterface {
   title: string;
   layout: RGL.Layout;
@@ -15,4 +22,5 @@ export interface GraphInterface {
   top?: number;
   frequency?: number;
   breakdown?: string;
+  target?: TargetInterface[];
 }
