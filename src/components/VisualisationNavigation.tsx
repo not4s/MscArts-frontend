@@ -10,30 +10,14 @@ const VisualisationNavigation = () => {
   const cookies = new Cookies();
   const defaultItems2: GraphGridInterface[] = [
     {
-      label: "Male vs Female",
+      label: "Application Targets",
       key: "item-0",
       graph: [
-        {
-          type: "PIE",
-          programType: "ALL",
-          layout: {
-            i: "layout-0",
-            w: 8,
-            h: 6,
-            x: 18,
-            y: 0,
-          },
-          decisionStatus: "ALL",
-          graphType: "nationality",
-          data: undefined,
-          title: "Nationality Pie Chart",
-          top: 10,
-        },
         {
           type: "BAR",
           layout: {
             i: "layout-1",
-            w: 16,
+            w: 8,
             h: 6,
             x: 0,
             y: 0,
@@ -44,32 +28,112 @@ const VisualisationNavigation = () => {
           stack: "decision_status",
           combined: true,
           data: undefined,
-          title: "Decision Status w/ Fee Status Bar Chart (MAC)",
+          title: "Applications Target Bar Chart (MAC)",
+          target: [],
         },
         {
           type: "BAR",
           layout: {
             i: "layout-2",
-            w: 16,
+            w: 8,
             h: 6,
-            x: 0,
-            y: 6,
+            x: 8,
+            y: 0,
           },
-          programType: "ALL",
-          graphType: "gender",
+          programType: "AIML",
+          graphType: "combined_fee_status",
           decisionStatus: "ALL",
+          stack: "decision_status",
+          target: [],
           combined: true,
           data: undefined,
-          title: "Gender Bar Chart (ALL)",
+          title: "Applications Target Bar Chart (AIML)",
         },
+        {
+          type: "BAR",
+          layout: {
+            i: "layout-3",
+            w: 8,
+            h: 6,
+            x: 16,
+            y: 0,
+          },
+          programType: "MCS",
+          graphType: "combined_fee_status",
+          decisionStatus: "ALL",
+          stack: "decision_status",
+          target: [],
+          combined: true,
+          data: undefined,
+          title: "Applications Target Bar Chart (MCS)",
+        },
+      ],
+    },
+    {
+      label: "Pie Charts",
+      key: "item-1",
+      graph: [
+        {
+          type: "PIE",
+          programType: "ALL",
+          layout: {
+            i: "layout-0",
+            w: 8,
+            h: 6,
+            x: 0,
+            y: 0,
+          },
+          decisionStatus: "ALL",
+          graphType: "nationality",
+          data: undefined,
+          title: "Nationality Pie Chart (ALL)",
+          top: 10,
+        },
+        {
+          type: "PIE",
+          programType: "ALL",
+          layout: {
+            i: "layout-1",
+            w: 8,
+            h: 6,
+            x: 8,
+            y: 0,
+          },
+          decisionStatus: "ALL",
+          graphType: "ethnicity",
+          data: undefined,
+          title: "Ethnicity Pie Chart (ALL)",
+          top: 10,
+        },
+        {
+          type: "PIE",
+          programType: "ALL",
+          layout: {
+            i: "layout-2",
+            w: 8,
+            h: 6,
+            x: 16,
+            y: 0,
+          },
+          decisionStatus: "ALL",
+          graphType: "gender",
+          data: undefined,
+          title: "Gender Pie Chart (ALL)",
+        },
+      ],
+    },
+    {
+      label: "Trends",
+      key: "item-2",
+      graph: [
         {
           type: "LINE",
           layout: {
             i: "layout-3",
-            w: 4,
-            h: 2,
-            x: 4,
-            y: 2,
+            w: 8,
+            h: 6,
+            x: 0,
+            y: 0,
           },
           programType: "ALL",
           decisionStatus: "all",
@@ -80,16 +144,6 @@ const VisualisationNavigation = () => {
           breakdown: "year",
         },
       ],
-    },
-    {
-      label: "Hello",
-      key: "item-1",
-      graph: [],
-    },
-    {
-      label: "Pie Chart",
-      key: "item-2",
-      graph: [],
     },
   ];
 
@@ -143,13 +197,14 @@ const VisualisationNavigation = () => {
   };
 
   const [items, setItems] = useState<Tab[]>([]);
-  const [activeKey, setActiveKey] = useState("tab-0");
+  const [activeKey, setActiveKey] = useState("");
   const [keyCounter, setKeyCounter] = useState(0);
   const [isModalOpen, setModalOpen] = useState(false);
   const [newName, setNewName] = useState("");
   const { confirm } = Modal;
 
   React.useEffect(() => {
+    console.log(graphContent);
     let newItems = makeTabItem([...graphContent]);
     setItems(newItems);
 
@@ -157,7 +212,7 @@ const VisualisationNavigation = () => {
       setKeyCounter(newItems.length);
     }
 
-    if (newItems.length > 0) {
+    if (activeKey === "" && newItems.length > 0) {
       setActiveKey(newItems[0].key);
     }
   }, [graphContent]);
@@ -227,10 +282,16 @@ const VisualisationNavigation = () => {
   };
 
   const handleOk = () => {
-    let item = items.find((i: any) => i.key === activeKey);
-    if (item != null) {
-      item.label = newName;
+    let targetIndex = items.findIndex((i: any) => i.key === activeKey);
+
+    let newGraphContent = [...graphContent];
+
+    if (targetIndex != -1) {
+      newGraphContent[targetIndex].label = newName;
+      setGraphContentWithCookie(newGraphContent);
+      setItems(makeTabItem(newGraphContent));
     }
+
     setNewName("");
     setModalOpen(false);
   };
