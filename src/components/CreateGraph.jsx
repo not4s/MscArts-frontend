@@ -31,7 +31,7 @@ const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, g
     //TODO
     setGraphs(graphIndex, [
     {
-      title: title,
+      title: title === "" ? "Graph" : title,
       layout: {
         i: `layout-${layoutCounter}`,
         w: 10,
@@ -51,7 +51,7 @@ const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, g
 
   const createPieChart = () => {
     setGraphs(graphIndex, [{
-      title: title,
+      title: title === "" ? "Graph" : title,
       layout: {
         i: `layout-${layoutCounter}`,
         w: 10,

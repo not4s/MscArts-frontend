@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { SetStateAction, useEffect, useState } from "react";
 import { EditText } from "react-edit-text";
 import "react-edit-text/dist/index.css";
 import { Column, ColumnConfig } from "@ant-design/charts";
@@ -20,12 +20,14 @@ interface BarGraphProps {
   graphType: string;
   data: any[] | undefined;
   title: string;
+  setTitle: (newTitle: string) => void;
 }
 
 const BarGraph: React.FC<BarGraphProps> = ({
   graphType,
   data,
   title,
+  setTitle,
   ...props
 }) => {
   const [config, setConfig] = useState<ColumnConfig>(DEFAULT_CONFIG);
@@ -85,8 +87,9 @@ const BarGraph: React.FC<BarGraphProps> = ({
       <DraggableHandle className="myDragHandleClassName">
         <EditText
           name="textbox3"
-          defaultValue={`${title} Graph`}
+          defaultValue={title}
           inputClassName="bg-success"
+          onSave={(e) => setTitle(e.value)}
         />
       </DraggableHandle>
       <Column className="our-chart" {...config} />

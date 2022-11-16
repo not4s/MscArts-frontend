@@ -30,9 +30,10 @@ const DEFAULT_CONFIG: PieConfig = {
 interface PieGraphProps {
   data: any[] | undefined;
   title: string;
+  setTitle: (newTitle: string) => void;
 }
 
-const PieGraph: React.FC<PieGraphProps> = ({ data, title }) => {
+const PieGraph: React.FC<PieGraphProps> = ({ data, title, setTitle }) => {
   const [config, setConfig] = useState<PieConfig>(DEFAULT_CONFIG);
 
   useEffect(() => {
@@ -46,8 +47,9 @@ const PieGraph: React.FC<PieGraphProps> = ({ data, title }) => {
       <DraggableHandle className="myDragHandleClassName">
         <EditText
           name="textbox3"
-          defaultValue={`${title} Graph`}
+          defaultValue={title}
           inputClassName="bg-success"
+          onSave={(e) => setTitle(e.value)}
         />
       </DraggableHandle>
       <Pie className="our-chart" {...config} />

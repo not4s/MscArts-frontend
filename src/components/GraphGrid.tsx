@@ -122,18 +122,18 @@ const GraphGrid: React.FC<Props> = ({
     init(newGraphs);
   }, [graphContent]);
 
-  const graphToComponent = (graphData: Graph) => {
+  const graphToComponent = (graphData: Graph, index: number) => {
     if (graphData.type === "PIE") {
       return (
         <GraphSize key={graphData.layout.i} data-grid={graphData.layout}>
-          <PieGraph {...graphData} />
+          <PieGraph {...graphData} setTitle={(e) => setTitle(index, e)} />
         </GraphSize>
       );
       // return <PieGraph key={`layout-${key}`} layoutKey={key} {...graphData} />;
     } else if (graphData.type === "BAR") {
       return (
         <GraphSize key={graphData.layout.i} data-grid={graphData.layout}>
-          <BarGraph {...graphData} />
+          <BarGraph {...graphData} setTitle={(e) => setTitle(index, e)} />
         </GraphSize>
       );
       // return <BarGraph key={`layout-${key}`} layoutKey={key} {...graphData} />;
@@ -155,6 +155,16 @@ const GraphGrid: React.FC<Props> = ({
     for (let i = 0; i < newGraphs.length; i++) {
       newGraphs[i].layout = layouts[i];
     }
+    setGraphContent(graphIndex, newGraphs);
+  };
+
+  const setTitle = (i: number, title: string) => {
+    const newG = graphContent[graphIndex];
+    const newGraphs = newG ? [...graphContent[graphIndex]] : [];
+
+    newGraphs[i].title = title;
+
+    console.log(newGraphs);
     setGraphContent(graphIndex, newGraphs);
   };
 
@@ -180,7 +190,7 @@ const GraphGrid: React.FC<Props> = ({
         onLayoutChange={setLayout}
       >
         {graphs.map((k, index) => {
-          return graphToComponent(k);
+          return graphToComponent(k, index);
         })}
       </ReactGridLayout>
     </>
