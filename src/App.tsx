@@ -32,6 +32,7 @@ import {
 } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthVerification from "./services/AuthVerification";
+import ParamGraphGrid from "./components/ParamGraphGrid";
 
 const { Sider, Header, Footer, Content } = Layout;
 
@@ -202,6 +203,19 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="visuals/:graphs"
+                element={
+                  <ProtectedRoute
+                    user={currentUser}
+                    roleRequired={1}
+                    rolePossessed={currentUserRole}
+                  >
+                    <ParamGraphGrid />
+                  </ProtectedRoute>
+                }
+              />
+
               <Route
                 path="spreadsheets"
                 element={
