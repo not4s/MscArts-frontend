@@ -7,11 +7,13 @@ import {
   ExclamationCircleOutlined,
   ExportOutlined,
   ImportOutlined,
+  PlusOutlined,
 } from "@ant-design/icons";
 import GraphGrid from "./GraphGrid";
 import { Graph, GraphGridInterface } from "../constants/graphs";
 import Cookies from "universal-cookie";
 import ImportModal from "./ImportModal";
+import CreateGraph from "./CreateGraph";
 
 const VisualisationNavigation = () => {
   const cookies = new Cookies();
@@ -23,7 +25,7 @@ const VisualisationNavigation = () => {
         {
           type: "BAR",
           layout: {
-            i: "layout-1",
+            i: "layout-0",
             w: 8,
             h: 6,
             x: 0,
@@ -41,7 +43,7 @@ const VisualisationNavigation = () => {
         {
           type: "BAR",
           layout: {
-            i: "layout-2",
+            i: "layout-1",
             w: 8,
             h: 6,
             x: 8,
@@ -59,7 +61,7 @@ const VisualisationNavigation = () => {
         {
           type: "BAR",
           layout: {
-            i: "layout-3",
+            i: "layout-2",
             w: 8,
             h: 6,
             x: 16,
@@ -136,7 +138,7 @@ const VisualisationNavigation = () => {
         {
           type: "LINE",
           layout: {
-            i: "layout-3",
+            i: "layout-0",
             w: 8,
             h: 6,
             x: 0,
@@ -319,6 +321,17 @@ const VisualisationNavigation = () => {
     }
   };
 
+  const addGraph = (newGraph: Graph) => {
+    const targetIndex = graphContent.findIndex((i) => i.key === activeKey);
+    const newGraphContent = [...graphContent];
+
+    newGraph.layout.i = `layout-${newGraphContent[targetIndex].graph.length}`;
+
+    newGraphContent[targetIndex].graph.push(newGraph);
+    console.log(newGraphContent);
+    setGraphContentWithCookie(newGraphContent);
+  };
+
   const operationItems: MenuProps["items"] = [
     {
       label: "Export",
@@ -335,12 +348,15 @@ const VisualisationNavigation = () => {
   ];
 
   const operations = (
-    <Dropdown menu={{ items: operationItems }}>
-      <Button>
-        More Actions
-        <DownOutlined />
-      </Button>
-    </Dropdown>
+    <>
+      <CreateGraph addGraph={addGraph} />
+      <Dropdown menu={{ items: operationItems }}>
+        <Button>
+          More Actions
+          <DownOutlined />
+        </Button>
+      </Dropdown>
+    </>
   );
 
   const handleOk = () => {
