@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { EditText } from "react-edit-text";
 import "react-edit-text/dist/index.css";
 import { Pie, PieConfig } from "@ant-design/charts";
+import { EditOutlined } from "@ant-design/icons";
 import { DraggableHandle } from "./styles";
 
 const DEFAULT_CONFIG: PieConfig = {
@@ -44,14 +45,20 @@ const PieGraph: React.FC<PieGraphProps> = ({ data, title, setTitle }) => {
 
   return (
     <>
-      <DraggableHandle className="myDragHandleClassName">
-        <EditText
-          name="textbox3"
-          defaultValue={title}
-          inputClassName="bg-success"
-          onSave={(e) => setTitle(e.value)}
-        />
-      </DraggableHandle>
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <DraggableHandle
+          className="myDragHandleClassName"
+          style={{ width: "calc(85%)" }}
+        >
+          <EditText
+            name="textbox3"
+            defaultValue={title}
+            inputClassName="bg-success"
+            onSave={(e) => setTitle(e.value)}
+          />
+        </DraggableHandle>
+        <EditOutlined />
+      </div>
       <Pie className="our-chart" {...config} />
     </>
   );
