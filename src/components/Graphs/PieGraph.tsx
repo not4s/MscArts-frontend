@@ -45,8 +45,12 @@ const PieGraph: React.FC<PieGraphProps> = ({ data, title, setTitle }) => {
 
   const userMenu = (
     <Menu>
-      <Menu.Item key="1">Edit</Menu.Item>
-      <Menu.Item key="2">Delete</Menu.Item>
+      <Menu.Item key="1" onClick={() => {}}>
+        Edit
+      </Menu.Item>
+      <Menu.Item key="2" onClick={() => {}}>
+        Delete
+      </Menu.Item>
     </Menu>
   );
 
