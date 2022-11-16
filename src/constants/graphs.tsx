@@ -11,6 +11,12 @@ export interface TargetInterface {
 
 export type Graph = BarGraphInterface | PieGraphInterface | LineGraphInterface;
 
+export interface GraphGridInterface {
+  label: string;
+  key: string;
+  graph: Graph[];
+}
+
 export interface BaseGraphInterface {
   title: string;
   layout: RGL.Layout;

@@ -75,9 +75,6 @@ const BarGraph: React.FC<BarGraphProps> = ({
         }
         newConfig = { ...newConfig, annotations };
       }
-
-      console.log(newConfig);
-
       setConfig(newConfig);
     }
   }, [data]);

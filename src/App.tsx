@@ -124,7 +124,6 @@ export default function App() {
   ];
 
   React.useEffect(() => {
-    console.log("Location is ", location);
     const accessToken = sessionStorage.getItem("user");
     const api = new APIService();
     api.getRole().then((res) => {

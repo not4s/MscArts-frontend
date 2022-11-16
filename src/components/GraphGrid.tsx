@@ -20,7 +20,7 @@ const ReactGridLayout = WidthProvider(RGL);
 
 interface Props {
   graphIndex: number;
-  graphContent: Graph[][];
+  graphContent: Graph[];
   setGraphContent: (key: number, graph: Graph[]) => void;
 }
 
@@ -32,18 +32,17 @@ const GraphGrid: React.FC<Props> = ({
   const [graphs, setGraphs] = useState<Graph[]>([]);
 
   const [reload, setReload] = useState<boolean>(false);
+  const [loaded, setLoaded] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
   const api = new APIService();
   // console.log(props)
   React.useEffect(() => {
-    const newG = graphContent[graphIndex];
-
-    const newGraphs = newG ? [...graphContent[graphIndex]] : [];
+    const newGraphs = [...graphContent];
     // console.log("Inside GraphGrid", newGraphs);
 
     const init = async (newGraphs: Graph[]) => {
-      setLoading(true);
+      if (!loaded) setLoading(true);
       let change = false;
       for (let i = 0; i < newGraphs.length; i++) {
         if (newGraphs[i]["data"] === undefined) {
@@ -120,6 +119,7 @@ const GraphGrid: React.FC<Props> = ({
         setLayoutCounter(newGraphs.length);
       }
       setLoading(false);
+      setLoaded(true);
     };
 
     init(newGraphs);
@@ -152,8 +152,7 @@ const GraphGrid: React.FC<Props> = ({
   const rows: JSX.Element[][] = sliceIntoChunks(graphs, 3);
 
   const setLayout = (layouts: RGL.Layout[]) => {
-    const newG = graphContent[graphIndex];
-    const newGraphs = newG ? [...graphContent[graphIndex]] : [];
+    const newGraphs = [...graphContent];
 
     for (let i = 0; i < newGraphs.length; i++) {
       newGraphs[i].layout = layouts[i];
@@ -162,8 +161,7 @@ const GraphGrid: React.FC<Props> = ({
   };
 
   const setTitle = (i: number, title: string) => {
-    const newG = graphContent[graphIndex];
-    const newGraphs = newG ? [...graphContent[graphIndex]] : [];
+    const newGraphs = [...graphContent];
 
     newGraphs[i].title = title;
 

@@ -1,15 +1,18 @@
 import React, { useRef, useState } from "react";
 import { Input, Modal, Tabs } from "antd";
+import type { Tab } from "rc-tabs/lib/interface";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import GraphGrid from "./GraphGrid";
-import { Graph } from "../constants/graphs";
+import { Graph, GraphGridInterface } from "../constants/graphs";
 import Cookies from "universal-cookie";
 
 const VisualisationNavigation = () => {
   const cookies = new Cookies();
-  const [graphContent, setGraphContent] = useState<Graph[][]>(
-    cookies.get("visualisations") || [
-      [
+  const defaultItems2: GraphGridInterface[] = [
+    {
+      label: "Male vs Female",
+      key: "item-0",
+      graph: [
         {
           type: "PIE",
           programType: "ALL",
@@ -77,31 +80,47 @@ const VisualisationNavigation = () => {
           breakdown: "year",
         },
       ],
-      [],
-      [],
-    ]
+    },
+    {
+      label: "Hello",
+      key: "item-1",
+      graph: [],
+    },
+    {
+      label: "Pie Chart",
+      key: "item-2",
+      graph: [],
+    },
+  ];
+
+  const [graphContent, setGraphContent] = useState<GraphGridInterface[]>(
+    cookies.get("visualisations") || defaultItems2
   );
-  const setGraphContentWithCookie = (content: Graph[][]) => {
+
+  const setGraphContentWithCookie = (content: GraphGridInterface[]) => {
     cookies.set(
       "visualisations",
-      [...content].map((tab) => {
-        return [...tab].map((graph) => {
+      [...content].map(({ label, key, graph }: GraphGridInterface) => ({
+        label,
+        key,
+        graph: [...graph].map((graph: Graph) => {
           let newG = { ...graph };
           newG["data"] = undefined;
           return newG;
-        });
-      })
+        }),
+      }))
     );
+
     setGraphContent(content);
   };
 
   const setGraphContentByKey = (key: number, newGraphs: Graph[]): void => {
     let newGraphContent = [...graphContent];
-    newGraphContent[key] = newGraphs;
+    newGraphContent[key].graph = newGraphs;
     setGraphContentWithCookie(newGraphContent);
   };
 
-  const makeGraphGrid = (index: number, graph: Graph[][]) => {
+  const makeGraphGrid = (index: number, graph: Graph[]) => {
     return (
       <GraphGrid
         graphContent={graph}
@@ -111,65 +130,46 @@ const VisualisationNavigation = () => {
     );
   };
 
-  const defaultItems = [
-    {
-      label: "Male vs Female",
-      key: "0",
-      children: makeGraphGrid(0, graphContent),
-    },
-    {
-      label: "Another view",
-      key: "1",
-      children: makeGraphGrid(1, graphContent),
-    },
-    {
-      label: "Pie chart",
-      key: "2",
-      children: makeGraphGrid(2, graphContent),
-    },
-  ];
+  const makeTabItem = (graphs: GraphGridInterface[]): Tab[] => {
+    let newItems: Tab[] = [...graphs].map(
+      ({ label, key, graph }: GraphGridInterface, index: number) => ({
+        label,
+        key,
+        children: makeGraphGrid(index, graph),
+      })
+    );
 
-  const [items, setItems] = useState(defaultItems);
-  const newTabIndex = useRef(3);
+    return newItems;
+  };
 
-  const [activeKey, setActiveKey] = useState("item-1");
+  const [items, setItems] = useState<Tab[]>([]);
+  const [activeKey, setActiveKey] = useState("tab-0");
+  const [keyCounter, setKeyCounter] = useState(0);
   const [isModalOpen, setModalOpen] = useState(false);
   const [newName, setNewName] = useState("");
   const { confirm } = Modal;
 
-  const onChange = (key: string) => {
-    setActiveKey(key);
-  };
-
   React.useEffect(() => {
-    let newItems = [...items];
+    let newItems = makeTabItem([...graphContent]);
+    setItems(newItems);
 
-    for (let i = 0; i < items.length; i++) {
-      newItems[i]["children"] = makeGraphGrid(i, graphContent);
+    if (newItems.length > keyCounter) {
+      setKeyCounter(newItems.length);
     }
 
-    setItems(newItems);
+    if (newItems.length > 0) {
+      setActiveKey(newItems[0].key);
+    }
   }, [graphContent]);
 
   const add = () => {
-    setGraphContentWithCookie([...graphContent, []]);
-    const newActiveKey: number = newTabIndex.current++;
-    const newActiveKeyString: string = String(newActiveKey);
-    setItems([
-      ...items,
-      {
-        label: "Untitled",
-        children: (
-          <GraphGrid
-            graphIndex={newActiveKey}
-            graphContent={graphContent}
-            setGraphContent={setGraphContentByKey}
-          />
-        ),
-        key: newActiveKeyString,
-      },
-    ]);
-    setActiveKey(newActiveKeyString);
+    const newGraphContent: GraphGridInterface[] = [
+      ...graphContent,
+      { label: "Untitled", key: `item-${keyCounter}`, graph: [] },
+    ];
+    setGraphContentWithCookie(newGraphContent);
+    setItems(makeTabItem(newGraphContent));
+    setKeyCounter((old) => old + 1);
   };
 
   const remove = (targetKey: string) => {
@@ -180,6 +180,8 @@ const VisualisationNavigation = () => {
 
     setGraphContentWithCookie(newGraphContent);
 
+    console.log(newGraphContent);
+
     if (newPanes.length && targetKey === activeKey) {
       const { key } =
         newPanes[
@@ -187,7 +189,7 @@ const VisualisationNavigation = () => {
         ];
       setActiveKey(key);
     }
-    setItems(newPanes);
+    setItems(makeTabItem(newGraphContent));
   };
 
   const onEdit = (targetKey: string) => {
@@ -219,8 +221,6 @@ const VisualisationNavigation = () => {
   };
 
   const clicked = (targetKey: string) => {
-    console.log(targetKey);
-    console.log(activeKey);
     if (targetKey === activeKey) {
       setModalOpen(true);
     }
@@ -243,7 +243,7 @@ const VisualisationNavigation = () => {
     <div>
       <Modal
         title={
-          "Rename '" + items.find((i: any) => i.key === activeKey)?.label + "'"
+          "Rename '" + items.find((i: Tab) => i.key === activeKey)?.label + "'"
         }
         open={isModalOpen}
         onOk={handleOk}
@@ -256,14 +256,17 @@ const VisualisationNavigation = () => {
         />
       </Modal>
       <Tabs
-        onChange={onChange}
+        onChange={setActiveKey}
         activeKey={activeKey}
         type="editable-card"
         onEdit={(e: any) => {
           onEdit(e.toString());
         }}
         items={items}
-        onTabClick={(e: any) => clicked(e.toString())}
+        onTabClick={(e: any) => {
+          console.log(e);
+          clicked(e.toString());
+        }}
       />
     </div>
   );
