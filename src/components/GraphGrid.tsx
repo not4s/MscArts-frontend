@@ -115,6 +115,7 @@ const GraphGrid: React.FC<Props> = ({
       if (change) {
         setGraphContent(graphIndex, newGraphs);
         setGraphs(newGraphs);
+        setLayoutCounter(newGraphs.length);
       }
     };
 
@@ -147,7 +148,7 @@ const GraphGrid: React.FC<Props> = ({
 
   const rows: JSX.Element[][] = sliceIntoChunks(graphs, 3);
 
-  const [layoutCounter, setLayoutCounter] = useState(graphs.length);
+  const [layoutCounter, setLayoutCounter] = useState(0);
 
   return (
     <>
