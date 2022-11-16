@@ -33,7 +33,7 @@ const GraphGrid: React.FC<Props> = ({
     const newG = graphContent[graphIndex];
 
     const newGraphs = newG ? [...graphContent[graphIndex]] : [];
-    console.log("Inside GraphGrid", newGraphs);
+    // console.log("Inside GraphGrid", newGraphs);
 
     const init = async (newGraphs: GraphInterface[]) => {
       let change = false;

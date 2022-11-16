@@ -1,5 +1,5 @@
-import React, { useState, useRef } from "react";
-import { Tabs, Modal, Input } from "antd";
+import React, { useRef, useState } from "react";
+import { Input, Modal, Tabs } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import GraphGrid from "./GraphGrid";
 import { GraphInterface } from "../constants/graphs";
@@ -7,87 +7,89 @@ import Cookies from "universal-cookie";
 
 const VisualisationNavigation = () => {
   const cookies = new Cookies();
-  const [graphContent, setGraphContent] = useState<GraphInterface[][]>([
-    [
-      {
-        type: "PIE",
-        programType: "ALL",
-        layout: {
-          i: "layout-1",
-          w: 8,
-          h: 6,
-          x: 18,
-          y: 0,
+  const [graphContent, setGraphContent] = useState<GraphInterface[][]>(
+    cookies.get("visualisations") || [
+      [
+        {
+          type: "PIE",
+          programType: "ALL",
+          layout: {
+            i: "layout-1",
+            w: 8,
+            h: 6,
+            x: 18,
+            y: 0,
+          },
+          decisionStatus: "ALL",
+          graphType: "nationality",
+          data: undefined,
+          title: "Nationality Pie Chart",
+          top: 10,
         },
-        decisionStatus: "ALL",
-        graphType: "nationality",
-        data: undefined,
-        title: "Nationality Pie Chart",
-        top: 10,
-      },
-      {
-        type: "BAR",
-        layout: {
-          i: "layout-2",
-          w: 16,
-          h: 6,
-          x: 0,
-          y: 0,
+        {
+          type: "BAR",
+          layout: {
+            i: "layout-2",
+            w: 16,
+            h: 6,
+            x: 0,
+            y: 0,
+          },
+          programType: "MAC",
+          graphType: "combined_fee_status",
+          decisionStatus: "ALL",
+          stack: "decision_status",
+          combined: true,
+          data: undefined,
+          title: "Decision Status w/ Fee Status Bar Chart (MAC)",
         },
-        programType: "MAC",
-        graphType: "combined_fee_status",
-        decisionStatus: "ALL",
-        stack: "decision_status",
-        combined: true,
-        data: undefined,
-        title: "Decision Status w/ Fee Status Bar Chart (MAC)",
-      },
-      {
-        type: "BAR",
-        layout: {
-          i: "layout-3",
-          w: 16,
-          h: 6,
-          x: 0,
-          y: 6,
+        {
+          type: "BAR",
+          layout: {
+            i: "layout-3",
+            w: 16,
+            h: 6,
+            x: 0,
+            y: 6,
+          },
+          programType: "ALL",
+          graphType: "gender",
+          decisionStatus: "ALL",
+          combined: true,
+          data: undefined,
+          title: "Gender Bar Chart (ALL)",
         },
-        programType: "ALL",
-        graphType: "gender",
-        decisionStatus: "ALL",
-        combined: true,
-        data: undefined,
-        title: "Gender Bar Chart (ALL)",
-      },
-      {
-        type: "LINE",
-        layout: {
-          i: "layout-4",
-          w: 4,
-          h: 2,
-          x: 4,
-          y: 2,
+        {
+          type: "LINE",
+          layout: {
+            i: "layout-4",
+            w: 4,
+            h: 2,
+            x: 4,
+            y: 2,
+          },
+          programType: "ALL",
+          decisionStatus: "all",
+          graphType: "hi",
+          data: undefined,
+          title: "Line graph",
+          frequency: 10,
+          breakdown: "year",
         },
-        programType: "ALL",
-        decisionStatus: "all",
-        graphType: "hi",
-        data: undefined,
-        title: "Line graph",
-        frequency: 10,
-        breakdown: "year",
-      },
-    ],
-    [],
-    [],
-  ]);
+      ],
+      [],
+      [],
+    ]
+  );
   const setGraphContentWithCookie = (content: GraphInterface[][]) => {
     cookies.set(
       "visualisations",
-      content.map((tab) => {
-        tab.map((graph) => {
-          graph.data = undefined;
-          return graph;
+      [...content].map((tab) => {
+        return [...tab].map((graph) => {
+          let newG = { ...graph };
+          newG["data"] = undefined;
+          return newG;
         });
-        return tab;
       })
     );
     setGraphContent(content);
