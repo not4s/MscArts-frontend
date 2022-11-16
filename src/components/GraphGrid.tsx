@@ -1,4 +1,4 @@
-import { Col, Row } from "antd";
+import { Col, Row, Spin } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import { ETHNICITY_MAPPING } from "../constants/ethnicity";
 import {
@@ -32,6 +32,7 @@ const GraphGrid: React.FC<Props> = ({
   const [graphs, setGraphs] = useState<Graph[]>([]);
 
   const [reload, setReload] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const api = new APIService();
   // console.log(props)
@@ -42,6 +43,7 @@ const GraphGrid: React.FC<Props> = ({
     // console.log("Inside GraphGrid", newGraphs);
 
     const init = async (newGraphs: Graph[]) => {
+      setLoading(true);
       let change = false;
       for (let i = 0; i < newGraphs.length; i++) {
         if (newGraphs[i]["data"] === undefined) {
@@ -117,6 +119,7 @@ const GraphGrid: React.FC<Props> = ({
         setGraphs(newGraphs);
         setLayoutCounter(newGraphs.length);
       }
+      setLoading(false);
     };
 
     init(newGraphs);
@@ -170,7 +173,7 @@ const GraphGrid: React.FC<Props> = ({
 
   const [layoutCounter, setLayoutCounter] = useState(0);
 
-  return (
+  return !loading ? (
     <>
       <CreateGraph
         graphs={graphs}
@@ -193,6 +196,10 @@ const GraphGrid: React.FC<Props> = ({
           return graphToComponent(k, index);
         })}
       </ReactGridLayout>
+    </>
+  ) : (
+    <>
+      <Spin size="large" tip="Loading..." />
     </>
   );
 };

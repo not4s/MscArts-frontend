@@ -23,8 +23,13 @@ import { ItemType } from "antd/lib/menu/hooks/useItems";
 import ApplicantTable from "./components/Applicants/ApplicantTable";
 import UserAccessSettings from "./components/Settings/UserAccessSettings";
 import MockVisualisation from "./components/Mocks/MockVisualisation";
-import { Outlet, useNavigate } from "react-router-dom";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {
+  Outlet,
+  useNavigate,
+  useLocation,
+  Routes,
+  Route,
+} from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthVerification from "./services/AuthVerification";
 
@@ -51,6 +56,7 @@ function getItem(
 
 export default function App() {
   let navigate = useNavigate();
+  let location = useLocation();
   const LOGOUT_KEY = "5";
 
   const [currentUser, setCurrentUser] = useState(null);
@@ -118,6 +124,7 @@ export default function App() {
   ];
 
   React.useEffect(() => {
+    console.log("Location is ", location);
     const accessToken = sessionStorage.getItem("user");
     const api = new APIService();
     api.getRole().then((res) => {
@@ -164,7 +171,7 @@ export default function App() {
           >
             <Menu
               theme="dark"
-              defaultSelectedKeys={["1"]}
+              selectedKeys={[location.pathname]}
               mode="inline"
               items={items.filter((e: any) => e.key !== -1)}
               onClick={(e) => navigate(e.key)}
