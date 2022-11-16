@@ -13,6 +13,14 @@
   position: absolute !important;
 }
 
-/* .ant-btn-primary {
-  background: rgb(182, 182, 182);  
-} */
+.ant-btn-primary {
+  border: none;
+  background: none;
+  color: black;
+}
+
+.ant-btn-primary:hover {
+  background: rgb(166, 166, 166);
+  border: none;
+  color: black;
+}
