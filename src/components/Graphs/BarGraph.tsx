@@ -82,16 +82,7 @@ const BarGraph: React.FC<BarGraphProps> = ({
 
   return (
     <>
-      <DraggableHandle
-        className="myDragHandleClassName"
-        style={{
-          padding: "10px",
-          margin: "10px",
-          border: "solid",
-          borderWidth: "1px",
-          borderColor: "rgba(220,220,220,0.9)",
-        }}
-      >
+      <DraggableHandle className="myDragHandleClassName">
         <EditText
           name="textbox3"
           defaultValue={`${title} Graph`}

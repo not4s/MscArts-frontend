@@ -148,6 +148,16 @@ const GraphGrid: React.FC<Props> = ({
 
   const rows: JSX.Element[][] = sliceIntoChunks(graphs, 3);
 
+  const setLayout = (layouts: RGL.Layout[]) => {
+    const newG = graphContent[graphIndex];
+    const newGraphs = newG ? [...graphContent[graphIndex]] : [];
+
+    for (let i = 0; i < newGraphs.length; i++) {
+      newGraphs[i].layout = layouts[i];
+    }
+    setGraphContent(graphIndex, newGraphs);
+  };
+
   const [layoutCounter, setLayoutCounter] = useState(0);
 
   return (
@@ -167,6 +177,7 @@ const GraphGrid: React.FC<Props> = ({
         cols={24}
         rowHeight={50}
         isBounded={true}
+        onLayoutChange={setLayout}
       >
         {graphs.map((k, index) => {
           return graphToComponent(k);
