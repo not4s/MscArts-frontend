@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
+import { EditText, EditTextArea } from 'react-edit-text';
+import 'react-edit-text/dist/index.css'
 import { Column } from "@ant-design/charts";
-import axios from "axios";
-import { APIService } from "../../services/API";
-import { GraphInterface } from "../../constants/graphs";
+import { GraphSize, DraggableHandle } from "./styles";
 
 const DEFAULT_CONFIG = {
   data: [],
   xField: "gender",
   yField: "count",
   isStack: true,
-  seriesField: 'type'
+  seriesField: 'type',
+  tooltip: {
+    showTitle: true
+  }
 }
 
 const BarGraph = ({ programType, graphType, data, title }) => {
@@ -81,18 +84,25 @@ const BarGraph = ({ programType, graphType, data, title }) => {
     //   },
     // ],
     //  configs[preset ? preset : 0]
+  
 
   return (
-    <div style={{
+    <>
+    <DraggableHandle className="myDragHandleClassName" style={{
       padding: "10px",
       margin: "10px",
       border: "solid",
       borderWidth: "1px",
       borderColor: "rgba(220,220,220,0.9)",
       }}>
-      <h1>{ `${title} Graph` }</h1>
-      <Column {...config} />
-    </div>
+      <EditText name='textbox3'
+                defaultValue={ `${title} Graph` }
+                inputClassName='bg-success'>
+        { `${title} Graph` }
+      </EditText>
+    </DraggableHandle>
+    <Column className="our-chart" {...config} />
+    </>
   );
 };
 

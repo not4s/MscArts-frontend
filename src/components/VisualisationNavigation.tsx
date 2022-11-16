@@ -1,50 +1,84 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { Tabs, Modal, Input } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import GraphGrid from "./GraphGrid";
-import Cookies from "universal-cookie";
-import CreateGraph from "./CreateGraph";
 import { GraphInterface } from "../constants/graphs";
-
-interface Props {
-  mock: boolean;
-}
+import Cookies from "universal-cookie";
 
 const VisualisationNavigation = () => {
   const cookies = new Cookies();
-  const [graphContent, setGraphContent] = useState<GraphInterface[][]>(
-    cookies.get("visualisations") || [
-      [
-        {
-          type: "PIE",
-          programType: "ALL",
-          graphType: "nationality",
-          data: undefined,
-          title: "Nationality Pie Chart",
-          top: 0,
+  const [graphContent, setGraphContent] = useState<GraphInterface[][]>([
+    [
+      {
+        type: "PIE",
+        programType: "ALL",
+        layout: {
+          i: "layout-1",
+          w: 8,
+          h: 6,
+          x: 18,
+          y: 0,
         },
-        {
-          type: "BAR",
-          programType: "ALL",
-          graphType: "gender",
-          stack: false,
-          data: undefined,
-          title: "Gender Bar Chart (ALL)",
+        decisionStatus: "ALL",
+        graphType: "nationality",
+        data: undefined,
+        title: "Nationality Pie Chart",
+        top: 10,
+      },
+      {
+        type: "BAR",
+        layout: {
+          i: "layout-2",
+          w: 16,
+          h: 6,
+          x: 0,
+          y: 0,
         },
-        {
-          type: "BAR",
-          programType: "MAC",
-          graphType: "gender",
-          stack: true,
-          data: undefined,
-          title: "Gender Bar Chart (MAC)",
+        programType: "MAC",
+        graphType: "combined_fee_status",
+        decisionStatus: "ALL",
+        stack: "decision_status",
+        combined: true,
+        data: undefined,
+        title: "Decision Status w/ Fee Status Bar Chart (MAC)",
+      },
+      {
+        type: "BAR",
+        layout: {
+          i: "layout-3",
+          w: 16,
+          h: 6,
+          x: 0,
+          y: 6,
         },
-      ],
-      [],
-      [],
-    ]
-  );
-
+        programType: "ALL",
+        graphType: "gender",
+        decisionStatus: "ALL",
+        combined: true,
+        data: undefined,
+        title: "Gender Bar Chart (ALL)",
+      },
+      {
+        type: "LINE",
+        layout: {
+          i: "layout-4",
+          w: 4,
+          h: 2,
+          x: 4,
+          y: 2,
+        },
+        programType: "ALL",
+        decisionStatus: "all",
+        graphType: "hi",
+        data: undefined,
+        title: "Line graph",
+        frequency: 10,
+        breakdown: "year",
+      },
+    ],
+    [],
+    [],
+  ]);
   const setGraphContentWithCookie = (content: GraphInterface[][]) => {
     cookies.set(
       "visualisations",
@@ -169,7 +203,7 @@ const VisualisationNavigation = () => {
     confirm({
       title:
         "Are you sure delete '" +
-        items.find((i) => i.key == targetKey)?.label +
+        items.find((i) => i.key === targetKey)?.label +
         "'?",
       icon: <ExclamationCircleOutlined />,
       content: "This cannot be undone.",
@@ -194,7 +228,7 @@ const VisualisationNavigation = () => {
   };
 
   const handleOk = () => {
-    let item = items.find((i: any) => i.key == activeKey);
+    let item = items.find((i: any) => i.key === activeKey);
     if (item != null) {
       item.label = newName;
     }
@@ -210,7 +244,7 @@ const VisualisationNavigation = () => {
     <div>
       <Modal
         title={
-          "Rename '" + items.find((i: any) => i.key == activeKey)?.label + "'"
+          "Rename '" + items.find((i: any) => i.key === activeKey)?.label + "'"
         }
         open={isModalOpen}
         onOk={handleOk}

@@ -42,13 +42,13 @@ const TargetForm = () => {
   
   return (
     <div>
-        You can set targets for each course here.
+        You can set targets for each course here. 
         <Form 
         name="targets"
         onFinish={submitNewTarget}
         >
-          <Form.Item label="Course" name="course">
-            <Select>
+          <Form.Item  name="course" style={{width:240}} rules={[{required:true}]}>
+            <Select placeholder="Course"> 
               {
                 programs.map(program => {return(
                   <Select.Option value={program}>
@@ -58,11 +58,11 @@ const TargetForm = () => {
               }
             </Select>
           </Form.Item>
-          <Form.Item label="Target" name="target">
-            <Input />
+          <Form.Item  name="target" style={{width:240}} rules={[{required:true}]}>
+            <Input placeholder="Target"/>
           </Form.Item>
-          <Form.Item label="Year" name="year">
-            <Select>
+          <Form.Item  name="year" style={{width:240}} rules={[{required:true}]}>
+            <Select placeholder="Year">
               <Select.Option value="2023">22/23</Select.Option>
               <Select.Option value="2022">21/22</Select.Option>
               <Select.Option value="2021">20/21</Select.Option>
@@ -71,7 +71,7 @@ const TargetForm = () => {
             </Select>
           </Form.Item>
           <Form.Item>
-            <Button htmlType='submit'> Submit</Button>
+            <Button htmlType='submit'>Submit new target</Button>
           </Form.Item>
         </Form>
         <div>

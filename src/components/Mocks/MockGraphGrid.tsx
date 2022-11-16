@@ -15,7 +15,15 @@ const MockGraphGrid: React.FC<Props> = ({ mockData }) => {
   const [graphs, setGraphs] = useState<GraphInterface[]>([
     {
       type: "PIE",
+      layout: {
+        i: "layout-1",
+        w: 4,
+        h: 2,
+        x: 0,
+        y: 0,
+      },
       programType: "ALL",
+      decisionStatus: "ALL",
       graphType: "nationality",
       data: undefined,
       top: 5,
@@ -23,10 +31,18 @@ const MockGraphGrid: React.FC<Props> = ({ mockData }) => {
     },
     {
       type: "BAR",
+      layout: {
+        i: "layout-1",
+        w: 4,
+        h: 2,
+        x: 0,
+        y: 0,
+      },
       programType: "MAC",
+      decisionStatus: "ALL",
       graphType: "gender",
       data: undefined,
-      stack: true,
+      combined: true,
       title: "Gender Bar Chart (MAC)",
     },
   ]);
@@ -52,7 +68,7 @@ const MockGraphGrid: React.FC<Props> = ({ mockData }) => {
               mockData,
               newGraphs[i]["graphType"],
               newGraphs[i]["programType"],
-              newGraphs[i]["stack"]
+              newGraphs[i]["combined"]
             );
             newGraphs[i]["data"] = data;
           }
@@ -97,6 +113,7 @@ const MockGraphGrid: React.FC<Props> = ({ mockData }) => {
     <>
       {nodes}
       <CreateGraph
+        setLayoutCounter={[]}
         graphs={graphs}
         graphIndex={-1}
         setGraphs={setGraphsByIndex}

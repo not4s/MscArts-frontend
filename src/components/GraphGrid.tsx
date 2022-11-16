@@ -1,11 +1,16 @@
 import { Col, Row } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import { ETHNICITY_MAPPING } from "../constants/ethnicity";
+import { GraphInterface } from "../constants/graphs";
 import { APIService } from "../services/API";
 import CreateGraph from "./CreateGraph";
-import { GraphInterface } from "../constants/graphs";
 import BarGraph from "./Graphs/BarGraph";
+import LineGraph from "./Graphs/LineGraph";
 import PieGraph from "./Graphs/PieGraph";
+import RGL, { WidthProvider } from "react-grid-layout";
+import { GraphSize } from "./Graphs/styles";
+
+const ReactGridLayout = WidthProvider(RGL);
 
 interface Props {
   graphIndex: number;
@@ -21,6 +26,7 @@ const GraphGrid: React.FC<Props> = ({
   const [graphs, setGraphs] = useState<GraphInterface[]>([]);
 
   const [reload, setReload] = useState<boolean>(false);
+
   const api = new APIService();
   // console.log(props)
   React.useEffect(() => {
@@ -34,10 +40,14 @@ const GraphGrid: React.FC<Props> = ({
       for (let i = 0; i < newGraphs.length; i++) {
         if (newGraphs[i]["data"] === undefined) {
           change = true;
-          const fetchParams: any = {};
+          let fetchParams: any = {};
 
           if (newGraphs[i]["programType"] !== "ALL") {
             fetchParams["program_type"] = newGraphs[i]["programType"];
+          }
+
+          if (newGraphs[i]["decisionStatus"] !== "ALL") {
+            fetchParams["decision_status"] = newGraphs[i]["decisionStatus"];
           }
 
           if (newGraphs[i].type === "PIE") {
@@ -47,16 +57,28 @@ const GraphGrid: React.FC<Props> = ({
               newGraphs[i]["graphType"],
               newGraphs[i]["top"]
             );
+          } else if (newGraphs[i].type === "LINE") {
+            fetchParams = {
+              ...fetchParams,
+              breakdown: newGraphs[i]["breakdown"],
+              frequency: newGraphs[i]["frequency"],
+            };
+            let res = await api.getTrends(fetchParams);
+            console.log(res.data);
+            newGraphs[i]["data"] = res.data;
           } else {
             fetchParams["count"] = newGraphs[i]["graphType"];
+            if (newGraphs[i]["stack"] !== undefined) {
+              fetchParams["series"] = newGraphs[i]["stack"];
+            }
+
             let res = await api.getApplicant(fetchParams);
             let data = res.data;
-            if (!newGraphs[i]["stack"]) {
+            if (!newGraphs[i]["combined"]) {
               data = data.filter(
                 (a: any) => a[newGraphs[i]["graphType"]] !== "Combined"
               );
             }
-            // console.log(data);
             newGraphs[i]["data"] = data;
           }
         }
@@ -73,40 +95,54 @@ const GraphGrid: React.FC<Props> = ({
 
   const graphToComponent = (graphData: GraphInterface) => {
     if (graphData.type === "PIE") {
-      return <PieGraph {...graphData} />;
+      return (
+        <GraphSize key={graphData.layout.i} data-grid={graphData.layout}>
+          <PieGraph {...graphData} />
+        </GraphSize>
+      );
+      // return <PieGraph key={`layout-${key}`} layoutKey={key} {...graphData} />;
     } else if (graphData.type === "BAR") {
-      return <BarGraph {...graphData} />;
+      return (
+        <GraphSize key={graphData.layout.i} data-grid={graphData.layout}>
+          <BarGraph {...graphData} />
+        </GraphSize>
+      );
+      // return <BarGraph key={`layout-${key}`} layoutKey={key} {...graphData} />;
+    } else if (graphData.type === "LINE") {
+      return (
+        <GraphSize key={graphData.layout.i} data-grid={graphData.layout}>
+          <LineGraph data={graphData.data} />
+        </GraphSize>
+      );
     }
   };
 
   const rows: JSX.Element[][] = sliceIntoChunks(graphs, 3);
 
-  const nodes = rows.map((row, index: number) => {
-    return (
-      <>
-        <Row key={index}>
-          {row.map((graph: any, key: number) => {
-            return (
-              <Col key={key} span={24 / row.length}>
-                {graphToComponent(graph)}
-              </Col>
-            );
-          })}
-        </Row>
-      </>
-    );
-  });
+  const [layoutCounter, setLayoutCounter] = useState(4);
 
   return (
     <>
-      {nodes}
       <CreateGraph
         graphs={graphs}
         setGraphs={setGraphContent}
+        layoutCounter={layoutCounter}
+        setLayoutCounter={setLayoutCounter}
         graphIndex={graphIndex}
         setReload={setReload}
         reload={reload}
       />
+      <ReactGridLayout
+        className="layout"
+        style={{ marginRight: "10px" }}
+        cols={24}
+        rowHeight={50}
+        isBounded={true}
+      >
+        {graphs.map((k, index) => {
+          return graphToComponent(k);
+        })}
+      </ReactGridLayout>
     </>
   );
 };
@@ -136,7 +172,7 @@ const toPieData = (data: any, graphType: string, top: number = 0): any[] => {
   );
 
   if (top > 0) {
-    finalData.sort((a: any, b: any) => b.value - a.value);
+    finalData = finalData.sort((a: any, b: any) => b.value - a.value);
     let topN = finalData.slice(0, top);
     let others: any = finalData.slice(top);
 

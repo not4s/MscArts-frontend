@@ -182,4 +182,11 @@ export class APIService {
       access: level,
     });
   }
+
+  getTrends({ breakdown, frequency }: any) {
+    return this.buildAuthRequest(
+      "GET",
+      `api/trends/?unit=${frequency}&period=${breakdown}`
+    );
+  }
 }

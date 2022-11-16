@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { EditText, EditTextArea } from 'react-edit-text';
+import 'react-edit-text/dist/index.css'
 import { Pie } from "@ant-design/charts";
-import axios from "axios";
-import { APIService } from "../../services/API";
-
-import { ETHNICITY_MAPPING } from "../../constants/ethnicity";
+import { DraggableHandle, GraphSize } from "./styles";
 
 const DEFAULT_CONFIG = {
     data: [],
@@ -13,6 +12,7 @@ const DEFAULT_CONFIG = {
     radius: 0.9,
     label: {
       type: 'inner',
+      // labelHeight: 28,
       offset: '-20%',
       content: ({ percent }) => `${(percent * 100).toFixed(0)}%`,
       style: {
@@ -38,16 +38,15 @@ const PieGraph = ({ programType, graphType, data, title }) => {
   }, [data])
 
   return (
-  <div style={{
-    padding: "10px",
-    margin: "10px",
-    border: "solid",
-    borderWidth: "1px",
-    borderColor: "rgba(220,220,220,0.9)",
-    }}>
-    <h1>{ `${title} Graph` }</h1>
-    <Pie {...config} />
-  </div>)
+  <>
+    <DraggableHandle className="myDragHandleClassName">
+      <EditText name='textbox3'
+                defaultValue={ `${title} Graph` }
+                inputClassName='bg-success'>
+        { `${title} Graph` }
+      </EditText></DraggableHandle>
+    <Pie className="our-chart" {...config} />
+  </>)
 };
 
 export default PieGraph;

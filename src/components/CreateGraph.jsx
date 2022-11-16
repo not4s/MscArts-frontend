@@ -4,35 +4,78 @@ import {
   PieChartOutlined,
   TableOutlined,
   PlusOutlined,
-  ExclamationCircleOutlined,
+  LineChartOutlined,
 } from "@ant-design/icons";
-import { Button, Checkbox, Form, Modal, Select, Input, Tag, InputNumber } from "antd";
-import FormItem from "antd/es/form/FormItem";
-import axios from "axios";
-import Graph from "./Graphs/BarGraph";
-import PieGraph from "./Graphs/PieGraph";
+import { Button, Checkbox, Form, Modal, Select, Input, InputNumber, Radio } from "antd";
+import { APPLICANT_COLUMN_MAPPING, DECISION_STATUS_OPTIONS } from "../constants/applicant";
 
 const { Option } = Select;
 const degreeTypes = ["ALL", "MAC", "AIML", "MCSS", "MCS"];
 
-const CreateGraph = ({ graphs, setGraphs, graphIndex, setReload, reload}) => {
+const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, graphIndex, setReload, reload }) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [graphType, setGraphType] = useState("");
   const [form] = Form.useForm();
   const [stacked, setStacked] = useState(true);
   const [visualType, setVisualType] = useState("");
   const [programType, setProgramType] = useState("");
+  const [stackType, setStackType] = useState("");
+  const [decisionStatus, setDecisionStatus] = useState("ALL");
   const [title, setTitle] = useState("");
   const [top, setTop] = useState(0);
+  const [breakdown, setBreakdown] = useState("Year");
+  const [frequency, setFrequency] = useState(3);
 
   const createBarChart = () => {
     //TODO
-    setGraphs(graphIndex, [...graphs, { title: title, type: 'BAR', programType: programType, graphType: visualType, stack: stacked}]);
+    setGraphs(graphIndex, [
+    {
+      title: title,
+      layout: {
+        i: `layout-${layoutCounter}`,
+        w: 10,
+        h: 6,
+        x: 0,
+        y: 0
+      },
+      type: 'BAR',
+      decisionStatus: decisionStatus,
+      programType: programType,
+      graphType: visualType,
+      stack: stackType === "" ? undefined : stackType,
+      combined: stacked
+    }, ...graphs]);
   };
 
   const createPieChart = () => {
-    setGraphs(graphIndex, [...graphs, { title: title, type: 'PIE', programType: programType, graphType: visualType, top: top}]);
+    setGraphs(graphIndex, [{
+      title: title,
+      layout: {
+        i: `layout-${layoutCounter}`,
+        w: 10,
+        h: 6,
+        x: 0,
+        y: 0
+      },
+      decisionStatus: decisionStatus,
+      type: 'PIE', programType: programType, graphType: visualType, top: top
+    }, ...graphs]);
   }
+
+  const createLineChart = () => {
+    setGraphs(graphIndex, [{
+      title: title,
+      layout: {
+        i: `layout-${layoutCounter}`,
+        w: 10,
+        h: 6,
+        x: 0,
+        y: 0
+      },
+      type: 'LINE', breakdown, frequency
+    }, ...graphs])
+  }
+
 
   const handleOk = () => {
     form.submit();
@@ -46,15 +89,21 @@ const CreateGraph = ({ graphs, setGraphs, graphIndex, setReload, reload}) => {
         case "PIE":
           createPieChart();
           break;
+        case "LINE":
+          createLineChart();
+          break;
         default:
       }
       setReload(!reload);
+      setLayoutCounter((old) => old + 1);
     }
   };
 
   const handleCancel = () => {
     setModalOpen(false);
     form.resetFields();
+    setStackType("");
+    setDecisionStatus("ALL");
     setGraphType("");
   };
 
@@ -80,6 +129,9 @@ const CreateGraph = ({ graphs, setGraphs, graphIndex, setReload, reload}) => {
               <Option value="PIE">
                 <PieChartOutlined /> Pie Chart
               </Option>
+              <Option value="LINE">
+                <LineChartOutlined /> Line Trend
+              </Option>
               <Option value="TABLE">
                 <TableOutlined /> Table{" "}
               </Option>
@@ -94,15 +146,15 @@ const CreateGraph = ({ graphs, setGraphs, graphIndex, setReload, reload}) => {
                 name="Degree"
                 rules={[{ required: true }]}
                 extra="This is the degree from which to access the data"
-            >
-              <Select
+              >
+                <Select
                   placeholder="Select Degree"
                   style={{ width: 240 }}
                   onChange={(value) => setProgramType(value)}
-              >
-                {degreeTypes.map(type => <Option value={type}>{type}</Option>)}
-              </Select>
-            </Form.Item>
+                >
+                  {degreeTypes.map((type, index) => <Option key={`degree-${index}`} value={type}>{type}</Option>)}
+                </Select>
+              </Form.Item>
 
               <Form.Item
                 name="Columns"
@@ -114,14 +166,74 @@ const CreateGraph = ({ graphs, setGraphs, graphIndex, setReload, reload}) => {
                   style={{ width: 240 }}
                   onChange={(value) => setVisualType(value)}
                 >
-                  <Option value="gender">Gender</Option>
-                  <Option value="application_folder_fee_status">Fee Status</Option>
+                  {
+                    Object.keys(APPLICANT_COLUMN_MAPPING).map((k, index) => {
+                      return <Option key={index} value={APPLICANT_COLUMN_MAPPING[k]}>{k}</Option>
+                    })
+                  }
                 </Select>
               </Form.Item>
 
+              <Form.Item
+                name="Stack Type"
+                hasFeedback
+                validateStatus={stackType !== "" && stackType === visualType ? "error" : ""}
+                initialValue=""
+                help={stackType !== "" && stackType === visualType ? "Columns and Stack Type cannot be the same!" : "E.g. 'Fee Status' will breakdown the Genders into their fee statuses"}
+              >
+                <Select
+                  placeholder="Select Stack Type"
+                  style={{ width: 240 }}
+                  defaultValue={""}
+                  onChange={(value) => setStackType(value)}
+                >
+                  <Option value={""}>None</Option>
+                  {
+                    Object.keys(APPLICANT_COLUMN_MAPPING).map((k, index) => {
+                      return <Option key={index} value={APPLICANT_COLUMN_MAPPING[k]}>{k}</Option>
+                    })
+                  }
+                </Select>
+              </Form.Item>
+
+              <br></br>
+
+              <Form.Item label="Decision Status" name="decisionStatus"
+              initialValue={"ALL"}>
+                <Radio.Group
+                  defaultValue="ALL"
+                  onChange={(e) => setDecisionStatus(e.target.value)} 
+                >
+                  <Radio.Button value="ALL">All</Radio.Button>
+                  <Radio.Button value="live">Live</Radio.Button>
+                  <Radio.Button value="not_live">Not Live</Radio.Button>
+                  <Radio.Button value="custom">Custom</Radio.Button>
+                </Radio.Group>
+              </Form.Item>
+
+              {
+                decisionStatus === "custom" ?
+                (
+                  <Form.Item name="customDecisions">
+                    <Select 
+                      mode="multiple"
+                      placeholder="Select Decision Status to filter"
+                      onChange={(e) => console.log(e)}
+                      options={DECISION_STATUS_OPTIONS.map((v) => ({
+                        label: v,
+                        value: v
+                      }))}
+                    >
+                    </Select>
+                  </Form.Item>
+                ) 
+                :
+                <></>
+              }
+
               <Form.Item>
                 <Input placeholder="Chart Title (Optional)"
-                       onChange={(e) => setTitle(e.target.value)}/>
+                  onChange={(e) => setTitle(e.target.value)} />
               </Form.Item>
 
               <Form.Item>
@@ -155,49 +267,114 @@ const CreateGraph = ({ graphs, setGraphs, graphIndex, setReload, reload}) => {
           )}
 
           {graphType === "PIE" ?
-          <>
-            <Form.Item
+            <>
+              <Form.Item
                 name="Degree"
                 rules={[{ required: true }]}
                 extra="This is the degree from which to access the data"
-            >
-              <Select
+              >
+                <Select
                   placeholder="Select Degree"
                   style={{ width: 240 }}
                   onChange={(value) => setProgramType(value)}
-              >
-                {degreeTypes.map(type => <Option value={type}>{type}</Option>)}
-              </Select>
-            </Form.Item>
+                >
+                  {degreeTypes.map((type, index) => <Option key={`degree-${index}`} value={type}>{type}</Option>)}
+                </Select>
+              </Form.Item>
 
-            <Form.Item
+              <Form.Item
                 name="Filter type"
                 rules={[{ required: true }]}
-            >
-              <Select
+              >
+                <Select
                   placeholder="Select Filter"
                   style={{ width: 240 }}
                   onChange={(value) => setVisualType(value)}
-              >
-                <Option value="ethnicity">Ethnicity</Option>
-                <Option value="nationality">Nationality</Option>
-              </Select>
-            </Form.Item>
+                >
+                  {
+                    Object.keys(APPLICANT_COLUMN_MAPPING).map((k, index) => {
+                      return <Option key={index} value={APPLICANT_COLUMN_MAPPING[k]}>{k}</Option>
+                    })
+                  }
+                </Select>
+              </Form.Item>
 
-            <Form.Item
+              <Form.Item
                 name="Display Top X"
                 label="Display Top"
-                initialValue={0}>  
-              <InputNumber min={0} value={top} onChange={(e) => { setTop(e) }}/> 
-            </Form.Item>
+                initialValue={0}>
+                <InputNumber min={0} value={top} onChange={(e) => { setTop(e) }} />
+              </Form.Item>
 
-            <Form.Item>
+              <Form.Item label="Decision Status" name="decisionStatus"
+              initialValue={"ALL"}>
+                <Radio.Group
+                  defaultValue="ALL"
+                  onChange={(e) => setDecisionStatus(e.target.value)} 
+                >
+                  <Radio.Button value="ALL">All</Radio.Button>
+                  <Radio.Button value="live">Live</Radio.Button>
+                  <Radio.Button value="not_live">Not Live</Radio.Button>
+                  <Radio.Button value="custom">Custom</Radio.Button>
+                </Radio.Group>
+              </Form.Item>
+
+              {
+                decisionStatus === "custom" ?
+                (
+                  <Form.Item name="customDecisions">
+                    <Select 
+                      mode="multiple"
+                      placeholder="Select Decision Status to filter"
+                      onChange={(e) => console.log(e)}
+                      options={DECISION_STATUS_OPTIONS.map((v) => ({
+                        label: v,
+                        value: v
+                      }))}
+                    >
+                    </Select>
+                  </Form.Item>
+                ) 
+                :
+                <></>
+              }
+
+              <Form.Item>
                 <Input placeholder="Chart Title (Optional)"
-                       onChange={(e) => setTitle(e.target.value)}/>
-            </Form.Item>
+                  onChange={(e) => setTitle(e.target.value)} />
+              </Form.Item>
 
-          </> :
-          <></>}
+            </> :
+            <></>}
+          {graphType === "LINE" ?
+            <>
+              <Form.Item
+                name="Time Period"
+                rules={[{ required: true }]}
+              >
+                <Select
+                  placeholder="Time Period"
+                  style={{ width: 240 }}
+                  onChange={(value) => setBreakdown(value)}
+                >
+                  {["Day", "Week", "Month", "Year"].map((type) => <Option key={`${type}`} value={type}>{type}</Option>)}
+                </Select>
+              </Form.Item>
+              <Form.Item
+                name="Time Frame"
+                rules={[{ required: true }]}
+              >
+                <Select
+                  placeholder="Time Frame"
+                  style={{ width: 240 }}
+                  onChange={(value) => setFrequency(value)}
+                  extra="Return the trend for the previous (frame) number of (period)s i.e. 3 weeks"
+                >
+                  {[...Array(24).keys()].map((type) => <Option key={`${type}`} value={type}>{type}</Option>)}
+                </Select>
+              </Form.Item>
+            </> :
+            <></>}
         </Form>
       </Modal>
       <Button type="dashed" onClick={() => setModalOpen(true)}>
