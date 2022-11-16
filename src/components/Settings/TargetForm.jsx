@@ -62,8 +62,8 @@ const TargetForm = () => {
               <Select.Option value="2019">18/19</Select.Option>
             </Select>
           </Form.Item>
-          <Form.Item label="Fee Status" name="fee_status">
-            <Select>
+          <Form.Item name="feeStatus" style={{width:240}} rules={[{required:true}]} >
+            <Select placeholder="Fee Status">
               <Select.Option value="Overseas">Overseas</Select.Option>
               <Select.Option value="Home">Home</Select.Option>
             </Select>

@@ -21,6 +21,7 @@ const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, g
   const [programType, setProgramType] = useState("");
   const [stackType, setStackType] = useState("");
   const [decisionStatus, setDecisionStatus] = useState("ALL");
+  const [plotTarget, setPlotTarget] = useState(false);
   const [title, setTitle] = useState("");
   const [top, setTop] = useState(0);
   const [breakdown, setBreakdown] = useState("Year");
@@ -43,7 +44,8 @@ const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, g
       programType: programType,
       graphType: visualType,
       stack: stackType === "" ? undefined : stackType,
-      combined: stacked
+      combined: stacked,
+      target: plotTarget ? [] : undefined
     }, ...graphs]);
   };
 
@@ -173,6 +175,13 @@ const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, g
                   }
                 </Select>
               </Form.Item>
+
+              {
+                visualType === "combined_fee_status" ?
+                <Form.Item>
+                  <Checkbox onChange={(e) => setPlotTarget(e.target.checked)}>Plot Targets</Checkbox>
+                </Form.Item> : <></> 
+              }
 
               <Form.Item
                 name="Stack Type"

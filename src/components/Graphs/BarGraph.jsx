@@ -33,19 +33,18 @@ const BarGraph = ({ programType, graphType, data, title, ...props}) => {
         const annotations = []
         const target = props['target']
        
-
         for (let i = 0; i < target.length; i++) {
           const targetAmount = target[i]['target'];
           
           annotations.push({
             type: 'line',
             start: (xScale, yScale) => {
-              const pos = xScale.scale(xScale.values[i]);
+              const pos = xScale.scale(target[i]['fee_status']);
               const offset = 100 / (xScale.values.length * 2) - 2.5;
               return [`${pos * 100 - offset}%`, `${100 - (targetAmount / yScale.count.max * 100)}%`]
             },
             end: (xScale, yScale) => {
-              const pos = xScale.scale(xScale.values[i]);
+              const pos = xScale.scale(target[i]['fee_status']);
               const offset = 100 / (xScale.values.length * 2) - 2.5;
               return [`${pos * 100 + offset}%`, `${100 - (targetAmount / yScale.count.max * 100)}%`]
             },

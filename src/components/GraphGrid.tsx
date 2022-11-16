@@ -137,7 +137,7 @@ const GraphGrid: React.FC<Props> = ({
 
   const rows: JSX.Element[][] = sliceIntoChunks(graphs, 3);
 
-  const [layoutCounter, setLayoutCounter] = useState(4);
+  const [layoutCounter, setLayoutCounter] = useState(graphs.length);
 
   return (
     <>
