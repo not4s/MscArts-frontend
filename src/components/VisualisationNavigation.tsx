@@ -176,7 +176,7 @@ const VisualisationNavigation = () => {
     const targetIndex = items.findIndex((pane) => pane.key === targetKey);
     const newPanes = items.filter((pane) => pane.key !== targetKey);
     let newGraphContent = [...graphContent];
-    delete newGraphContent[targetIndex];
+    newGraphContent.splice(targetIndex, 1);
 
     setGraphContentWithCookie(newGraphContent);
 
