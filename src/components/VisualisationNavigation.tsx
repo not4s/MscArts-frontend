@@ -2,19 +2,19 @@ import React, { useRef, useState } from "react";
 import { Input, Modal, Tabs } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import GraphGrid from "./GraphGrid";
-import { GraphInterface } from "../constants/graphs";
+import { Graph } from "../constants/graphs";
 import Cookies from "universal-cookie";
 
 const VisualisationNavigation = () => {
   const cookies = new Cookies();
-  const [graphContent, setGraphContent] = useState<GraphInterface[][]>(
+  const [graphContent, setGraphContent] = useState<Graph[][]>(
     cookies.get("visualisations") || [
       [
         {
           type: "PIE",
           programType: "ALL",
           layout: {
-            i: "layout-1",
+            i: "layout-0",
             w: 8,
             h: 6,
             x: 18,
@@ -29,7 +29,7 @@ const VisualisationNavigation = () => {
         {
           type: "BAR",
           layout: {
-            i: "layout-2",
+            i: "layout-1",
             w: 16,
             h: 6,
             x: 0,
@@ -46,7 +46,7 @@ const VisualisationNavigation = () => {
         {
           type: "BAR",
           layout: {
-            i: "layout-3",
+            i: "layout-2",
             w: 16,
             h: 6,
             x: 0,
@@ -62,7 +62,7 @@ const VisualisationNavigation = () => {
         {
           type: "LINE",
           layout: {
-            i: "layout-4",
+            i: "layout-3",
             w: 4,
             h: 2,
             x: 4,
@@ -81,7 +81,7 @@ const VisualisationNavigation = () => {
       [],
     ]
   );
-  const setGraphContentWithCookie = (content: GraphInterface[][]) => {
+  const setGraphContentWithCookie = (content: Graph[][]) => {
     cookies.set(
       "visualisations",
       [...content].map((tab) => {
@@ -95,16 +95,13 @@ const VisualisationNavigation = () => {
     setGraphContent(content);
   };
 
-  const setGraphContentByKey = (
-    key: number,
-    newGraphs: GraphInterface[]
-  ): void => {
+  const setGraphContentByKey = (key: number, newGraphs: Graph[]): void => {
     let newGraphContent = [...graphContent];
     newGraphContent[key] = newGraphs;
     setGraphContentWithCookie(newGraphContent);
   };
 
-  const makeGraphGrid = (index: number, graph: GraphInterface[][]) => {
+  const makeGraphGrid = (index: number, graph: Graph[][]) => {
     return (
       <GraphGrid
         graphContent={graph}

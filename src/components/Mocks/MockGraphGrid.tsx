@@ -3,7 +3,11 @@ import React, { useState } from "react";
 import { ETHNICITY_MAPPING } from "../../constants/ethnicity";
 import { APIService } from "../../services/API";
 import CreateGraph from "../CreateGraph";
-import { GraphInterface } from "../../constants/graphs";
+import {
+  BarGraphInterface,
+  Graph,
+  PieGraphInterface,
+} from "../../constants/graphs";
 import BarGraph from "../Graphs/BarGraph";
 import PieGraph from "../Graphs/PieGraph";
 
@@ -12,7 +16,7 @@ interface Props {
 }
 
 const MockGraphGrid: React.FC<Props> = ({ mockData }) => {
-  const [graphs, setGraphs] = useState<GraphInterface[]>([
+  const [graphs, setGraphs] = useState<Graph[]>([
     {
       type: "PIE",
       layout: {
@@ -53,24 +57,22 @@ const MockGraphGrid: React.FC<Props> = ({ mockData }) => {
   React.useEffect(() => {
     const newGraphs = [...graphs];
 
-    const init = async (newGraphs: GraphInterface[]) => {
+    const init = async (newGraphs: Graph[]) => {
       for (let i = 0; i < newGraphs.length; i++) {
         if (newGraphs[i]["data"] === undefined) {
           if (newGraphs[i].type === "PIE") {
-            let top = newGraphs[i]["top"] || 0;
-            newGraphs[i]["data"] = toPieData(
-              mockData,
-              newGraphs[i]["graphType"],
-              top
-            );
+            let pieGraph: PieGraphInterface = newGraphs[i];
+            let top = pieGraph.top || 0;
+            pieGraph.data = toPieData(mockData, pieGraph.graphType, top);
           } else {
+            let barGraph: BarGraphInterface = newGraphs[i];
             let data: any[] = toBarData(
               mockData,
-              newGraphs[i]["graphType"],
-              newGraphs[i]["programType"],
-              newGraphs[i]["combined"]
+              barGraph.graphType,
+              barGraph.programType,
+              barGraph.combined
             );
-            newGraphs[i]["data"] = data;
+            barGraph.data = data;
           }
         }
       }
@@ -80,7 +82,7 @@ const MockGraphGrid: React.FC<Props> = ({ mockData }) => {
     init(newGraphs);
   }, [mockData, reload]);
 
-  const graphToComponent = (graphData: GraphInterface) => {
+  const graphToComponent = (graphData: Graph) => {
     if (graphData.type === "PIE") {
       return <PieGraph {...graphData} />;
     } else if (graphData.type === "BAR") {
@@ -90,7 +92,7 @@ const MockGraphGrid: React.FC<Props> = ({ mockData }) => {
 
   const rows: JSX.Element[][] = sliceIntoChunks(graphs, 3);
 
-  const setGraphsByIndex = (key: number, newGraph: GraphInterface[]) =>
+  const setGraphsByIndex = (key: number, newGraph: Graph[]) =>
     setGraphs(newGraph);
 
   const nodes = rows.map((row, index: number) => {

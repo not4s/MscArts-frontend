@@ -96,28 +96,38 @@ export class APIService {
   }
 
   getTargets(): Promise<APIResponse> {
-    return this.buildAuthRequest("GET", "api/target");
+    return this.buildAuthRequest("GET", "api/target/progress");
   }
 
-  postTarget({ course, target, year }: any): Promise<APIResponse> {
+  getTarget(course: any, year: any): Promise<APIResponse> {
+    return this.buildAuthRequest(
+      "GET",
+      `api/target?year=${year}&program_type=${course}`
+    );
+  }
+
+  postTarget({ course, target, fee_status, year }: any): Promise<APIResponse> {
     return this.buildAuthRequest("POST", `api/target`, {
       program_type: course,
       year,
+      fee_status,
       target,
     });
   }
 
-  putTarget({ course, target, year }: any): Promise<APIResponse> {
+  putTarget({ course, target, fee_status, year }: any): Promise<APIResponse> {
     return this.buildAuthRequest("PUT", `api/target`, {
       program_type: course,
       year,
+      fee_status,
       target,
     });
   }
 
-  deleteTarget({ course, year }: any): Promise<APIResponse> {
+  deleteTarget({ course, fee_status, year }: any): Promise<APIResponse> {
     return this.buildAuthRequest("DELETE", `api/target/`, {
       program_type: course,
+      fee_status,
       year,
     });
   }
