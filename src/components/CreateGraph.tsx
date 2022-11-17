@@ -52,6 +52,7 @@ const CreateGraph: React.FC<CreateGraphProps> = ({
   const [top, setTop] = useState(0);
   const [breakdown, setBreakdown] = useState("Year");
   const [frequency, setFrequency] = useState(3);
+  const [series, setSeries] = useState("all");
 
   useEffect(() => {
     if (editInput !== undefined) {
@@ -135,6 +136,7 @@ const CreateGraph: React.FC<CreateGraphProps> = ({
       programType: "",
       decisionStatus: "",
       graphType: "",
+      series: series,
     });
   };
 
@@ -468,6 +470,20 @@ const CreateGraph: React.FC<CreateGraphProps> = ({
                   // extra="Return the trend for the previous (frame) number of (period)s i.e. 3 weeks"
                 >
                   {[...Array(24).keys()].map((type) => (
+                    <Option key={`${type}`} value={type}>
+                      {type}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Form.Item name="series" rules={[{ required: false }]}>
+                <Select
+                  placeholder="Compare"
+                  style={{ width: 240 }}
+                  onChange={(value: string) => setSeries(value.toLowerCase())}
+                  // extra="Return the trend for the previous (frame) number of (period)s i.e. 3 weeks"
+                >
+                  {["All", "Gender", "Nationality"].map((type) => (
                     <Option key={`${type}`} value={type}>
                       {type}
                     </Option>

@@ -195,7 +195,7 @@ export class APIService {
 
   getTrends({ breakdown, frequency, series }: any) {
     let endpoint = `api/trends/?unit=${frequency}&period=${breakdown}`;
-    if (series != null) {
+    if (series != null && series != "all") {
       endpoint += `&series=${series}`;
     }
     return this.buildAuthRequest("GET", endpoint);
