@@ -69,6 +69,7 @@ const GraphGrid: React.FC<Props> = ({
               ...fetchParams,
               breakdown: lineGraph.breakdown,
               frequency: lineGraph.frequency,
+              series: lineGraph.series,
             };
             let res = await api.getTrends(fetchParams);
             let data = res.data.reverse();

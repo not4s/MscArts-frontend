@@ -1,26 +1,27 @@
-import { Line, LineConfig } from '@ant-design/charts';
-import React from 'react'
+import { Line, LineConfig } from "@ant-design/charts";
+import React from "react";
 
 interface LineGraphProps {
-  data: any
+  data: any;
 }
 
 const LineGraph: React.FC<LineGraphProps> = ({ data }) => {
-
   const config: LineConfig = {
     data,
-    xField: 'period',
-    yField: 'count',
+    xField: "period",
+    yField: "count",
+    seriesField: "series",
     label: {},
     point: {
       size: 5,
-      shape: 'diamond',
+      shape: "diamond",
       style: {
-        fill: 'white',
-        stroke: '#5B8FF9',
+        fill: "white",
+        stroke: "#5B8FF9",
         lineWidth: 2,
       },
     },
+
     tooltip: {
       showMarkers: false,
     },
@@ -28,21 +29,18 @@ const LineGraph: React.FC<LineGraphProps> = ({ data }) => {
       active: {
         style: {
           shadowBlur: 4,
-          stroke: '#000',
-          fill: 'red',
+          stroke: "#000",
+          fill: "red",
         },
       },
     },
     interactions: [
       {
-        type: 'marker-active',
+        type: "marker-active",
       },
     ],
   };
-  return (
-    <>
-      {data===undefined ? <></> : <Line {...config} />}      
-    </>);
-}
+  return <>{data === undefined ? <></> : <Line {...config} />}</>;
+};
 
-export default LineGraph
+export default LineGraph;

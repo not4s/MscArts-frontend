@@ -40,4 +40,5 @@ export interface PieGraphInterface extends BaseGraphInterface {
 export interface LineGraphInterface extends BaseGraphInterface {
   frequency?: number;
   breakdown?: string;
+  series?: string;
 }

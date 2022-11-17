@@ -150,6 +150,7 @@ const VisualisationNavigation = () => {
           title: "Line graph",
           frequency: 10,
           breakdown: "year",
+          series: "gender",
         },
       ],
     },

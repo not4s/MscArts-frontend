@@ -193,10 +193,11 @@ export class APIService {
     });
   }
 
-  getTrends({ breakdown, frequency }: any) {
-    return this.buildAuthRequest(
-      "GET",
-      `api/trends/?unit=${frequency}&period=${breakdown}`
-    );
+  getTrends({ breakdown, frequency, series }: any) {
+    let endpoint = `api/trends/?unit=${frequency}&period=${breakdown}`;
+    if (series != null) {
+      endpoint += `&series=${series}`;
+    }
+    return this.buildAuthRequest("GET", endpoint);
   }
 }
