@@ -4,6 +4,8 @@ import "react-edit-text/dist/index.css";
 import { Pie, PieConfig } from "@ant-design/charts";
 import { DraggableHandle } from "./styles";
 import { Menu, Dropdown } from "antd";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import type { MenuProps } from "antd";
 
 const DEFAULT_CONFIG: PieConfig = {
   data: [],
@@ -43,16 +45,20 @@ const PieGraph: React.FC<PieGraphProps> = ({ data, title, setTitle }) => {
     }
   }, [data]);
 
-  const userMenu = (
-    <Menu>
-      <Menu.Item key="1" onClick={() => {}}>
-        Edit
-      </Menu.Item>
-      <Menu.Item key="2" onClick={() => {}}>
-        Delete
-      </Menu.Item>
-    </Menu>
-  );
+  const operationItems: MenuProps["items"] = [
+    {
+      label: "Edit",
+      key: "op-1",
+      icon: <EditOutlined />,
+      onClick: (e) => console.log("Okay"),
+    },
+    {
+      label: "Delete",
+      key: "op-2",
+      icon: <DeleteOutlined />,
+      onClick: (e) => console.log("Deleted"),
+    },
+  ];
 
   return (
     <>
@@ -68,10 +74,7 @@ const PieGraph: React.FC<PieGraphProps> = ({ data, title, setTitle }) => {
               />
             </td>
             <td>
-              <Dropdown.Button
-                type="primary"
-                overlay={userMenu}
-              ></Dropdown.Button>
+              <Dropdown menu={{ items: operationItems }}></Dropdown>
             </td>
           </tr>
         </table>
