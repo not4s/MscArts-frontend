@@ -30,16 +30,14 @@ const GraphGrid: React.FC<Props> = ({
   setGraphContent,
 }) => {
   const [graphs, setGraphs] = useState<Graph[]>([]);
-
-  const [reload, setReload] = useState<boolean>(false);
   const [loaded, setLoaded] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
   const api = new APIService();
-  // console.log(props)
+
   React.useEffect(() => {
     const newGraphs = [...graphContent];
-    // console.log("Inside GraphGrid", newGraphs);
+    console.log("Inside GraphGrid", newGraphs);
 
     const init = async (newGraphs: Graph[]) => {
       if (!loaded) setLoading(true);
@@ -115,9 +113,9 @@ const GraphGrid: React.FC<Props> = ({
 
       if (change) {
         setGraphContent(graphIndex, newGraphs);
-        setGraphs(newGraphs);
-        setLayoutCounter(newGraphs.length);
       }
+
+      setGraphs(newGraphs);
       setLoading(false);
       setLoaded(true);
     };
@@ -129,17 +127,25 @@ const GraphGrid: React.FC<Props> = ({
     if (graphData.type === "PIE") {
       return (
         <GraphSize key={graphData.layout.i} data-grid={graphData.layout}>
-          <PieGraph {...graphData} setTitle={(e) => setTitle(index, e)} />
+          <PieGraph
+            {...graphData}
+            setTitle={(e) => setTitle(index, e)}
+            deleteGraph={() => deleteGraph(index)}
+            editGraph={(e) => editGraph(index, e)}
+          />
         </GraphSize>
       );
-      // return <PieGraph key={`layout-${key}`} layoutKey={key} {...graphData} />;
     } else if (graphData.type === "BAR") {
       return (
         <GraphSize key={graphData.layout.i} data-grid={graphData.layout}>
-          <BarGraph {...graphData} setTitle={(e) => setTitle(index, e)} />
+          <BarGraph
+            {...graphData}
+            setTitle={(e) => setTitle(index, e)}
+            deleteGraph={() => deleteGraph(index)}
+            editGraph={(e) => editGraph(index, e)}
+          />
         </GraphSize>
       );
-      // return <BarGraph key={`layout-${key}`} layoutKey={key} {...graphData} />;
     } else if (graphData.type === "LINE") {
       return (
         <GraphSize key={graphData.layout.i} data-grid={graphData.layout}>
@@ -148,8 +154,6 @@ const GraphGrid: React.FC<Props> = ({
       );
     }
   };
-
-  const rows: JSX.Element[][] = sliceIntoChunks(graphs, 3);
 
   const setLayout = (layouts: RGL.Layout[]) => {
     const newGraphs = [...graphContent];
@@ -169,19 +173,27 @@ const GraphGrid: React.FC<Props> = ({
     setGraphContent(graphIndex, newGraphs);
   };
 
-  const [layoutCounter, setLayoutCounter] = useState(0);
+  const deleteGraph = (i: number) => {
+    const newGraphs = [...graphContent];
+    console.log(newGraphs);
+
+    newGraphs.splice(i, 1);
+
+    console.log("Post Splice: ", newGraphs);
+
+    setGraphContent(graphIndex, newGraphs);
+  };
+
+  const editGraph = (i: number, newGraph: Graph) => {
+    const newGraphs = [...graphContent];
+
+    newGraphs[i] = newGraph;
+
+    setGraphContent(graphIndex, newGraphs);
+  };
 
   return !loading ? (
     <>
-      {/* <CreateGraph
-        graphs={graphs}
-        setGraphs={setGraphContent}
-        layoutCounter={layoutCounter}
-        setLayoutCounter={setLayoutCounter}
-        graphIndex={graphIndex}
-        setReload={setReload}
-        reload={reload}
-      /> */}
       <ReactGridLayout
         className="layout"
         style={{ marginRight: "10px" }}
@@ -190,9 +202,7 @@ const GraphGrid: React.FC<Props> = ({
         isBounded={true}
         onLayoutChange={setLayout}
       >
-        {graphs.map((k, index) => {
-          return graphToComponent(k, index);
-        })}
+        {graphs.map((k, index) => graphToComponent(k, index))}
       </ReactGridLayout>
     </>
   ) : (

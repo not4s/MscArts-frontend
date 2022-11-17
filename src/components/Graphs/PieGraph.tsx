@@ -3,9 +3,18 @@ import { EditText } from "react-edit-text";
 import "react-edit-text/dist/index.css";
 import { Pie, PieConfig } from "@ant-design/charts";
 import { DraggableHandle } from "./styles";
-import { Menu, Dropdown } from "antd";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { Dropdown, Button, Modal } from "antd";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  EllipsisOutlined,
+  ExclamationCircleOutlined,
+} from "@ant-design/icons";
 import type { MenuProps } from "antd";
+import EditGraph from "../EditGraph";
+import { Graph } from "../../constants/graphs";
+
+const { confirm } = Modal;
 
 const DEFAULT_CONFIG: PieConfig = {
   data: [],
@@ -34,9 +43,18 @@ interface PieGraphProps {
   data: any[] | undefined;
   title: string;
   setTitle: (newTitle: string) => void;
+  deleteGraph: () => void;
+  editGraph: (newGraph: Graph) => void;
 }
 
-const PieGraph: React.FC<PieGraphProps> = ({ data, title, setTitle }) => {
+const PieGraph: React.FC<PieGraphProps> = ({
+  data,
+  title,
+  setTitle,
+  deleteGraph,
+  editGraph,
+  ...props
+}) => {
   const [config, setConfig] = useState<PieConfig>(DEFAULT_CONFIG);
 
   useEffect(() => {
@@ -48,20 +66,52 @@ const PieGraph: React.FC<PieGraphProps> = ({ data, title, setTitle }) => {
   const operationItems: MenuProps["items"] = [
     {
       label: "Edit",
-      key: "op-1",
+      key: `op-1`,
       icon: <EditOutlined />,
-      onClick: (e) => console.log("Okay"),
+      onClick: (e) => {
+        // @ts-ignore
+        setEdit({ ...props, data: undefined, title });
+      },
     },
     {
       label: "Delete",
-      key: "op-2",
+      key: `op-2`,
       icon: <DeleteOutlined />,
-      onClick: (e) => console.log("Deleted"),
+      onClick: (e) => showDeleteConfirm(),
     },
   ];
 
+  const [editOpen, setEditOpen] = useState(false);
+  const [edit, setEdit] = useState<Graph | undefined>(undefined);
+
+  React.useEffect(() => {
+    if (edit !== undefined) {
+      setEditOpen(true);
+    }
+  }, [edit]);
+
+  const showDeleteConfirm = () => {
+    confirm({
+      title: "Delete this graph?",
+      icon: <ExclamationCircleOutlined />,
+      okText: "Yes",
+      okType: "danger",
+      cancelText: "No",
+      onOk() {
+        deleteGraph();
+      },
+      onCancel() {},
+    });
+  };
+
   return (
     <>
+      <EditGraph
+        open={editOpen}
+        setOpen={setEditOpen}
+        editInput={edit}
+        editGraph={editGraph}
+      />
       <DraggableHandle className="myDragHandleClassName">
         <table>
           <tr>
@@ -74,7 +124,11 @@ const PieGraph: React.FC<PieGraphProps> = ({ data, title, setTitle }) => {
               />
             </td>
             <td>
-              <Dropdown menu={{ items: operationItems }}></Dropdown>
+              <Dropdown menu={{ items: operationItems }}>
+                <Button>
+                  <EllipsisOutlined />
+                </Button>
+              </Dropdown>
             </td>
           </tr>
         </table>
