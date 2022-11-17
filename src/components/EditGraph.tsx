@@ -3,19 +3,9 @@ import {
   BarChartOutlined,
   PieChartOutlined,
   TableOutlined,
-  PlusOutlined,
   LineChartOutlined,
 } from "@ant-design/icons";
-import {
-  Button,
-  Checkbox,
-  Form,
-  Modal,
-  Select,
-  Input,
-  InputNumber,
-  Radio,
-} from "antd";
+import { Checkbox, Form, Modal, Select, Input, InputNumber, Radio } from "antd";
 import {
   APPLICANT_COLUMN_MAPPING,
   DECISION_STATUS_OPTIONS,
@@ -26,20 +16,24 @@ import {
   LineGraphInterface,
   PieGraphInterface,
 } from "../constants/graphs";
+import { Layout } from "react-grid-layout";
 
 const { Option } = Select;
 const degreeTypes = ["ALL", "MAC", "AIML", "MCSS", "MCS"];
 
-interface CreateGraphProps {
-  addGraph: (newGraph: Graph) => void;
+interface EditGraphProps {
+  open: boolean;
+  setOpen: (x: boolean) => void;
   editInput?: Graph | undefined;
+  editGraph: (x: Graph) => void;
 }
 
-const CreateGraph: React.FC<CreateGraphProps> = ({
-  addGraph,
+const EditGraph: React.FC<EditGraphProps> = ({
+  open,
+  setOpen,
   editInput = undefined,
+  editGraph,
 }) => {
-  const [isModalOpen, setModalOpen] = useState(false);
   const [graphType, setGraphType] = useState("");
   const [form] = Form.useForm();
   const [stacked, setStacked] = useState(true);
@@ -52,6 +46,13 @@ const CreateGraph: React.FC<CreateGraphProps> = ({
   const [top, setTop] = useState(0);
   const [breakdown, setBreakdown] = useState("Year");
   const [frequency, setFrequency] = useState(3);
+  const [layout, setLayout] = useState<Layout>({
+    i: "",
+    h: 0,
+    w: 0,
+    x: 0,
+    y: 0,
+  });
 
   useEffect(() => {
     if (editInput !== undefined) {
@@ -60,6 +61,7 @@ const CreateGraph: React.FC<CreateGraphProps> = ({
       setTitle(editInput.title);
       setProgramType(editInput.programType);
       setVisualType(editInput.graphType);
+      setLayout(editInput.layout);
 
       /* Set the Specialized Case */
       if (editInput.type === "PIE") {
@@ -76,82 +78,52 @@ const CreateGraph: React.FC<CreateGraphProps> = ({
         setFrequency(lineInput.frequency ? lineInput.frequency : 3);
       }
     }
-  }, []);
-
-  const createBarChart = () => {
-    addGraph({
-      title: title === "" ? "Graph" : title,
-      layout: {
-        i: `layout-`,
-        w: 10,
-        h: 6,
-        x: 0,
-        y: 0,
-      },
-      type: "BAR",
-      decisionStatus: decisionStatus,
-      programType: programType,
-      graphType: visualType,
-      data: undefined,
-      stack: stackType === "" ? undefined : stackType,
-      combined: stacked,
-      target: plotTarget ? [] : undefined,
-    });
-  };
-
-  const createPieChart = () => {
-    addGraph({
-      title: title === "" ? "Graph" : title,
-      layout: {
-        i: `layout-`,
-        w: 10,
-        h: 6,
-        x: 0,
-        y: 0,
-      },
-      decisionStatus: decisionStatus,
-      data: undefined,
-      type: "PIE",
-      programType: programType,
-      graphType: visualType,
-      top: top,
-    });
-  };
-
-  const createLineChart = () => {
-    addGraph({
-      title: title,
-      layout: {
-        i: `layout-`,
-        w: 10,
-        h: 6,
-        x: 0,
-        y: 0,
-      },
-      type: "LINE",
-      breakdown,
-      frequency,
-      data: undefined,
-      programType: "",
-      decisionStatus: "",
-      graphType: "",
-    });
-  };
+  }, [editInput]);
 
   const handleOk = () => {
     form.submit();
+    setOpen(false);
     if (!Object.values(form.getFieldsValue()).includes(undefined)) {
-      setModalOpen(false);
       var type = form.getFieldValue("Visualisation");
       switch (type) {
         case "BAR":
-          createBarChart();
+          editGraph({
+            title: title === "" ? "Graph" : title,
+            layout: layout,
+            type: "BAR",
+            decisionStatus: decisionStatus,
+            programType: programType,
+            graphType: visualType,
+            data: undefined,
+            stack: stackType === "" ? undefined : stackType,
+            combined: stacked,
+            target: plotTarget ? [] : undefined,
+          });
           break;
         case "PIE":
-          createPieChart();
+          editGraph({
+            title: title === "" ? "Graph" : title,
+            layout: layout,
+            decisionStatus: decisionStatus,
+            data: undefined,
+            type: "PIE",
+            programType: programType,
+            graphType: visualType,
+            top: top,
+          });
           break;
         case "LINE":
-          createLineChart();
+          editGraph({
+            title: title,
+            layout: layout,
+            type: "LINE",
+            breakdown,
+            frequency,
+            data: undefined,
+            programType: "",
+            decisionStatus: "",
+            graphType: "",
+          });
           break;
         default:
       }
@@ -159,8 +131,8 @@ const CreateGraph: React.FC<CreateGraphProps> = ({
   };
 
   const handleCancel = () => {
-    setModalOpen(false);
     form.resetFields();
+    setOpen(false);
     setStackType("");
     setDecisionStatus("ALL");
     setGraphType("");
@@ -169,14 +141,18 @@ const CreateGraph: React.FC<CreateGraphProps> = ({
   return (
     <>
       <Modal
-        title="Create a new visualisation"
-        open={isModalOpen}
+        title="Edit current visualisation"
+        open={open}
         onOk={handleOk}
         okText="Submit"
         onCancel={handleCancel}
       >
         <Form form={form}>
-          <Form.Item name="Visualisation" rules={[{ required: true }]}>
+          <Form.Item
+            name="Visualisation"
+            rules={[{ required: true }]}
+            initialValue={graphType}
+          >
             <Select
               placeholder="Select visualisation type"
               style={{ width: 240 }}
@@ -205,6 +181,7 @@ const CreateGraph: React.FC<CreateGraphProps> = ({
                 name="Degree"
                 rules={[{ required: true }]}
                 extra="This is the degree from which to access the data"
+                initialValue={programType}
               >
                 <Select
                   placeholder="Select Degree"
@@ -223,6 +200,7 @@ const CreateGraph: React.FC<CreateGraphProps> = ({
                 name="Columns"
                 rules={[{ required: true }]}
                 extra="E.g. 'Gender' will create columns for 'Male' and 'Female' respectfully"
+                initialValue={visualType}
               >
                 <Select
                   placeholder="Select columns"
@@ -240,7 +218,7 @@ const CreateGraph: React.FC<CreateGraphProps> = ({
               </Form.Item>
 
               {visualType === "combined_fee_status" ? (
-                <Form.Item>
+                <Form.Item initialValue={plotTarget}>
                   <Checkbox onChange={(e) => setPlotTarget(e.target.checked)}>
                     Plot Targets
                   </Checkbox>
@@ -255,7 +233,7 @@ const CreateGraph: React.FC<CreateGraphProps> = ({
                 validateStatus={
                   stackType !== "" && stackType === visualType ? "error" : ""
                 }
-                initialValue=""
+                initialValue={stackType}
                 help={
                   stackType !== "" && stackType === visualType
                     ? "Columns and Stack Type cannot be the same!"
@@ -284,7 +262,7 @@ const CreateGraph: React.FC<CreateGraphProps> = ({
               <Form.Item
                 label="Decision Status"
                 name="decisionStatus"
-                initialValue={"ALL"}
+                initialValue={decisionStatus}
               >
                 <Radio.Group
                   defaultValue="ALL"
@@ -313,14 +291,14 @@ const CreateGraph: React.FC<CreateGraphProps> = ({
                 <></>
               )}
 
-              <Form.Item>
+              <Form.Item initialValue={title}>
                 <Input
                   placeholder="Chart Title (Optional)"
                   onChange={(e) => setTitle(e.target.value)}
                 />
               </Form.Item>
 
-              <Form.Item>
+              <Form.Item initialValue={stacked}>
                 <Checkbox
                   onChange={(e) => setStacked(e.target.checked)}
                   checked={stacked}
@@ -328,26 +306,6 @@ const CreateGraph: React.FC<CreateGraphProps> = ({
                   Show Combined?
                 </Checkbox>
               </Form.Item>
-
-              {/* ---------------------------------------- */}
-
-              {/* <Form.Item
-                name="Grouping"
-                rules={[{ required: false }]}
-                extra="E.g. 'Gender' will display the difference between 'Male' and 'Female' within a single column"
-              >
-                <Select
-                  placeholder="Select grouping (optional)"
-                  style={{ width: 240 }}
-                  // onChange={(value: string) => setGraphType(value)}
-                >
-                  <Option value="GENDER">Gender</Option>
-                  <Option value="COURSE">Course</Option>
-                  <Option value="FEE_STATUS">Fee Status</Option>
-                </Select>
-              </Form.Item> */}
-
-              {/* ---------------------------------------- */}
             </>
           ) : (
             <></>
@@ -359,6 +317,7 @@ const CreateGraph: React.FC<CreateGraphProps> = ({
                 name="Degree"
                 rules={[{ required: true }]}
                 extra="This is the degree from which to access the data"
+                initialValue={programType}
               >
                 <Select
                   placeholder="Select Degree"
@@ -373,7 +332,11 @@ const CreateGraph: React.FC<CreateGraphProps> = ({
                 </Select>
               </Form.Item>
 
-              <Form.Item name="Filter type" rules={[{ required: true }]}>
+              <Form.Item
+                name="Filter type"
+                rules={[{ required: true }]}
+                initialValue={visualType}
+              >
                 <Select
                   placeholder="Select Filter"
                   style={{ width: 240 }}
@@ -392,7 +355,7 @@ const CreateGraph: React.FC<CreateGraphProps> = ({
               <Form.Item
                 name="Display Top X"
                 label="Display Top"
-                initialValue={0}
+                initialValue={top}
               >
                 <InputNumber
                   min={0}
@@ -406,7 +369,7 @@ const CreateGraph: React.FC<CreateGraphProps> = ({
               <Form.Item
                 label="Decision Status"
                 name="decisionStatus"
-                initialValue={"ALL"}
+                initialValue={decisionStatus}
               >
                 <Radio.Group
                   defaultValue="ALL"
@@ -435,10 +398,11 @@ const CreateGraph: React.FC<CreateGraphProps> = ({
                 <></>
               )}
 
-              <Form.Item>
+              <Form.Item initialValue={title}>
                 <Input
                   placeholder="Chart Title (Optional)"
                   onChange={(e) => setTitle(e.target.value)}
+                  value={title}
                 />
               </Form.Item>
             </>
@@ -447,7 +411,11 @@ const CreateGraph: React.FC<CreateGraphProps> = ({
           )}
           {graphType === "LINE" ? (
             <>
-              <Form.Item name="Time Period" rules={[{ required: true }]}>
+              <Form.Item
+                name="Time Period"
+                rules={[{ required: true }]}
+                initialValue={breakdown}
+              >
                 <Select
                   placeholder="Time Period"
                   style={{ width: 240 }}
@@ -460,7 +428,11 @@ const CreateGraph: React.FC<CreateGraphProps> = ({
                   ))}
                 </Select>
               </Form.Item>
-              <Form.Item name="Time Frame" rules={[{ required: true }]}>
+              <Form.Item
+                name="Time Frame"
+                rules={[{ required: true }]}
+                initialValue={frequency}
+              >
                 <Select
                   placeholder="Time Frame"
                   style={{ width: 240 }}
@@ -480,16 +452,8 @@ const CreateGraph: React.FC<CreateGraphProps> = ({
           )}
         </Form>
       </Modal>
-      <Button
-        icon={<PlusOutlined />}
-        type="dashed"
-        onClick={() => setModalOpen(true)}
-        style={{ marginRight: "5px" }}
-      >
-        Add Graph
-      </Button>
     </>
   );
 };
 
-export default CreateGraph;
+export default EditGraph;

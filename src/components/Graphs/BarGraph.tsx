@@ -3,7 +3,18 @@ import { EditText } from "react-edit-text";
 import "react-edit-text/dist/index.css";
 import { Column, ColumnConfig } from "@ant-design/charts";
 import { DraggableHandle } from "./styles";
-import { TargetInterface } from "../../constants/graphs";
+import { Graph, TargetInterface } from "../../constants/graphs";
+import { Modal, Button, Dropdown } from "antd";
+import type { MenuProps } from "antd";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  EllipsisOutlined,
+  ExclamationCircleOutlined,
+} from "@ant-design/icons";
+import EditGraph from "../EditGraph";
+
+const { confirm } = Modal;
 
 const DEFAULT_CONFIG = {
   data: [],
@@ -21,6 +32,8 @@ interface BarGraphProps {
   data: any[] | undefined;
   title: string;
   setTitle: (newTitle: string) => void;
+  deleteGraph: () => void;
+  editGraph: (x: Graph) => void;
 }
 
 const BarGraph: React.FC<BarGraphProps> = ({
@@ -28,6 +41,8 @@ const BarGraph: React.FC<BarGraphProps> = ({
   data,
   title,
   setTitle,
+  deleteGraph,
+  editGraph,
   ...props
 }) => {
   const [config, setConfig] = useState<ColumnConfig>(DEFAULT_CONFIG);
@@ -79,15 +94,75 @@ const BarGraph: React.FC<BarGraphProps> = ({
     }
   }, [data]);
 
+  const operationItems: MenuProps["items"] = [
+    {
+      label: "Edit",
+      key: `op-1`,
+      icon: <EditOutlined />,
+      onClick: (e) => {
+        // @ts-ignore
+        setEdit({ ...props, data: undefined, title });
+      },
+    },
+    {
+      label: "Delete",
+      key: `op-2`,
+      icon: <DeleteOutlined />,
+      onClick: (e) => showDeleteConfirm(),
+    },
+  ];
+
+  const [editOpen, setEditOpen] = useState(false);
+  const [edit, setEdit] = useState<Graph | undefined>(undefined);
+
+  React.useEffect(() => {
+    if (edit !== undefined) {
+      setEditOpen(true);
+    }
+  }, [edit]);
+
+  const showDeleteConfirm = () => {
+    confirm({
+      title: "Delete this graph?",
+      icon: <ExclamationCircleOutlined />,
+      okText: "Yes",
+      okType: "danger",
+      cancelText: "No",
+      onOk() {
+        deleteGraph();
+      },
+      onCancel() {},
+    });
+  };
+
   return (
     <>
+      <EditGraph
+        open={editOpen}
+        setOpen={setEditOpen}
+        editInput={edit}
+        editGraph={editGraph}
+      />
       <DraggableHandle className="myDragHandleClassName">
-        <EditText
-          name="textbox3"
-          defaultValue={title}
-          inputClassName="bg-success"
-          onSave={(e) => setTitle(e.value)}
-        />
+        <table>
+          <tr>
+            <td className="a" style={{ width: "calc(100%)" }}>
+              <EditText
+                name="textbox3"
+                defaultValue={title}
+                inputClassName="bg-success"
+                onSave={(e) => setTitle(e.value)}
+              />
+            </td>
+            <td>
+              <Dropdown menu={{ items: operationItems }}>
+                <Button>
+                  <EllipsisOutlined />
+                </Button>
+              </Dropdown>
+            </td>
+          </tr>
+        </table>
       </DraggableHandle>
       <Column className="our-chart" {...config} />
     </>

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { MenuProps, message } from "antd";
 import { Button, Dropdown, Input, Modal, Tabs } from "antd";
 import type { Tab } from "rc-tabs/lib/interface";
@@ -7,7 +7,6 @@ import {
   ExclamationCircleOutlined,
   ExportOutlined,
   ImportOutlined,
-  PlusOutlined,
 } from "@ant-design/icons";
 import GraphGrid from "./GraphGrid";
 import { Graph, GraphGridInterface } from "../constants/graphs";
@@ -215,7 +214,8 @@ const VisualisationNavigation = () => {
   const { confirm } = Modal;
 
   React.useEffect(() => {
-    let newItems = makeTabItem([...graphContent]);
+    let newItems = makeTabItem(graphContent);
+    console.log("Making new Items!", graphContent);
     setItems(newItems);
 
     if (newItems.length > keyCounter) {
@@ -334,7 +334,6 @@ const VisualisationNavigation = () => {
       newGraph,
       ...newGraphContent[targetIndex].graph,
     ];
-    console.log(newGraphContent);
     setGraphContentWithCookie(newGraphContent);
   };
 

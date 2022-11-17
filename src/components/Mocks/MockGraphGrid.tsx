@@ -85,11 +85,21 @@ const MockGraphGrid: React.FC<Props> = ({ mockData }) => {
   const graphToComponent = (graphData: Graph) => {
     if (graphData.type === "PIE") {
       return (
-        <PieGraph {...graphData} setTitle={(e) => console.log("saving")} />
+        <PieGraph
+          {...graphData}
+          setTitle={(e) => console.log("saving")}
+          deleteGraph={() => console.log("deleted")}
+          editGraph={(e) => console.log("saving")}
+        />
       );
     } else if (graphData.type === "BAR") {
       return (
-        <BarGraph {...graphData} setTitle={(e) => console.log("saving")} />
+        <BarGraph
+          {...graphData}
+          setTitle={(e) => console.log("saving")}
+          deleteGraph={() => console.log("deleted")}
+          editGraph={(e) => console.log("saving")}
+        />
       );
     }
   };
