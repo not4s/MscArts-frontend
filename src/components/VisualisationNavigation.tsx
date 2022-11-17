@@ -1,10 +1,19 @@
 import React, { useRef, useState } from "react";
-import { Input, Modal, Tabs } from "antd";
+import { MenuProps, message } from "antd";
+import { Button, Dropdown, Input, Modal, Tabs } from "antd";
 import type { Tab } from "rc-tabs/lib/interface";
-import { ExclamationCircleOutlined } from "@ant-design/icons";
+import {
+  DownOutlined,
+  ExclamationCircleOutlined,
+  ExportOutlined,
+  ImportOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 import GraphGrid from "./GraphGrid";
 import { Graph, GraphGridInterface } from "../constants/graphs";
 import Cookies from "universal-cookie";
+import ImportModal from "./ImportModal";
+import CreateGraph from "./CreateGraph";
 
 const VisualisationNavigation = () => {
   const cookies = new Cookies();
@@ -16,7 +25,7 @@ const VisualisationNavigation = () => {
         {
           type: "BAR",
           layout: {
-            i: "layout-1",
+            i: "layout-0",
             w: 8,
             h: 6,
             x: 0,
@@ -34,7 +43,7 @@ const VisualisationNavigation = () => {
         {
           type: "BAR",
           layout: {
-            i: "layout-2",
+            i: "layout-1",
             w: 8,
             h: 6,
             x: 8,
@@ -52,7 +61,7 @@ const VisualisationNavigation = () => {
         {
           type: "BAR",
           layout: {
-            i: "layout-3",
+            i: "layout-2",
             w: 8,
             h: 6,
             x: 16,
@@ -129,7 +138,7 @@ const VisualisationNavigation = () => {
         {
           type: "LINE",
           layout: {
-            i: "layout-3",
+            i: "layout-0",
             w: 8,
             h: 6,
             x: 0,
@@ -152,6 +161,7 @@ const VisualisationNavigation = () => {
   );
 
   const setGraphContentWithCookie = (content: GraphGridInterface[]) => {
+    console.log("Setting Cookies");
     cookies.set(
       "visualisations",
       [...content].map(({ label, key, graph }: GraphGridInterface) => ({
@@ -200,11 +210,11 @@ const VisualisationNavigation = () => {
   const [activeKey, setActiveKey] = useState("");
   const [keyCounter, setKeyCounter] = useState(0);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isImportModalOpen, setImportModalOpen] = useState(false);
   const [newName, setNewName] = useState("");
   const { confirm } = Modal;
 
   React.useEffect(() => {
-    console.log(graphContent);
     let newItems = makeTabItem([...graphContent]);
     setItems(newItems);
 
@@ -218,12 +228,14 @@ const VisualisationNavigation = () => {
   }, [graphContent]);
 
   const add = () => {
+    const newItemKey = `item-${keyCounter}`;
     const newGraphContent: GraphGridInterface[] = [
       ...graphContent,
-      { label: "Untitled", key: `item-${keyCounter}`, graph: [] },
+      { label: "Untitled", key: newItemKey, graph: [] },
     ];
     setGraphContentWithCookie(newGraphContent);
     setItems(makeTabItem(newGraphContent));
+    setActiveKey(newItemKey);
     setKeyCounter((old) => old + 1);
   };
 
@@ -281,6 +293,78 @@ const VisualisationNavigation = () => {
     }
   };
 
+  const exportUniqueLink = () => {
+    const targetIndex = items.findIndex((i: any) => i.key === activeKey);
+
+    let newGraphs: Graph[] = [...graphContent][targetIndex].graph;
+    newGraphs.map((g: Graph) => {
+      g.data = undefined;
+      return g;
+    });
+
+    navigator.clipboard.writeText(btoa(JSON.stringify(newGraphs)));
+    message.success("JSON Model Copied to Clipboard", 0.5);
+  };
+
+  const importUniqueLink = (value: string) => {
+    try {
+      const newGraph = JSON.parse(atob(value));
+      const targetIndex = items.findIndex((i: any) => i.key === activeKey);
+
+      let newGraphContent: GraphGridInterface[] = [...graphContent];
+
+      newGraphContent[targetIndex].graph = newGraph;
+
+      console.log(newGraphContent);
+
+      setGraphContentWithCookie(newGraphContent);
+      message.success("Imported Successfully", 0.5);
+    } catch {
+      message.error("Unable To Parse Input", 0.5);
+    }
+  };
+
+  const addGraph = (newGraph: Graph) => {
+    const targetIndex = graphContent.findIndex((i) => i.key === activeKey);
+    const newGraphContent = [...graphContent];
+
+    newGraph.layout.i = `layout-${newGraphContent[targetIndex].graph.length}`;
+
+    newGraphContent[targetIndex].graph = [
+      newGraph,
+      ...newGraphContent[targetIndex].graph,
+    ];
+    console.log(newGraphContent);
+    setGraphContentWithCookie(newGraphContent);
+  };
+
+  const operationItems: MenuProps["items"] = [
+    {
+      label: "Export",
+      key: "op-1",
+      icon: <ExportOutlined />,
+      onClick: exportUniqueLink,
+    },
+    {
+      label: "Import",
+      key: "op-2",
+      icon: <ImportOutlined />,
+      onClick: (e) => setImportModalOpen(true),
+    },
+  ];
+
+  const operations = (
+    <>
+      <CreateGraph addGraph={addGraph} />
+      <Dropdown menu={{ items: operationItems }}>
+        <Button>
+          More Actions
+          <DownOutlined />
+        </Button>
+      </Dropdown>
+    </>
+  );
+
   const handleOk = () => {
     let targetIndex = items.findIndex((i: any) => i.key === activeKey);
 
@@ -296,10 +380,6 @@ const VisualisationNavigation = () => {
     setModalOpen(false);
   };
 
-  const handleCancel = () => {
-    setModalOpen(false);
-  };
-
   return (
     <div>
       <Modal
@@ -308,7 +388,7 @@ const VisualisationNavigation = () => {
         }
         open={isModalOpen}
         onOk={handleOk}
-        onCancel={handleCancel}
+        onCancel={() => setModalOpen(false)}
       >
         <Input
           placeholder="New name..."
@@ -316,6 +396,11 @@ const VisualisationNavigation = () => {
           onChange={(e: any) => setNewName(e.target.value)}
         />
       </Modal>
+      <ImportModal
+        open={isImportModalOpen}
+        setOpen={setImportModalOpen}
+        importLink={importUniqueLink}
+      />
       <Tabs
         onChange={setActiveKey}
         activeKey={activeKey}
@@ -328,6 +413,7 @@ const VisualisationNavigation = () => {
           console.log(e);
           clicked(e.toString());
         }}
+        tabBarExtraContent={operations}
       />
     </div>
   );

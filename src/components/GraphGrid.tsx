@@ -173,7 +173,7 @@ const GraphGrid: React.FC<Props> = ({
 
   return !loading ? (
     <>
-      <CreateGraph
+      {/* <CreateGraph
         graphs={graphs}
         setGraphs={setGraphContent}
         layoutCounter={layoutCounter}
@@ -181,7 +181,7 @@ const GraphGrid: React.FC<Props> = ({
         graphIndex={graphIndex}
         setReload={setReload}
         reload={reload}
-      />
+      /> */}
       <ReactGridLayout
         className="layout"
         style={{ marginRight: "10px" }}

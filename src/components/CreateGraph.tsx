@@ -6,13 +6,30 @@ import {
   PlusOutlined,
   LineChartOutlined,
 } from "@ant-design/icons";
-import { Button, Checkbox, Form, Modal, Select, Input, InputNumber, Radio } from "antd";
-import { APPLICANT_COLUMN_MAPPING, DECISION_STATUS_OPTIONS } from "../constants/applicant";
+import {
+  Button,
+  Checkbox,
+  Form,
+  Modal,
+  Select,
+  Input,
+  InputNumber,
+  Radio,
+} from "antd";
+import {
+  APPLICANT_COLUMN_MAPPING,
+  DECISION_STATUS_OPTIONS,
+} from "../constants/applicant";
+import { Graph } from "../constants/graphs";
 
 const { Option } = Select;
 const degreeTypes = ["ALL", "MAC", "AIML", "MCSS", "MCS"];
 
-const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, graphIndex, setReload, reload }) => {
+interface CreateGraphProps {
+  addGraph: (newGraph: Graph) => void;
+}
+
+const CreateGraph: React.FC<CreateGraphProps> = ({ addGraph }) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [graphType, setGraphType] = useState("");
   const [form] = Form.useForm();
@@ -28,56 +45,64 @@ const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, g
   const [frequency, setFrequency] = useState(3);
 
   const createBarChart = () => {
-    //TODO
-    setGraphs(graphIndex, [
-    {
+    addGraph({
       title: title === "" ? "Graph" : title,
       layout: {
-        i: `layout-${layoutCounter}`,
+        i: `layout-`,
         w: 10,
         h: 6,
         x: 0,
-        y: 0
+        y: 0,
       },
-      type: 'BAR',
+      type: "BAR",
       decisionStatus: decisionStatus,
       programType: programType,
       graphType: visualType,
+      data: undefined,
       stack: stackType === "" ? undefined : stackType,
       combined: stacked,
-      target: plotTarget ? [] : undefined
-    }, ...graphs]);
+      target: plotTarget ? [] : undefined,
+    });
   };
 
   const createPieChart = () => {
-    setGraphs(graphIndex, [{
+    addGraph({
       title: title === "" ? "Graph" : title,
       layout: {
-        i: `layout-${layoutCounter}`,
+        i: `layout-`,
         w: 10,
         h: 6,
         x: 0,
-        y: 0
+        y: 0,
       },
       decisionStatus: decisionStatus,
-      type: 'PIE', programType: programType, graphType: visualType, top: top
-    }, ...graphs]);
-  }
+      data: undefined,
+      type: "PIE",
+      programType: programType,
+      graphType: visualType,
+      top: top,
+    });
+  };
 
   const createLineChart = () => {
-    setGraphs(graphIndex, [{
+    addGraph({
       title: title,
       layout: {
-        i: `layout-${layoutCounter}`,
+        i: `layout-`,
         w: 10,
         h: 6,
         x: 0,
-        y: 0
+        y: 0,
       },
-      type: 'LINE', breakdown, frequency
-    }, ...graphs])
-  }
-
+      type: "LINE",
+      breakdown,
+      frequency,
+      data: undefined,
+      programType: "",
+      decisionStatus: "",
+      graphType: "",
+    });
+  };
 
   const handleOk = () => {
     form.submit();
@@ -96,8 +121,6 @@ const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, g
           break;
         default:
       }
-      setReload(!reload);
-      setLayoutCounter((old) => old + 1);
     }
   };
 
@@ -154,7 +177,11 @@ const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, g
                   style={{ width: 240 }}
                   onChange={(value) => setProgramType(value)}
                 >
-                  {degreeTypes.map((type, index) => <Option key={`degree-${index}`} value={type}>{type}</Option>)}
+                  {degreeTypes.map((type, index) => (
+                    <Option key={`degree-${index}`} value={type}>
+                      {type}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
 
@@ -168,27 +195,38 @@ const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, g
                   style={{ width: 240 }}
                   onChange={(value) => setVisualType(value)}
                 >
-                  {
-                    Object.keys(APPLICANT_COLUMN_MAPPING).map((k, index) => {
-                      return <Option key={index} value={APPLICANT_COLUMN_MAPPING[k]}>{k}</Option>
-                    })
-                  }
+                  {Object.keys(APPLICANT_COLUMN_MAPPING).map((k, index) => {
+                    return (
+                      <Option key={index} value={APPLICANT_COLUMN_MAPPING[k]}>
+                        {k}
+                      </Option>
+                    );
+                  })}
                 </Select>
               </Form.Item>
 
-              {
-                visualType === "combined_fee_status" ?
+              {visualType === "combined_fee_status" ? (
                 <Form.Item>
-                  <Checkbox onChange={(e) => setPlotTarget(e.target.checked)}>Plot Targets</Checkbox>
-                </Form.Item> : <></> 
-              }
+                  <Checkbox onChange={(e) => setPlotTarget(e.target.checked)}>
+                    Plot Targets
+                  </Checkbox>
+                </Form.Item>
+              ) : (
+                <></>
+              )}
 
               <Form.Item
                 name="Stack Type"
                 hasFeedback
-                validateStatus={stackType !== "" && stackType === visualType ? "error" : ""}
+                validateStatus={
+                  stackType !== "" && stackType === visualType ? "error" : ""
+                }
                 initialValue=""
-                help={stackType !== "" && stackType === visualType ? "Columns and Stack Type cannot be the same!" : "E.g. 'Fee Status' will breakdown the Genders into their fee statuses"}
+                help={
+                  stackType !== "" && stackType === visualType
+                    ? "Columns and Stack Type cannot be the same!"
+                    : "E.g. 'Fee Status' will breakdown the Genders into their fee statuses"
+                }
               >
                 <Select
                   placeholder="Select Stack Type"
@@ -197,21 +235,26 @@ const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, g
                   onChange={(value) => setStackType(value)}
                 >
                   <Option value={""}>None</Option>
-                  {
-                    Object.keys(APPLICANT_COLUMN_MAPPING).map((k, index) => {
-                      return <Option key={index} value={APPLICANT_COLUMN_MAPPING[k]}>{k}</Option>
-                    })
-                  }
+                  {Object.keys(APPLICANT_COLUMN_MAPPING).map((k, index) => {
+                    return (
+                      <Option key={index} value={APPLICANT_COLUMN_MAPPING[k]}>
+                        {k}
+                      </Option>
+                    );
+                  })}
                 </Select>
               </Form.Item>
 
               <br></br>
 
-              <Form.Item label="Decision Status" name="decisionStatus"
-              initialValue={"ALL"}>
+              <Form.Item
+                label="Decision Status"
+                name="decisionStatus"
+                initialValue={"ALL"}
+              >
                 <Radio.Group
                   defaultValue="ALL"
-                  onChange={(e) => setDecisionStatus(e.target.value)} 
+                  onChange={(e) => setDecisionStatus(e.target.value)}
                 >
                   <Radio.Button value="ALL">All</Radio.Button>
                   <Radio.Button value="live">Live</Radio.Button>
@@ -220,33 +263,34 @@ const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, g
                 </Radio.Group>
               </Form.Item>
 
-              {
-                decisionStatus === "custom" ?
-                (
-                  <Form.Item name="customDecisions">
-                    <Select 
-                      mode="multiple"
-                      placeholder="Select Decision Status to filter"
-                      onChange={(e) => console.log(e)}
-                      options={DECISION_STATUS_OPTIONS.map((v) => ({
-                        label: v,
-                        value: v
-                      }))}
-                    >
-                    </Select>
-                  </Form.Item>
-                ) 
-                :
+              {decisionStatus === "custom" ? (
+                <Form.Item name="customDecisions">
+                  <Select
+                    mode="multiple"
+                    placeholder="Select Decision Status to filter"
+                    onChange={(e) => console.log(e)}
+                    options={DECISION_STATUS_OPTIONS.map((v) => ({
+                      label: v,
+                      value: v,
+                    }))}
+                  ></Select>
+                </Form.Item>
+              ) : (
                 <></>
-              }
+              )}
 
               <Form.Item>
-                <Input placeholder="Chart Title (Optional)"
-                  onChange={(e) => setTitle(e.target.value)} />
+                <Input
+                  placeholder="Chart Title (Optional)"
+                  onChange={(e) => setTitle(e.target.value)}
+                />
               </Form.Item>
 
               <Form.Item>
-                <Checkbox onChange={e => setStacked(e.target.checked)} checked={stacked}>
+                <Checkbox
+                  onChange={(e) => setStacked(e.target.checked)}
+                  checked={stacked}
+                >
                   Show Combined?
                 </Checkbox>
               </Form.Item>
@@ -275,7 +319,7 @@ const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, g
             <></>
           )}
 
-          {graphType === "PIE" ?
+          {graphType === "PIE" ? (
             <>
               <Form.Item
                 name="Degree"
@@ -287,39 +331,52 @@ const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, g
                   style={{ width: 240 }}
                   onChange={(value) => setProgramType(value)}
                 >
-                  {degreeTypes.map((type, index) => <Option key={`degree-${index}`} value={type}>{type}</Option>)}
+                  {degreeTypes.map((type, index) => (
+                    <Option key={`degree-${index}`} value={type}>
+                      {type}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
 
-              <Form.Item
-                name="Filter type"
-                rules={[{ required: true }]}
-              >
+              <Form.Item name="Filter type" rules={[{ required: true }]}>
                 <Select
                   placeholder="Select Filter"
                   style={{ width: 240 }}
                   onChange={(value) => setVisualType(value)}
                 >
-                  {
-                    Object.keys(APPLICANT_COLUMN_MAPPING).map((k, index) => {
-                      return <Option key={index} value={APPLICANT_COLUMN_MAPPING[k]}>{k}</Option>
-                    })
-                  }
+                  {Object.keys(APPLICANT_COLUMN_MAPPING).map((k, index) => {
+                    return (
+                      <Option key={index} value={APPLICANT_COLUMN_MAPPING[k]}>
+                        {k}
+                      </Option>
+                    );
+                  })}
                 </Select>
               </Form.Item>
 
               <Form.Item
                 name="Display Top X"
                 label="Display Top"
-                initialValue={0}>
-                <InputNumber min={0} value={top} onChange={(e) => { setTop(e) }} />
+                initialValue={0}
+              >
+                <InputNumber
+                  min={0}
+                  value={top}
+                  onChange={(e: any) => {
+                    setTop(e);
+                  }}
+                />
               </Form.Item>
 
-              <Form.Item label="Decision Status" name="decisionStatus"
-              initialValue={"ALL"}>
+              <Form.Item
+                label="Decision Status"
+                name="decisionStatus"
+                initialValue={"ALL"}
+              >
                 <Radio.Group
                   defaultValue="ALL"
-                  onChange={(e) => setDecisionStatus(e.target.value)} 
+                  onChange={(e) => setDecisionStatus(e.target.value)}
                 >
                   <Radio.Button value="ALL">All</Radio.Button>
                   <Radio.Button value="live">Live</Radio.Button>
@@ -328,66 +385,73 @@ const CreateGraph = ({ graphs, setGraphs, layoutCounter = 0, setLayoutCounter, g
                 </Radio.Group>
               </Form.Item>
 
-              {
-                decisionStatus === "custom" ?
-                (
-                  <Form.Item name="customDecisions">
-                    <Select 
-                      mode="multiple"
-                      placeholder="Select Decision Status to filter"
-                      onChange={(e) => console.log(e)}
-                      options={DECISION_STATUS_OPTIONS.map((v) => ({
-                        label: v,
-                        value: v
-                      }))}
-                    >
-                    </Select>
-                  </Form.Item>
-                ) 
-                :
+              {decisionStatus === "custom" ? (
+                <Form.Item name="customDecisions">
+                  <Select
+                    mode="multiple"
+                    placeholder="Select Decision Status to filter"
+                    onChange={(e) => console.log(e)}
+                    options={DECISION_STATUS_OPTIONS.map((v) => ({
+                      label: v,
+                      value: v,
+                    }))}
+                  ></Select>
+                </Form.Item>
+              ) : (
                 <></>
-              }
+              )}
 
               <Form.Item>
-                <Input placeholder="Chart Title (Optional)"
-                  onChange={(e) => setTitle(e.target.value)} />
+                <Input
+                  placeholder="Chart Title (Optional)"
+                  onChange={(e) => setTitle(e.target.value)}
+                />
               </Form.Item>
-
-            </> :
-            <></>}
-          {graphType === "LINE" ?
+            </>
+          ) : (
+            <></>
+          )}
+          {graphType === "LINE" ? (
             <>
-              <Form.Item
-                name="Time Period"
-                rules={[{ required: true }]}
-              >
+              <Form.Item name="Time Period" rules={[{ required: true }]}>
                 <Select
                   placeholder="Time Period"
                   style={{ width: 240 }}
                   onChange={(value) => setBreakdown(value)}
                 >
-                  {["Day", "Week", "Month", "Year"].map((type) => <Option key={`${type}`} value={type}>{type}</Option>)}
+                  {["Day", "Week", "Month", "Year"].map((type) => (
+                    <Option key={`${type}`} value={type}>
+                      {type}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
-              <Form.Item
-                name="Time Frame"
-                rules={[{ required: true }]}
-              >
+              <Form.Item name="Time Frame" rules={[{ required: true }]}>
                 <Select
                   placeholder="Time Frame"
                   style={{ width: 240 }}
                   onChange={(value) => setFrequency(value)}
-                  extra="Return the trend for the previous (frame) number of (period)s i.e. 3 weeks"
+                  // extra="Return the trend for the previous (frame) number of (period)s i.e. 3 weeks"
                 >
-                  {[...Array(24).keys()].map((type) => <Option key={`${type}`} value={type}>{type}</Option>)}
+                  {[...Array(24).keys()].map((type) => (
+                    <Option key={`${type}`} value={type}>
+                      {type}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
-            </> :
-            <></>}
+            </>
+          ) : (
+            <></>
+          )}
         </Form>
       </Modal>
-      <Button type="dashed" onClick={() => setModalOpen(true)}>
-        <PlusOutlined />
+      <Button
+        icon={<PlusOutlined />}
+        type="dashed"
+        onClick={() => setModalOpen(true)}
+      >
+        Add Graph
       </Button>
     </>
   );
