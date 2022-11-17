@@ -161,6 +161,7 @@ const VisualisationNavigation = () => {
   );
 
   const setGraphContentWithCookie = (content: GraphGridInterface[]) => {
+    console.log("Setting Cookies");
     cookies.set(
       "visualisations",
       [...content].map(({ label, key, graph }: GraphGridInterface) => ({
@@ -314,6 +315,8 @@ const VisualisationNavigation = () => {
 
       newGraphContent[targetIndex].graph = newGraph;
 
+      console.log(newGraphContent);
+
       setGraphContentWithCookie(newGraphContent);
       message.success("Imported Successfully", 0.5);
     } catch {
@@ -327,7 +330,10 @@ const VisualisationNavigation = () => {
 
     newGraph.layout.i = `layout-${newGraphContent[targetIndex].graph.length}`;
 
-    newGraphContent[targetIndex].graph.push(newGraph);
+    newGraphContent[targetIndex].graph = [
+      newGraph,
+      ...newGraphContent[targetIndex].graph,
+    ];
     console.log(newGraphContent);
     setGraphContentWithCookie(newGraphContent);
   };
