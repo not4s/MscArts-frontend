@@ -11,6 +11,8 @@ export interface TargetInterface {
 
 export type Graph = BarGraphInterface | PieGraphInterface | LineGraphInterface;
 
+export type DecisionStatus = "all" | "live" | "not_live" | "custom";
+
 export interface GraphGridInterface {
   label: string;
   key: string;
@@ -22,7 +24,8 @@ export interface BaseGraphInterface {
   layout: RGL.Layout;
   type: GraphType;
   programType: string;
-  decisionStatus: string;
+  decisionStatus: DecisionStatus;
+  customDecision?: string[]; // Required if decisionStatus is custom
   graphType: string;
   data: any[] | undefined;
 }

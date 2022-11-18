@@ -12,7 +12,7 @@ import GraphGrid from "./GraphGrid";
 import { Graph, GraphGridInterface } from "../constants/graphs";
 import Cookies from "universal-cookie";
 import ImportModal from "./ImportModal";
-import CreateGraph from "./CreateGraph";
+import GraphModal from "./GraphModal";
 
 const VisualisationNavigation = () => {
   const cookies = new Cookies();
@@ -32,7 +32,7 @@ const VisualisationNavigation = () => {
           },
           programType: "MAC",
           graphType: "combined_fee_status",
-          decisionStatus: "ALL",
+          decisionStatus: "all",
           stack: "decision_status",
           combined: true,
           data: undefined,
@@ -50,7 +50,7 @@ const VisualisationNavigation = () => {
           },
           programType: "AIML",
           graphType: "combined_fee_status",
-          decisionStatus: "ALL",
+          decisionStatus: "all",
           stack: "decision_status",
           target: [],
           combined: true,
@@ -68,7 +68,7 @@ const VisualisationNavigation = () => {
           },
           programType: "MCS",
           graphType: "combined_fee_status",
-          decisionStatus: "ALL",
+          decisionStatus: "all",
           stack: "decision_status",
           target: [],
           combined: true,
@@ -91,7 +91,7 @@ const VisualisationNavigation = () => {
             x: 0,
             y: 0,
           },
-          decisionStatus: "ALL",
+          decisionStatus: "all",
           graphType: "nationality",
           data: undefined,
           title: "Nationality Pie Chart (ALL)",
@@ -107,7 +107,7 @@ const VisualisationNavigation = () => {
             x: 8,
             y: 0,
           },
-          decisionStatus: "ALL",
+          decisionStatus: "all",
           graphType: "ethnicity",
           data: undefined,
           title: "Ethnicity Pie Chart (ALL)",
@@ -123,7 +123,7 @@ const VisualisationNavigation = () => {
             x: 16,
             y: 0,
           },
-          decisionStatus: "ALL",
+          decisionStatus: "all",
           graphType: "gender",
           data: undefined,
           title: "Gender Pie Chart (ALL)",
@@ -161,7 +161,6 @@ const VisualisationNavigation = () => {
   );
 
   const setGraphContentWithCookie = (content: GraphGridInterface[]) => {
-    console.log("Setting Cookies");
     cookies.set(
       "visualisations",
       [...content].map(({ label, key, graph }: GraphGridInterface) => ({
@@ -216,7 +215,6 @@ const VisualisationNavigation = () => {
 
   React.useEffect(() => {
     let newItems = makeTabItem(graphContent);
-    console.log("Making new Items!", graphContent);
     setItems(newItems);
 
     if (newItems.length > keyCounter) {
@@ -355,7 +353,7 @@ const VisualisationNavigation = () => {
 
   const operations = (
     <>
-      <CreateGraph addGraph={addGraph} />
+      <GraphModal submitAction={addGraph} isEdit={false} />
       <Dropdown menu={{ items: operationItems }}>
         <Button>
           More Actions

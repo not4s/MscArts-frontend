@@ -1,4 +1,9 @@
 import axios from "axios";
+import {
+  BarGraphInterface,
+  Graph,
+  PieGraphInterface,
+} from "../constants/graphs";
 
 const apiURL = process.env.REACT_APP_API_URL
   ? process.env.REACT_APP_API_URL
@@ -81,6 +86,36 @@ export class APIService {
 
   getAllApplicants(): Promise<APIResponse> {
     return this.buildAuthRequest("GET", "api/applicant");
+  }
+
+  getGraph(graph: Graph): Promise<APIResponse> {
+    const { programType, decisionStatus, graphType, customDecision } = graph;
+
+    let reqURL = `api/applicant/graph/?primary=${graphType}&program_type=${programType}&decision_status=${decisionStatus}`;
+
+    if (decisionStatus === "custom") {
+      reqURL += `&custom_decision=${customDecision?.toString()}`;
+    }
+
+    if (graph.type === "PIE") {
+      let pieGraph: PieGraphInterface = graph;
+      reqURL = `${reqURL}&type=PIE&top=${pieGraph.top ? pieGraph.top : 0}`;
+    } else if (graph.type === "BAR") {
+      let barGraph: BarGraphInterface = graph;
+      reqURL = `${reqURL}&type=BAR`;
+
+      if (barGraph.stack !== undefined) {
+        reqURL += `&secondary=${barGraph.stack}`;
+      }
+
+      if (barGraph.combined) {
+        reqURL += `&combined=1`;
+      }
+    } else {
+      // Line Graph
+      reqURL = `${reqURL}&type=LINE`;
+    }
+    return this.buildAuthRequest("GET", reqURL);
   }
 
   getAllAttributes(): Promise<APIResponse> {

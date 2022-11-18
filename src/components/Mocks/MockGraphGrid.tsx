@@ -2,7 +2,6 @@ import { Col, Row } from "antd";
 import React, { useState } from "react";
 import { ETHNICITY_MAPPING } from "../../constants/ethnicity";
 import { APIService } from "../../services/API";
-import CreateGraph from "../CreateGraph";
 import {
   BarGraphInterface,
   Graph,
@@ -27,7 +26,7 @@ const MockGraphGrid: React.FC<Props> = ({ mockData }) => {
         y: 0,
       },
       programType: "ALL",
-      decisionStatus: "ALL",
+      decisionStatus: "all",
       graphType: "nationality",
       data: undefined,
       top: 5,
@@ -43,7 +42,7 @@ const MockGraphGrid: React.FC<Props> = ({ mockData }) => {
         y: 0,
       },
       programType: "MAC",
-      decisionStatus: "ALL",
+      decisionStatus: "all",
       graphType: "gender",
       data: undefined,
       combined: true,

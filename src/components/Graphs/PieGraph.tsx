@@ -11,8 +11,8 @@ import {
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
-import EditGraph from "../EditGraph";
 import { Graph } from "../../constants/graphs";
+import GraphModal from "../GraphModal";
 
 const { confirm } = Modal;
 
@@ -70,7 +70,7 @@ const PieGraph: React.FC<PieGraphProps> = ({
       icon: <EditOutlined />,
       onClick: (e) => {
         // @ts-ignore
-        setEdit({ ...props, data: undefined, title });
+        setEdit({ ...props, data: undefined, title, type: "PIE" });
       },
     },
     {
@@ -81,14 +81,7 @@ const PieGraph: React.FC<PieGraphProps> = ({
     },
   ];
 
-  const [editOpen, setEditOpen] = useState(false);
   const [edit, setEdit] = useState<Graph | undefined>(undefined);
-
-  React.useEffect(() => {
-    if (edit !== undefined) {
-      setEditOpen(true);
-    }
-  }, [edit]);
 
   const showDeleteConfirm = () => {
     confirm({
@@ -106,12 +99,7 @@ const PieGraph: React.FC<PieGraphProps> = ({
 
   return (
     <>
-      <EditGraph
-        open={editOpen}
-        setOpen={setEditOpen}
-        editInput={edit}
-        editGraph={editGraph}
-      />
+      <GraphModal editInput={edit} submitAction={editGraph} isEdit={true} />
       <DraggableHandle className="myDragHandleClassName">
         <table>
           <tr>

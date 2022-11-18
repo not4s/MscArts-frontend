@@ -12,7 +12,7 @@ import {
   EllipsisOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
-import EditGraph from "../EditGraph";
+import GraphModal from "../GraphModal";
 
 const { confirm } = Modal;
 
@@ -101,7 +101,7 @@ const BarGraph: React.FC<BarGraphProps> = ({
       icon: <EditOutlined />,
       onClick: (e) => {
         // @ts-ignore
-        setEdit({ ...props, data: undefined, title });
+        setEdit({ ...props, data: undefined, title, graphType, type: "BAR" });
       },
     },
     {
@@ -112,14 +112,7 @@ const BarGraph: React.FC<BarGraphProps> = ({
     },
   ];
 
-  const [editOpen, setEditOpen] = useState(false);
   const [edit, setEdit] = useState<Graph | undefined>(undefined);
-
-  React.useEffect(() => {
-    if (edit !== undefined) {
-      setEditOpen(true);
-    }
-  }, [edit]);
 
   const showDeleteConfirm = () => {
     confirm({
@@ -137,12 +130,7 @@ const BarGraph: React.FC<BarGraphProps> = ({
 
   return (
     <>
-      <EditGraph
-        open={editOpen}
-        setOpen={setEditOpen}
-        editInput={edit}
-        editGraph={editGraph}
-      />
+      <GraphModal editInput={edit} submitAction={editGraph} isEdit={true} />
       <DraggableHandle className="myDragHandleClassName">
         <table>
           <tr>
