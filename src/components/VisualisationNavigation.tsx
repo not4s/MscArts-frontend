@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { MenuProps, message } from "antd";
+import { Alert, MenuProps, message } from "antd";
 import { Button, Dropdown, Input, Modal, Tabs } from "antd";
 import type { Tab } from "rc-tabs/lib/interface";
 import {
@@ -14,7 +14,13 @@ import Cookies from "universal-cookie";
 import ImportModal from "./ImportModal";
 import GraphModal from "./GraphModal";
 
-const VisualisationNavigation = () => {
+interface VisualisationNavigationProps {
+  mock: boolean;
+}
+
+const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
+  mock = false,
+}) => {
   const cookies = new Cookies();
   const defaultItems2: GraphGridInterface[] = [
     {
@@ -189,6 +195,7 @@ const VisualisationNavigation = () => {
         graphContent={graph}
         graphIndex={index}
         setGraphContent={setGraphContentByKey}
+        mock={mock}
       />
     );
   };
@@ -265,6 +272,10 @@ const VisualisationNavigation = () => {
       add();
     }
   };
+
+  React.useEffect(() => {
+    // [TODO] Invalidate all Data
+  }, [mock]);
 
   const showDeleteConfirm = (targetKey: string) => {
     confirm({
@@ -399,6 +410,16 @@ const VisualisationNavigation = () => {
         setOpen={setImportModalOpen}
         importLink={importUniqueLink}
       />
+      {mock ? (
+        <Alert
+          description="Operating in Mock Data Mode"
+          banner
+          closable
+          type="warning"
+        />
+      ) : (
+        <></>
+      )}
       <Tabs
         onChange={setActiveKey}
         activeKey={activeKey}

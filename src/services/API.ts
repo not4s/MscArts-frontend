@@ -88,10 +88,14 @@ export class APIService {
     return this.buildAuthRequest("GET", "api/applicant");
   }
 
-  getGraph(graph: Graph): Promise<APIResponse> {
+  getGraph(graph: Graph, mock: boolean = false): Promise<APIResponse> {
     const { programType, decisionStatus, graphType, customDecision } = graph;
 
     let reqURL = `api/applicant/graph/?primary=${graphType}&program_type=${programType}&decision_status=${decisionStatus}`;
+
+    if (mock) {
+      reqURL += "&mock=1";
+    }
 
     if (decisionStatus === "custom") {
       reqURL += `&custom_decision=${customDecision?.toString()}`;

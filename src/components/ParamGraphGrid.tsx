@@ -30,6 +30,7 @@ const ParamGraphGrid = () => {
       <GraphGrid
         graphContent={graph}
         graphIndex={graphIndex}
+        mock={false}
         setGraphContent={(e, v) => {
           return;
         }}

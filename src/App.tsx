@@ -16,13 +16,11 @@ import VisualisationNavigation from "./components/VisualisationNavigation";
 import { Layout, MenuProps, Menu } from "antd";
 import GeneralSettings from "./components/Settings/GeneralSettings";
 import TargetSettings from "./components/Settings/TargetSettings";
-import Login from "./components/Login";
 import ProgramPage from "./components/ProgramPage";
 import { APIService } from "./services/API";
 import { ItemType } from "antd/lib/menu/hooks/useItems";
 import ApplicantTable from "./components/Applicants/ApplicantTable";
 import UserAccessSettings from "./components/Settings/UserAccessSettings";
-import MockVisualisation from "./components/Mocks/MockVisualisation";
 import {
   Outlet,
   useNavigate,
@@ -195,11 +193,7 @@ export default function App() {
                     roleRequired={1}
                     rolePossessed={currentUserRole}
                   >
-                    {!mockMode ? (
-                      <VisualisationNavigation />
-                    ) : (
-                      <MockVisualisation mockData={mockData} />
-                    )}
+                    <VisualisationNavigation mock={mockMode} />
                   </ProtectedRoute>
                 }
               />

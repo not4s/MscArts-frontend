@@ -19,12 +19,14 @@ interface Props {
   graphIndex: number;
   graphContent: Graph[];
   setGraphContent: (key: number, graph: Graph[]) => void;
+  mock: boolean;
 }
 
 const GraphGrid: React.FC<Props> = ({
   graphIndex,
   graphContent,
   setGraphContent,
+  mock = false,
 }) => {
   const [graphs, setGraphs] = useState<Graph[]>([]);
   const [loaded, setLoaded] = useState<boolean>(false);
@@ -45,7 +47,7 @@ const GraphGrid: React.FC<Props> = ({
           let fetchParams = {};
 
           if (newGraphs[i].type === "PIE" || newGraphs[i].type === "BAR") {
-            const res = await api.getGraph(newGraphs[i]);
+            const res = await api.getGraph(newGraphs[i], mock);
             newGraphs[i].data = res.data;
 
             if (newGraphs[i].type === "BAR") {
