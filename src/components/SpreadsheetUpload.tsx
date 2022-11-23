@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FileUploader } from "react-drag-drop-files";
-import { Alert, message, Spin, Upload } from "antd";
+import { Alert, Button, Form, message, Select, Spin, Upload } from "antd";
 import axios from "axios";
 import { Modal, Input } from "antd";
 import { ApplicantTable } from "./Applicants/ApplicantTable";
@@ -12,9 +12,11 @@ import {
 import { RollbackTable } from "./RollbackTable";
 import { APIService } from "../services/API";
 import type { UploadProps } from "antd";
+import SpreadsheetTypeModal from "./SpreadsheetTypeModal";
 
 const FILE_TYPES = ["CSV", "XLS", "XML", "XLSX"];
 const { Dragger } = Upload;
+const { Option } = Select;
 
 interface Props {
   mock: boolean;
@@ -28,27 +30,32 @@ const SpreadsheetUpload: React.FC<Props> = ({ mock, setMock, setMockData }) => {
   const [showSpin, setShowSpin] = useState(false);
   const [reload, setReload] = useState(false);
   const api = new APIService();
+  const [openModal, setOpenModal] = useState(false);
+  const [file, setFile] = useState<File>();
+  const [form] = Form.useForm();
 
-  const showConfirm = (file: File) => {
-    confirm({
-      title: "Are you sure you want to upload this spreadsheet?",
-      icon: <ExclamationCircleOutlined />,
-      okText: "Upload",
-      onOk() {
-        handleOk(file);
-      },
-      onCancel() {
-        console.log("Canceled");
-      },
-    });
-  };
+  // const showConfirm = (file: File) => {
+  //   confirm({
+  //     title: "Are you sure you want to upload this spreadsheet?",
+  //     icon: <ExclamationCircleOutlined />,
+  //     okText: "Upload",
+  //     onOk() {
+  //         setFile(file);
+  //         setOpenModal(true);
+  //     },
+  //     onCancel() {
+  //       console.log("Canceled");
+  //     },
+  //   });
+  // };
   const handleChange = (file: File) => {
-    // setFile(file);
-    showConfirm(file);
+    setFile(file);
+    setOpenModal(true);
   };
-  const handleOk = (file: File) => {
+  const handleOk = (values: any) => {
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("file", file!);
+    formData.append("type", values["spreadsheet-type"]);
     console.log("POSTING");
     setShowSpin(true);
     if (mock) {
@@ -102,6 +109,42 @@ const SpreadsheetUpload: React.FC<Props> = ({ mock, setMock, setMockData }) => {
 
   return (
     <div>
+      <Modal
+        title="Choose the Spreadsheet Type"
+        okText="Submit"
+        onCancel={() => setOpenModal(false)}
+        open={openModal}
+        footer={null}
+      >
+        <Form onFinish={handleOk} form={form}>
+          <Form.Item name="spreadsheet-type">
+            <Select
+              placeholder="Select Spreadsheet Type"
+              style={{ width: 240 }}
+              onChange={(value) => {
+                switch (value) {
+                  case "APPLICANT":
+                    form.setFieldsValue({ "spreadsheet-type": "APPLICANT" });
+                    return;
+                  case "DEPOSIT":
+                    form.setFieldsValue({ "spreadsheet-type": "DEPOSIT" });
+                    return;
+                  default:
+                }
+              }}
+            >
+              <Option value="APPLICANT">Applicant Spreadsheet</Option>
+              <Option value="DEPOSIT">Deposit Spreadsheet</Option>
+            </Select>
+            Are you sure you want to upload this spreadsheet?
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Submit
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
       <Spin
         spinning={showSpin}
         indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
