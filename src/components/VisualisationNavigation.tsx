@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Alert, MenuProps, message } from "antd";
+import { Alert, Menu, message } from "antd";
 import { Button, Dropdown, Input, Modal, Tabs } from "antd";
 import type { Tab } from "rc-tabs/lib/interface";
 import {
@@ -13,6 +13,9 @@ import { Graph, GraphGridInterface } from "../constants/graphs";
 import Cookies from "universal-cookie";
 import ImportModal from "./ImportModal";
 import GraphModal from "./GraphModal";
+import type { MenuProps } from "antd";
+
+type MenuItem = Required<MenuProps>["items"][number];
 
 interface VisualisationNavigationProps {
   mock: boolean;
@@ -347,7 +350,7 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
     setGraphContentWithCookie(newGraphContent);
   };
 
-  const operationItems: MenuProps["items"] = [
+  const operationItems2: MenuItem[] = [
     {
       label: "Export",
       key: "op-1",
@@ -358,14 +361,31 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
       label: "Import",
       key: "op-2",
       icon: <ImportOutlined />,
-      onClick: (e) => setImportModalOpen(true),
+      onClick: (e: any) => setImportModalOpen(true),
     },
   ];
+
+  const menu = <Menu items={operationItems2} />;
+
+  // const operationItems: MenuProps["items"] = [
+  //   {
+  //     label: "Export",
+  //     key: "op-1",
+  //     icon: <ExportOutlined />,
+  //     onClick: exportUniqueLink,
+  //   },
+  //   {
+  //     label: "Import",
+  //     key: "op-2",
+  //     icon: <ImportOutlined />,
+  //     onClick: (e) => setImportModalOpen(true),
+  //   },
+  // ];
 
   const operations = (
     <>
       <GraphModal submitAction={addGraph} isEdit={false} />
-      <Dropdown menu={{ items: operationItems }}>
+      <Dropdown overlay={menu}>
         <Button>
           More Actions
           <DownOutlined />
