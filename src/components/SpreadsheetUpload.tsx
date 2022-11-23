@@ -1,9 +1,6 @@
 import React, { useState } from "react";
-import { FileUploader } from "react-drag-drop-files";
 import { Alert, message, Spin, Upload } from "antd";
-import axios from "axios";
-import { Modal, Input } from "antd";
-import { ApplicantTable } from "./Applicants/ApplicantTable";
+import { Modal } from "antd";
 import {
   ExclamationCircleOutlined,
   InboxOutlined,
