@@ -12,7 +12,6 @@ import {
 import { RollbackTable } from "./RollbackTable";
 import { APIService } from "../services/API";
 import type { UploadProps } from "antd";
-import SpreadsheetTypeModal from "./SpreadsheetTypeModal";
 
 const FILE_TYPES = ["CSV", "XLS", "XML", "XLSX"];
 const { Dragger } = Upload;
