@@ -66,6 +66,11 @@ export const RollbackTable = (props: any) => {
 
   const columns: ColumnsType<DataType> = [
     {
+      title: "File Type",
+      dataIndex: "type",
+      width: 150,
+    },
+    {
       title: "File Name",
       dataIndex: "name",
     },
