@@ -222,4 +222,38 @@ export class APIService {
     }
     return this.buildAuthRequest("GET", endpoint);
   }
+
+  exportTab(base64JSON: string): Promise<APIResponse> {
+    return this.buildAuthRequest("POST", "api/template/", {
+      base64JSON,
+    });
+  }
+
+  importTab(template_id: string): Promise<APIResponse> {
+    return this.buildAuthRequest("GET", `api/template/?id=${template_id}`);
+  }
+
+  addDefaultTabs(uid: string, title: string): Promise<APIResponse> {
+    return this.buildAuthRequest("POST", "api/template/default/", {
+      uid,
+      title,
+    });
+  }
+
+  getDefaultTabs(): Promise<APIResponse> {
+    return this.buildAuthRequest("GET", "api/template/default/");
+  }
+
+  deleteDefaultTab(uid: string): Promise<APIResponse> {
+    return this.buildAuthRequest("DELETE", "api/template/default/", {
+      uid,
+    });
+  }
+
+  editDefaultTab(uid: string, title: string): Promise<APIResponse> {
+    return this.buildAuthRequest("PUT", "api/template/default/", {
+      uid,
+      title,
+    });
+  }
 }

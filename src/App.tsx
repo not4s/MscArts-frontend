@@ -31,6 +31,7 @@ import {
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthVerification from "./services/AuthVerification";
 import ParamGraphGrid from "./components/ParamGraphGrid";
+import TemplateSettings from "./components/Settings/TemplateSettings";
 
 const { Sider, Header, Footer, Content } = Layout;
 
@@ -89,6 +90,12 @@ export default function App() {
           "General",
           "/settings/generals",
           <SlidersOutlined />
+        ),
+        getItem(
+          currentUserRole >= 3,
+          "Templates",
+          "/settings/templates",
+          <ProjectOutlined />
         ),
         getItem(
           currentUserRole >= 2,
@@ -236,6 +243,18 @@ export default function App() {
                       rolePossessed={currentUserRole}
                     >
                       <GeneralSettings />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="templates"
+                  element={
+                    <ProtectedRoute
+                      user={currentUser}
+                      roleRequired={3}
+                      rolePossessed={currentUserRole}
+                    >
+                      <TemplateSettings />
                     </ProtectedRoute>
                   }
                 />

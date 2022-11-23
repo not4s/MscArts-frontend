@@ -14,6 +14,7 @@ import Cookies from "universal-cookie";
 import ImportModal from "./ImportModal";
 import GraphModal from "./GraphModal";
 import type { MenuProps } from "antd";
+import { APIService } from "../services/API";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -307,6 +308,7 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
   };
 
   const exportUniqueLink = () => {
+    const api = new APIService();
     const targetIndex = items.findIndex((i: any) => i.key === activeKey);
 
     let newGraphs: Graph[] = [...graphContent][targetIndex].graph;
@@ -315,23 +317,37 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
       return g;
     });
 
-    navigator.clipboard.writeText(btoa(JSON.stringify(newGraphs)));
-    message.success("JSON Model Copied to Clipboard", 0.5);
+    const base64 = btoa(JSON.stringify(newGraphs));
+
+    api.exportTab(base64).then((res) => {
+      if (res.success) {
+        navigator.clipboard.writeText(res.data.id);
+        message.success("JSON Model Copied to Clipboard", 0.5);
+      } else {
+        message.error("Failed to export", 0.5);
+      }
+    });
   };
 
   const importUniqueLink = (value: string) => {
     try {
-      const newGraph = JSON.parse(atob(value));
-      const targetIndex = items.findIndex((i: any) => i.key === activeKey);
+      const api = new APIService();
 
-      let newGraphContent: GraphGridInterface[] = [...graphContent];
+      api.importTab(value).then((res) => {
+        if (res.success) {
+          const newGraph = JSON.parse(atob(res.data["base64JSON"]));
+          const targetIndex = items.findIndex((i: any) => i.key === activeKey);
 
-      newGraphContent[targetIndex].graph = newGraph;
+          let newGraphContent: GraphGridInterface[] = [...graphContent];
 
-      console.log(newGraphContent);
+          newGraphContent[targetIndex].graph = newGraph;
 
-      setGraphContentWithCookie(newGraphContent);
-      message.success("Imported Successfully", 0.5);
+          setGraphContentWithCookie(newGraphContent);
+          message.success("Imported Successfully", 0.5);
+        } else {
+          message.error("Import failed", 0.5);
+        }
+      });
     } catch {
       message.error("Unable To Parse Input", 0.5);
     }
@@ -366,21 +382,6 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
   ];
 
   const menu = <Menu items={operationItems2} />;
-
-  // const operationItems: MenuProps["items"] = [
-  //   {
-  //     label: "Export",
-  //     key: "op-1",
-  //     icon: <ExportOutlined />,
-  //     onClick: exportUniqueLink,
-  //   },
-  //   {
-  //     label: "Import",
-  //     key: "op-2",
-  //     icon: <ImportOutlined />,
-  //     onClick: (e) => setImportModalOpen(true),
-  //   },
-  // ];
 
   const operations = (
     <>

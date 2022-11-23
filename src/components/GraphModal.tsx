@@ -75,7 +75,6 @@ const GraphModal: React.FC<GraphModalProps> = ({
   const [frequency, setFrequency] = useState(3);
 
   React.useEffect(() => {
-    console.log(editInput);
     if (editInput !== undefined) {
       /* Set the Shared Inputs */
       setType(editInput.type);
