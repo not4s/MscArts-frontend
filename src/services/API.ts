@@ -59,37 +59,16 @@ export class APIService {
     return { success: true, ...res };
   }
 
-  getApplicantData(count: string): Promise<APIResponse> {
-    return this.buildAuthRequest("GET", `api/applicant/?count=${count}`);
-  }
-
-  getApplicant(config: { [k: string]: string }): Promise<APIResponse> {
-    let url = "api/applicant/?";
-
-    for (var k in config) {
-      url += `${k}=${config[k]}&`;
-    }
-
-    return this.buildAuthRequest("GET", url);
-  }
-
-  getApplicantDataStacked(count: string, series: string): Promise<APIResponse> {
-    return this.buildAuthRequest(
-      "GET",
-      `api/applicant/?count=${count}&series=${series}`
-    );
-  }
-
   postSpreadsheet(data: FormData): Promise<APIResponse> {
     return this.buildAuthRequest("POST", "api/upload/", data);
   }
 
   postMockSpreadsheet(data: FormData): Promise<APIResponse> {
-    return this.buildAuthRequest("POST", "api/upload/mock", data);
+    return this.buildAuthRequest("POST", "api/upload/mock/", data);
   }
 
   getAllApplicants(): Promise<APIResponse> {
-    return this.buildAuthRequest("GET", "api/applicant");
+    return this.buildAuthRequest("GET", "api/applicant/");
   }
 
   getGraph(graph: Graph, mock: boolean = false): Promise<APIResponse> {
@@ -127,30 +106,30 @@ export class APIService {
   }
 
   getAllAttributes(): Promise<APIResponse> {
-    return this.buildAuthRequest("GET", "api/applicant/attribute");
+    return this.buildAuthRequest("GET", "api/applicant/attribute/");
   }
 
   login(username: string, password: string): Promise<APIResponse> {
-    return this.buildRequest("POST", "api/user/login", { username, password });
+    return this.buildRequest("POST", "api/user/login/", { username, password });
   }
 
   getRole(): Promise<APIResponse> {
-    return this.buildAuthRequest("GET", "api/user/roles");
+    return this.buildAuthRequest("GET", "api/user/roles/");
   }
 
   getTargets(): Promise<APIResponse> {
-    return this.buildAuthRequest("GET", "api/target/progress");
+    return this.buildAuthRequest("GET", "api/target/progress/");
   }
 
   getTarget(course: any, year: any): Promise<APIResponse> {
     return this.buildAuthRequest(
       "GET",
-      `api/target?year=${year}&program_type=${course}`
+      `api/target/?year=${year}&program_type=${course}`
     );
   }
 
   postTarget({ course, target, fee_status, year }: any): Promise<APIResponse> {
-    return this.buildAuthRequest("POST", `api/target`, {
+    return this.buildAuthRequest("POST", `api/target/`, {
       program_type: course,
       year,
       fee_status,
@@ -159,7 +138,7 @@ export class APIService {
   }
 
   putTarget({ course, target, fee_status, year }: any): Promise<APIResponse> {
-    return this.buildAuthRequest("PUT", `api/target`, {
+    return this.buildAuthRequest("PUT", `api/target/`, {
       program_type: course,
       year,
       fee_status,
@@ -176,7 +155,7 @@ export class APIService {
   }
 
   getUserAccess(): Promise<APIResponse> {
-    return this.buildAuthRequest("GET", "api/user/access");
+    return this.buildAuthRequest("GET", "api/user/access/");
   }
 
   getUploadedSheets(): Promise<APIResponse> {
@@ -188,7 +167,7 @@ export class APIService {
   }
 
   getPrograms(): Promise<APIResponse> {
-    return this.buildAuthRequest("GET", "api/program");
+    return this.buildAuthRequest("GET", "api/program/");
   }
 
   programChange(
@@ -198,7 +177,7 @@ export class APIService {
     programType: string,
     active: boolean
   ): Promise<APIResponse> {
-    return this.buildAuthRequest("PUT", "api/program", {
+    return this.buildAuthRequest("PUT", "api/program/", {
       code: code,
       name: name,
       academic_level: academicLevel,
@@ -214,7 +193,7 @@ export class APIService {
     programType: string,
     active: boolean
   ): Promise<APIResponse> {
-    return this.buildAuthRequest("POST", "api/program", {
+    return this.buildAuthRequest("POST", "api/program/", {
       code: code,
       name: name,
       academic_level: academicLevel,
@@ -224,13 +203,13 @@ export class APIService {
   }
 
   programDelete(code: string): Promise<APIResponse> {
-    return this.buildAuthRequest("DELETE", "api/program", {
+    return this.buildAuthRequest("DELETE", "api/program/", {
       code: code,
     });
   }
 
   updateAccessLevel(username: string, level: number): Promise<APIResponse> {
-    return this.buildAuthRequest("PUT", "api/user/roles", {
+    return this.buildAuthRequest("PUT", "api/user/roles/", {
       username: username,
       access: level,
     });
