@@ -43,6 +43,7 @@ export default function Login(props: any) {
           });
       })
       .catch((res) => {
+        console.log(res);
         if (res.response.status === 401) {
           message.error("Request Access from System Administrator");
         } else {

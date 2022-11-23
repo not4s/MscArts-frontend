@@ -20,6 +20,8 @@ export class APIService {
     endpoint: string,
     data: { [key: string]: any } | FormData = {}
   ) {
+    console.log(`Fetching from ${apiURL + endpoint}`);
+
     let res = await axios.request({
       url: apiURL + endpoint,
       method: method,
@@ -34,6 +36,8 @@ export class APIService {
     endpoint: string,
     data: { [key: string]: any } | FormData = {}
   ) {
+    console.log(`Fetching from ${apiURL + endpoint}`);
+
     const accessToken = sessionStorage.getItem("user");
 
     if (!accessToken)
