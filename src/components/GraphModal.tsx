@@ -197,8 +197,8 @@ const GraphModal: React.FC<GraphModalProps> = ({
               <Option value="LINE">
                 <LineChartOutlined /> Line Trend
               </Option>
-              <Option value="TABLE">
-                <TableOutlined /> Table{" "}
+              <Option value="TABLE" disabled>
+                <TableOutlined /> Table
               </Option>
             </Select>
           </Form.Item>
