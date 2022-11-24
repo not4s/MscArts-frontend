@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Alert, Menu, message } from "antd";
+import { Alert, Form, Menu, message, Select } from "antd";
 import { Button, Dropdown, Input, Modal, Tabs } from "antd";
 import type { Tab } from "rc-tabs/lib/interface";
 import {
@@ -237,14 +237,24 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
     }
   }, [graphContent]);
 
-  const add = () => {
+  const addTab = async (newTab: string) => {
+    let newGraph: Graph[] = [];
+    let newLabel: string = "Untitled";
+    const api = new APIService();
+    if (newTab !== "") {
+      const res = await api.importTab(newTab);
+      newGraph = JSON.parse(atob(res.data["base64JSON"]));
+      newLabel = res.data["title"] ? res.data["title"] : "Untitled";
+    }
+    console.log(newGraph);
+
     const newItemKey = `item-${keyCounter}`;
     const newGraphContent: GraphGridInterface[] = [
       ...graphContent,
-      { label: "Untitled", key: newItemKey, graph: [] },
+      { label: newLabel, key: newItemKey, graph: newGraph },
     ];
+
     setGraphContentWithCookie(newGraphContent);
-    setItems(makeTabItem(newGraphContent));
     setActiveKey(newItemKey);
     setKeyCounter((old) => old + 1);
   };
@@ -273,7 +283,9 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
     if (items.map((i) => i.key).includes(targetKey)) {
       showDeleteConfirm(targetKey);
     } else {
-      add();
+      setNewTab("");
+      setNewTabModalOpen(true);
+      // add();
     }
   };
 
@@ -410,8 +422,70 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
     setModalOpen(false);
   };
 
+  const [isNewTabModalOpen, setNewTabModalOpen] = useState<boolean>(false);
+
+  const handleNewTabOk = () => {
+    addTab(newTab);
+    setNewTab("");
+    setNewTabModalOpen(false);
+  };
+
+  const [defaultTabOptions, setDefaultTabOptions] = useState<any[]>([]);
+  const [newTab, setNewTab] = useState("");
+
+  React.useEffect(() => {
+    if (isNewTabModalOpen) {
+      const api = new APIService();
+
+      api.getDefaultTabs().then((res) => {
+        if (res.success) {
+          let options: any[] = [
+            {
+              value: "",
+              label: "Blank",
+            },
+          ];
+
+          const otherOptions = res.data.map((v: any) => {
+            return {
+              value: v.id,
+              label: v.title,
+            };
+          });
+
+          options = options.concat(otherOptions);
+
+          setDefaultTabOptions(options);
+        }
+      });
+    }
+  }, [isNewTabModalOpen]);
+
+  const newTabModal = (
+    <Modal
+      title={"Create a new Tab"}
+      open={isNewTabModalOpen}
+      onOk={handleNewTabOk}
+      onCancel={() => {
+        setNewTab("");
+        setNewTabModalOpen(false);
+      }}
+    >
+      <Form name="Preset">
+        <Form.Item>
+          <Select
+            value={newTab}
+            options={defaultTabOptions}
+            onChange={(e) => setNewTab(e)}
+          />
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
+
   return (
     <div>
+      {newTabModal}
       <Modal
         title={
           "Rename '" + items.find((i: Tab) => i.key === activeKey)?.label + "'"

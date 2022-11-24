@@ -87,6 +87,8 @@ const GraphGrid: React.FC<Props> = ({
       }
 
       if (change) {
+        console.log(newGraphs);
+        console.log(graphIndex);
         setGraphContent(graphIndex, newGraphs);
       }
 
