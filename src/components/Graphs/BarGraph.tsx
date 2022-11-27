@@ -28,7 +28,7 @@ const DEFAULT_CONFIG = {
 };
 
 interface BarGraphProps {
-  graphType: string;
+  primary: string;
   data: any[] | undefined;
   title: string;
   setTitle: (newTitle: string) => void;
@@ -37,7 +37,7 @@ interface BarGraphProps {
 }
 
 const BarGraph: React.FC<BarGraphProps> = ({
-  graphType,
+  primary,
   data,
   title,
   setTitle,
@@ -51,7 +51,7 @@ const BarGraph: React.FC<BarGraphProps> = ({
       let newConfig: ColumnConfig = {
         ...DEFAULT_CONFIG,
         data,
-        xField: graphType,
+        xField: primary,
       };
       const p: any = props;
       if (p["target"] !== undefined && p["target"].length > 1) {
@@ -101,7 +101,7 @@ const BarGraph: React.FC<BarGraphProps> = ({
       icon: <EditOutlined />,
       onClick: (e) => {
         // @ts-ignore
-        setEdit({ ...props, data: undefined, title, graphType, type: "BAR" });
+        setEdit({ ...props, data: undefined, title, primary, type: "BAR" });
       },
     },
     {

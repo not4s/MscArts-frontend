@@ -26,12 +26,13 @@ export interface BaseGraphInterface {
   programType: string;
   decisionStatus: DecisionStatus;
   customDecision?: string[]; // Required if decisionStatus is custom
-  graphType: string;
+  primary: string;
+  year: number;
   data: any[] | undefined;
 }
 
 export interface BarGraphInterface extends BaseGraphInterface {
-  stack?: string;
+  secondary?: string;
   combined?: boolean;
   target?: TargetInterface[];
 }

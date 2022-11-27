@@ -72,9 +72,10 @@ export class APIService {
   }
 
   getGraph(graph: Graph, mock: boolean = false): Promise<APIResponse> {
-    const { programType, decisionStatus, graphType, customDecision } = graph;
+    const { programType, decisionStatus, primary, customDecision, year } =
+      graph;
 
-    let reqURL = `api/applicant/graph/?primary=${graphType}&program_type=${programType}&decision_status=${decisionStatus}`;
+    let reqURL = `api/applicant/graph/?primary=${primary}&program_type=${programType}&decision_status=${decisionStatus}&year=${year}`;
 
     if (mock) {
       reqURL += "&mock=1";
@@ -91,8 +92,8 @@ export class APIService {
       let barGraph: BarGraphInterface = graph;
       reqURL = `${reqURL}&type=BAR`;
 
-      if (barGraph.stack !== undefined) {
-        reqURL += `&secondary=${barGraph.stack}`;
+      if (barGraph.secondary !== undefined) {
+        reqURL += `&secondary=${barGraph.secondary}`;
       }
 
       if (barGraph.combined) {

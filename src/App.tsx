@@ -9,6 +9,7 @@ import {
   SlidersOutlined,
   RiseOutlined,
   ContactsOutlined,
+  LayoutOutlined,
 } from "@ant-design/icons";
 import React, { useState } from "react";
 import SpreadsheetUpload from "./components/SpreadsheetUpload";
@@ -95,7 +96,7 @@ export default function App() {
           currentUserRole >= 3,
           "Templates",
           "/settings/templates",
-          <ProjectOutlined />
+          <LayoutOutlined />
         ),
         getItem(
           currentUserRole >= 2,
@@ -113,7 +114,7 @@ export default function App() {
           currentUserRole >= 3,
           "User Access",
           "/settings/user",
-          <SettingOutlined />
+          <UserOutlined />
         ),
       ]
     ),

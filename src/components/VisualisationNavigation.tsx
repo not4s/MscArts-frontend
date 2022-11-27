@@ -41,10 +41,11 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
             y: 0,
           },
           programType: "MAC",
-          graphType: "combined_fee_status",
+          primary: "combined_fee_status",
           decisionStatus: "all",
-          stack: "decision_status",
+          secondary: "decision_status",
           combined: true,
+          year: 2022,
           data: undefined,
           title: "Applications Target Bar Chart (MAC)",
           target: [],
@@ -59,9 +60,10 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
             y: 0,
           },
           programType: "AIML",
-          graphType: "combined_fee_status",
+          primary: "combined_fee_status",
           decisionStatus: "all",
-          stack: "decision_status",
+          secondary: "decision_status",
+          year: 2022,
           target: [],
           combined: true,
           data: undefined,
@@ -77,9 +79,10 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
             y: 0,
           },
           programType: "MCS",
-          graphType: "combined_fee_status",
+          primary: "combined_fee_status",
           decisionStatus: "all",
-          stack: "decision_status",
+          secondary: "decision_status",
+          year: 2022,
           target: [],
           combined: true,
           data: undefined,
@@ -102,7 +105,8 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
             y: 0,
           },
           decisionStatus: "all",
-          graphType: "nationality",
+          primary: "nationality",
+          year: 2022,
           data: undefined,
           title: "Nationality Pie Chart (ALL)",
           top: 10,
@@ -118,7 +122,8 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
             y: 0,
           },
           decisionStatus: "all",
-          graphType: "ethnicity",
+          primary: "ethnicity",
+          year: 2022,
           data: undefined,
           title: "Ethnicity Pie Chart (ALL)",
           top: 10,
@@ -134,7 +139,8 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
             y: 0,
           },
           decisionStatus: "all",
-          graphType: "gender",
+          primary: "gender",
+          year: 2022,
           data: undefined,
           title: "Gender Pie Chart (ALL)",
         },
@@ -155,9 +161,10 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
           },
           programType: "ALL",
           decisionStatus: "all",
-          graphType: "hi",
+          primary: "hi",
           data: undefined,
           title: "Line graph",
+          year: 2022,
           frequency: 10,
           breakdown: "year",
           series: "gender",
@@ -378,7 +385,7 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
     setGraphContentWithCookie(newGraphContent);
   };
 
-  const operationItems2: MenuItem[] = [
+  const operationItems: MenuProps["items"] = [
     {
       label: "Export",
       key: "op-1",
@@ -393,12 +400,10 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
     },
   ];
 
-  const menu = <Menu items={operationItems2} />;
-
   const operations = (
     <>
       <GraphModal submitAction={addGraph} isEdit={false} />
-      <Dropdown overlay={menu}>
+      <Dropdown menu={{ items: operationItems }}>
         <Button>
           More Actions
           <DownOutlined />
