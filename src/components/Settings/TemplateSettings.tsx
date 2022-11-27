@@ -21,6 +21,7 @@ import { APIService } from "../../services/API";
 import { useNavigate } from "react-router-dom";
 
 interface DataType {
+  key: string;
   id: string;
   title: string;
 }
@@ -30,28 +31,34 @@ const { confirm } = Modal;
 const TemplateSettings = () => {
   const api = new APIService();
   const navigate = useNavigate();
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<{ uid: string; title: string }>();
 
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
-  const [UID, setUID] = useState<string>("");
-  const [title, setTitle] = useState<string>("");
-
-  const [reload, setReload] = useState<boolean>(false);
+  const [reload, setReload] = useState<boolean>(true);
 
   const [data, setData] = useState<DataType[]>([]);
-
   const [editInput, setEditInput] = useState<DataType>();
 
   useEffect(() => {
-    api
-      .getDefaultTabs()
-      .then((res) => {
-        console.log(res.data);
-        setData(res.data);
-      })
-      .catch((res) => {
-        console.error(res);
-      });
+    if (reload) {
+      api
+        .getDefaultTabs()
+        .then((res) => {
+          setData(
+            res.data.map((v: any, index: any) => {
+              return {
+                key: String(index),
+                ...v,
+              };
+            })
+          );
+          setReload(false);
+        })
+        .catch((res) => {
+          console.error(res);
+          setReload(false);
+        });
+    }
   }, [reload]);
 
   const columns: ColumnsType<DataType> = [
@@ -74,7 +81,12 @@ const TemplateSettings = () => {
       render: (_, record: DataType) => {
         return (
           <Space size="small">
-            <Button onClick={(e) => setEditInput(record)}>
+            <Button
+              onClick={(e) => {
+                setEditInput(record);
+                setModalOpen(true);
+              }}
+            >
               <EditOutlined />
             </Button>
             <Button onClick={(e) => deleteTemplate(record.id)}>
@@ -91,18 +103,6 @@ const TemplateSettings = () => {
     },
   ];
 
-  React.useEffect(() => {
-    if (editInput !== undefined) {
-      setUID(editInput.id);
-      setTitle(editInput.title);
-      setModalOpen(true);
-    } else {
-      setTitle("");
-      setUID("");
-      setModalOpen(false);
-    }
-  }, [editInput]);
-
   const deleteTemplate = (uid: string) => {
     confirm({
       title: "Are you sure you want to delete default template?",
@@ -117,7 +117,7 @@ const TemplateSettings = () => {
           .then((res) => {
             if (res.success) {
               message.success("Deleted Default Template");
-              setReload(!reload);
+              setReload(true);
             } else {
               message.error("Failed to delete default template");
             }
@@ -133,12 +133,12 @@ const TemplateSettings = () => {
     });
   };
 
-  const handleOk = () => {
+  const createDefault = (values: any) => {
     setModalOpen(false);
 
     if (editInput === undefined) {
       api
-        .addDefaultTabs(UID, title)
+        .addDefaultTabs(values.uid, values.title)
         .then((res) => {
           if (res.success) {
             message.success("Added new default template");
@@ -153,7 +153,7 @@ const TemplateSettings = () => {
         });
     } else {
       api
-        .editDefaultTab(UID, title)
+        .editDefaultTab(values.uid, values.title)
         .then((res) => {
           if (res.success) {
             message.success("Edited default template");
@@ -166,21 +166,20 @@ const TemplateSettings = () => {
           console.error(res);
           message.error("Failed to edit template");
         });
-
       setEditInput(undefined);
     }
   };
 
-  const handleCancel = () => {
-    console.log("Canceling");
-    form.resetFields();
+  React.useEffect(() => {
     if (editInput !== undefined) {
-      setEditInput(undefined);
-    } else {
-      setTitle("");
-      setUID("");
-      setModalOpen(false);
+      form.setFieldsValue({ uid: editInput.id, title: editInput.title });
     }
+  }, [editInput]);
+
+  const handleCancel = () => {
+    form.resetFields();
+    setEditInput(undefined);
+    setModalOpen(false);
   };
 
   return (
@@ -188,24 +187,26 @@ const TemplateSettings = () => {
       <Modal
         title={`${editInput ? "Edit" : "Add"} new Default Template`}
         open={isModalOpen}
-        onOk={handleOk}
+        onOk={() => {
+          form
+            .validateFields()
+            .then((values) => {
+              form.resetFields();
+              console.log(values);
+              createDefault(values);
+            })
+            .catch((info) => {
+              console.log("Validation Fail:", info);
+            });
+        }}
         onCancel={handleCancel}
       >
         <Form form={form}>
-          <Form.Item name="uid" label="Template UID" initialValue={UID}>
-            <Input
-              defaultValue={UID}
-              value={UID}
-              onChange={(e) => setUID(e.target.value)}
-              disabled={editInput !== undefined}
-            />
+          <Form.Item name="uid" label="Template UID">
+            <Input disabled={editInput !== undefined} />
           </Form.Item>
-          <Form.Item name="title" label="Template Title" initialValue={title}>
-            <Input
-              defaultValue={title}
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
+          <Form.Item name="title" label="Template Title">
+            <Input />
           </Form.Item>
         </Form>
       </Modal>
@@ -213,13 +214,17 @@ const TemplateSettings = () => {
       <Table
         columns={columns}
         dataSource={data}
+        loading={reload}
         pagination={{
           total: 1,
           showTotal: (total) => {
             return (
               <Button
                 icon={<PlusOutlined />}
-                onClick={(e) => setModalOpen(true)}
+                onClick={(e) => {
+                  setEditInput(undefined);
+                  setModalOpen(true);
+                }}
               >
                 New Default Template
               </Button>

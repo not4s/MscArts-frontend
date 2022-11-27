@@ -1,20 +1,20 @@
 import React, { useEffect, useRef, useState } from "react";
-import { APIService } from "../services/API";
-import { ColumnsType, TableProps, ColumnType } from "antd/lib/table";
-import { Table, Switch, Button, Input, Space } from "antd";
+import { APIService } from "../../services/API";
+import { ColumnsType, ColumnType } from "antd/lib/table";
+import { Table, Switch, Button, Input, Space, message, Modal } from "antd";
 import {
   DeleteOutlined,
   EditOutlined,
+  ExclamationCircleOutlined,
   PlusOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import type { InputRef } from "antd";
-import type { FilterConfirmProps, FilterValue } from "antd/lib/table/interface";
+import type { FilterConfirmProps } from "antd/lib/table/interface";
 import ProgramEditModal from "./ProgramEditModal";
-import ProgramDeleteModal from "./ProgramDeleteModal";
 
-interface DataType {
+export interface ProgramDataType {
   key: React.Key;
   name: string;
   code: string;
@@ -23,23 +23,25 @@ interface DataType {
   program_type: string;
 }
 
-type DataIndex = keyof DataType;
+type DataIndex = keyof ProgramDataType;
+
+const { confirm } = Modal;
 
 export default function ProgramPage() {
   const [programs, setPrograms] = useState(undefined);
   const api = new APIService();
-  const [flag, setFlag] = useState(false);
+
+  /* Set Reloads */
+  const [reload, setReload] = useState(true);
+
+  /* Control Filters */
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef<InputRef>(null);
-  const [editProgramType, setEditProgramType] = useState("");
-  const [editName, setEditName] = useState("");
-  const [editCode, setEditCode] = useState("");
-  const [editLevel, setEditLevel] = useState("");
-  const [editActive, setEditActive] = useState(false);
+
+  /* Control Edit/New Form */
   const [openEditModal, setOpenEditModal] = useState(false);
-  const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [addFlag, setAddFlag] = useState(false);
+  const [editInput, setEditInput] = useState<ProgramDataType>();
 
   const handleSearch = (
     selectedKeys: string[],
@@ -58,7 +60,7 @@ export default function ProgramPage() {
 
   const getColumnSearchProps = (
     dataIndex: DataIndex
-  ): ColumnType<DataType> => ({
+  ): ColumnType<ProgramDataType> => ({
     filterDropdown: ({
       setSelectedKeys,
       selectedKeys,
@@ -138,68 +140,32 @@ export default function ProgramPage() {
   });
 
   useEffect(() => {
-    api.getPrograms().then((result) => {
-      console.log(result.data);
+    if (reload) {
+      api.getPrograms().then((result) => {
+        console.log(result.data);
 
-      setPrograms(mapToToggle(result.data));
-    });
-  }, [flag]);
+        setPrograms(
+          result.data.map((v: any, i: any) => ({
+            key: String(i),
+            ...v,
+          }))
+        );
+        setReload(false);
+      });
+    }
+  }, [reload]);
 
-  const mapToToggle = (data: any) => {
-    return data.map((obj: any) => {
-      const onClick = () => {
-        setEditProgramType(obj.program_type);
-        setEditName(obj.name);
-        setEditCode(obj.code);
-        setEditLevel(obj.academic_level);
-        setEditActive(obj.active);
-        setAddFlag(false);
-        setOpenEditModal(true);
-      };
-
-      const onDelete = () => {
-        setEditCode(obj.code);
-        setOpenDeleteModal(true);
-      };
-
-      obj.switch = (
-        <Switch
-          checked={obj.active}
-          onChange={() => {
-            api
-              .programChange(
-                obj.code,
-                obj.name,
-                obj.academic_level,
-                obj.program_type,
-                !obj.active
-              )
-              .then(() => {
-                // @ts-ignore
-                setFlag(!flag);
-              });
-          }}
-        />
-      );
-      obj.actions = (
-        <>
-          <Button
-            onClick={onClick}
-            icon={<EditOutlined />}
-            style={{ marginLeft: "2vh", marginRight: "2vh" }}
-          />
-          <Button
-            onClick={onDelete}
-            icon={<DeleteOutlined />}
-            style={{ marginLeft: "2vh", marginRight: "2vh" }}
-          />
-        </>
-      );
-      return obj;
-    });
-  };
-
-  const columns: ColumnsType<DataType> = [
+  const columns: ColumnsType<ProgramDataType> = [
+    {
+      title: "Code",
+      dataIndex: "code",
+      ...getColumnSearchProps("code"),
+    },
+    {
+      title: "Name",
+      dataIndex: "name",
+      ...getColumnSearchProps("name"),
+    },
     {
       title: "Program Type",
       dataIndex: "program_type",
@@ -226,19 +192,8 @@ export default function ProgramPage() {
         },
       ],
       filterMode: "tree",
-      // @ts-ignore
-      onFilter: (value: string, record: DataType) =>
+      onFilter: (value: string | number | boolean, record: ProgramDataType) =>
         record.program_type === value,
-    },
-    {
-      title: "Code",
-      dataIndex: "code",
-      ...getColumnSearchProps("code"),
-    },
-    {
-      title: "Name",
-      dataIndex: "name",
-      ...getColumnSearchProps("name"),
     },
     {
       title: "Academic Level",
@@ -258,8 +213,7 @@ export default function ProgramPage() {
         },
       ],
       filterMode: "tree",
-      // @ts-ignore
-      onFilter: (value: string, record: DataType) =>
+      onFilter: (value: string | number | boolean, record: ProgramDataType) =>
         record.academic_level === value,
     },
     {
@@ -276,22 +230,131 @@ export default function ProgramPage() {
         },
       ],
       filterMode: "tree",
-      // @ts-ignore
-      onFilter: (value: boolean, record: DataType) => record.active === value,
+      onFilter: (value: string | number | boolean, record: ProgramDataType) =>
+        record.active === value,
+      render: (_, record: ProgramDataType) => {
+        return (
+          <Switch
+            checked={record.active}
+            onChange={() => {
+              api
+                .programChange(
+                  record.code,
+                  record.name,
+                  record.academic_level,
+                  record.program_type,
+                  !record.active
+                )
+                .then(() => {
+                  setReload(!reload);
+                });
+            }}
+          />
+        );
+      },
     },
     {
       title: "Edit/Delete",
       dataIndex: "actions",
+      render: (_, record: ProgramDataType) => {
+        return (
+          <>
+            <Space>
+              <Button
+                onClick={(e) => {
+                  setEditInput(record);
+                  setOpenEditModal(true);
+                }}
+              >
+                <EditOutlined />
+              </Button>
+              <Button onClick={(e) => deleteProgram(record.code)}>
+                <DeleteOutlined />
+              </Button>
+            </Space>
+          </>
+        );
+      },
     },
   ];
 
+  const onCreate = (values: ProgramDataType) => {
+    console.log(values);
+    setOpenEditModal(false);
+    if (editInput === undefined) {
+      // Adding New Program
+      api
+        .programAdd(
+          values.code,
+          values.name,
+          values.academic_level,
+          values.program_type,
+          true
+        )
+        .then((res) => {
+          if (res.success) {
+            message.success("Added new program");
+            setReload(true);
+          }
+        })
+        .catch((err) => {
+          message.error(err);
+          console.error(err);
+        });
+    } else {
+      // Editing Program
+      api
+        .programChange(
+          values.code,
+          values.name,
+          values.academic_level,
+          values.program_type,
+          true
+        )
+        .then((res) => {
+          if (res.success) {
+            message.success("Edited program");
+            setReload(true);
+          }
+        })
+        .catch((err) => {
+          message.error(err);
+        });
+    }
+  };
+
+  const deleteProgram = (code: string) => {
+    confirm({
+      title: "Are you sure you want to delete program?",
+      icon: <ExclamationCircleOutlined />,
+      content: "This cannot be undone.",
+      okText: "Yes",
+      okType: "danger",
+      cancelText: "No",
+      onOk() {
+        api
+          .programDelete(code)
+          .then((res) => {
+            if (res.success) {
+              message.success("Deleted Program");
+              setReload(true);
+            } else {
+              message.error("Failed to delete Program");
+            }
+          })
+          .catch((res) => {
+            console.error(res);
+            message.error("Failed to delete Program");
+          });
+      },
+      onCancel() {
+        console.log("Canceled");
+      },
+    });
+  };
+
   const addNewProgram = () => {
-    setEditActive(true);
-    setEditProgramType("");
-    setEditName("");
-    setEditLevel("");
-    setEditCode("");
-    setAddFlag(true);
+    setEditInput(undefined);
     setOpenEditModal(true);
   };
 
@@ -299,9 +362,10 @@ export default function ProgramPage() {
     <>
       <Table
         columns={columns}
+        loading={reload}
         dataSource={programs}
         pagination={{
-          total: 25,
+          total: 20,
           showTotal: (total) => {
             return (
               <Button icon={<PlusOutlined />} onClick={addNewProgram}>
@@ -312,19 +376,13 @@ export default function ProgramPage() {
         }}
       />
       <ProgramEditModal
-        programType={editProgramType}
-        name={editName}
-        code={editCode}
-        level={editLevel}
         open={openEditModal}
-        active={editActive}
-        add={addFlag}
-        setOpen={setOpenEditModal}
-      />
-      <ProgramDeleteModal
-        code={editCode}
-        open={openDeleteModal}
-        setOpen={setOpenDeleteModal}
+        onCancel={() => {
+          setEditInput(undefined);
+          setOpenEditModal(false);
+        }}
+        onCreate={onCreate}
+        editInput={editInput}
       />
     </>
   );

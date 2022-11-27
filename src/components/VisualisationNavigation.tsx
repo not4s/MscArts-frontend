@@ -472,7 +472,7 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
       }}
     >
       <Form name="Preset">
-        <Form.Item>
+        <Form.Item initialValue={newTab}>
           <Select
             value={newTab}
             options={defaultTabOptions}

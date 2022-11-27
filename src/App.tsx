@@ -16,7 +16,7 @@ import VisualisationNavigation from "./components/VisualisationNavigation";
 import { Layout, MenuProps, Menu } from "antd";
 import GeneralSettings from "./components/Settings/GeneralSettings";
 import TargetSettings from "./components/Settings/TargetSettings";
-import ProgramPage from "./components/ProgramPage";
+import ProgramPage from "./components/Settings/ProgramSettings";
 import { APIService } from "./services/API";
 import { ItemType } from "antd/lib/menu/hooks/useItems";
 import ApplicantTable from "./components/Applicants/ApplicantTable";
