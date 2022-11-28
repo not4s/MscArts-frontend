@@ -39,6 +39,11 @@ interface GraphModalProps {
   isEdit: boolean;
 }
 
+const makeTitle = (graph: Graph) => {
+  if (graph.type == "BAR") {
+  }
+};
+
 const GraphModal: React.FC<GraphModalProps> = ({
   submitAction,
   editInput = undefined,
@@ -58,13 +63,14 @@ const GraphModal: React.FC<GraphModalProps> = ({
   });
   const [type, setType] = useState("");
   const [programType, setProgramType] = useState("");
+  const [year, setYear] = useState<number>(2022);
   const [decisionStatus, setDecisionStatus] = useState<DecisionStatus>("all");
   const [customDecision, setCustomDecision] = useState<string[]>([]);
-  const [graphType, setGraphType] = useState("");
+  const [primary, setPrimary] = useState("");
 
   /* Bar Graph Values */
   const [stacked, setStacked] = useState(true);
-  const [stackType, setStackType] = useState("");
+  const [secondary, setSecondary] = useState("");
   const [plotTarget, setPlotTarget] = useState(false);
 
   /* Pie Graph Values */
@@ -75,13 +81,12 @@ const GraphModal: React.FC<GraphModalProps> = ({
   const [frequency, setFrequency] = useState(3);
 
   React.useEffect(() => {
-    console.log(editInput);
     if (editInput !== undefined) {
       /* Set the Shared Inputs */
       setType(editInput.type);
       setTitle(editInput.title);
       setProgramType(editInput.programType);
-      setGraphType(editInput.graphType);
+      setPrimary(editInput.primary);
       setLayout(editInput.layout);
       setCustomDecision(
         editInput.customDecision ? editInput.customDecision : []
@@ -94,7 +99,7 @@ const GraphModal: React.FC<GraphModalProps> = ({
       } else if (editInput.type === "BAR") {
         const barInput: BarGraphInterface = editInput;
         setStacked(barInput.combined ? barInput.combined : false);
-        setStackType(barInput.stack ? barInput.stack : "");
+        setSecondary(barInput.secondary ? barInput.secondary : "");
         setPlotTarget(barInput.target !== undefined ? true : false);
       } else if (editInput.type === "LINE") {
         const lineInput: LineGraphInterface = editInput;
@@ -114,8 +119,9 @@ const GraphModal: React.FC<GraphModalProps> = ({
       let baseGraph: BaseGraphInterface = {
         type: "BAR",
         title: title === "" ? "Graph" : title,
-        graphType: graphType,
+        primary: primary,
         data: undefined,
+        year: year,
         layout: layout,
         programType: programType,
         decisionStatus: decisionStatus,
@@ -129,7 +135,7 @@ const GraphModal: React.FC<GraphModalProps> = ({
           finalGraph = {
             ...finalGraph,
             type,
-            stack: stackType === "" ? undefined : stackType,
+            secondary: secondary === "" ? undefined : secondary,
             combined: stacked,
             target: plotTarget ? [] : undefined,
           };
@@ -150,9 +156,6 @@ const GraphModal: React.FC<GraphModalProps> = ({
           };
         default:
       }
-
-      console.log(finalGraph);
-
       submitAction(finalGraph);
     }
   };
@@ -160,7 +163,7 @@ const GraphModal: React.FC<GraphModalProps> = ({
   const handleCancel = () => {
     setModalOpen(false);
     form.resetFields();
-    setStackType("");
+    setSecondary("");
     setDecisionStatus("all");
     setType("");
   };
@@ -211,6 +214,18 @@ const GraphModal: React.FC<GraphModalProps> = ({
                   onChange={(e) => setTitle(e.target.value)}
                   value={title}
                 />
+              </Form.Item>
+
+              <Form.Item initialValue={2022}>
+                <Select
+                  defaultValue={2022}
+                  value={year}
+                  onChange={(e) => setYear(e)}
+                  options={[2022, 2021, 2020].map((v) => ({
+                    value: v,
+                    label: `Admissions Cycle ${v}`,
+                  }))}
+                ></Select>
               </Form.Item>
 
               <Form.Item
@@ -271,7 +286,7 @@ const GraphModal: React.FC<GraphModalProps> = ({
                 name="Columns"
                 rules={[{ required: true }]}
                 extra="E.g. 'Gender' will create columns for 'Male' and 'Female' respectfully"
-                initialValue={graphType}
+                initialValue={primary}
               >
                 <Select
                   placeholder="Select columns"
@@ -280,7 +295,7 @@ const GraphModal: React.FC<GraphModalProps> = ({
                     if (value !== "combined_fee_status") {
                       setPlotTarget(false);
                     }
-                    setGraphType(value);
+                    setPrimary(value);
                   }}
                 >
                   {Object.keys(APPLICANT_COLUMN_MAPPING).map((k, index) => {
@@ -299,7 +314,7 @@ const GraphModal: React.FC<GraphModalProps> = ({
 
           {type === "BAR" ? (
             <>
-              {graphType === "combined_fee_status" ? (
+              {primary === "combined_fee_status" ? (
                 <Form.Item initialValue={plotTarget}>
                   <Checkbox
                     onChange={(e) => setPlotTarget(e.target.checked)}
@@ -316,11 +331,11 @@ const GraphModal: React.FC<GraphModalProps> = ({
                 name="Stack Type"
                 hasFeedback
                 validateStatus={
-                  stackType !== "" && stackType === graphType ? "error" : ""
+                  secondary !== "" && secondary === primary ? "error" : ""
                 }
-                initialValue={stackType}
+                initialValue={secondary}
                 help={
-                  stackType !== "" && stackType === graphType
+                  secondary !== "" && secondary === primary
                     ? "Columns and Stack Type cannot be the same!"
                     : "E.g. 'Fee Status' will breakdown the Genders into their fee statuses"
                 }
@@ -328,7 +343,7 @@ const GraphModal: React.FC<GraphModalProps> = ({
                 <Select
                   placeholder="Select Stack Type"
                   style={{ width: 240 }}
-                  onChange={(value) => setStackType(value)}
+                  onChange={(value) => setSecondary(value)}
                 >
                   <Option value={""}>None</Option>
                   {Object.keys(APPLICANT_COLUMN_MAPPING).map((k, index) => {

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Alert, Menu, message } from "antd";
+import { Alert, Form, Menu, message, Select } from "antd";
 import { Button, Dropdown, Input, Modal, Tabs } from "antd";
 import type { Tab } from "rc-tabs/lib/interface";
 import {
@@ -14,6 +14,7 @@ import Cookies from "universal-cookie";
 import ImportModal from "./ImportModal";
 import GraphModal from "./GraphModal";
 import type { MenuProps } from "antd";
+import { APIService } from "../services/API";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -40,10 +41,11 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
             y: 0,
           },
           programType: "MAC",
-          graphType: "combined_fee_status",
+          primary: "combined_fee_status",
           decisionStatus: "all",
-          stack: "decision_status",
+          secondary: "decision_status",
           combined: true,
+          year: 2022,
           data: undefined,
           title: "Applications Target Bar Chart (MAC)",
           target: [],
@@ -58,9 +60,10 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
             y: 0,
           },
           programType: "AIML",
-          graphType: "combined_fee_status",
+          primary: "combined_fee_status",
           decisionStatus: "all",
-          stack: "decision_status",
+          secondary: "decision_status",
+          year: 2022,
           target: [],
           combined: true,
           data: undefined,
@@ -76,9 +79,10 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
             y: 0,
           },
           programType: "MCS",
-          graphType: "combined_fee_status",
+          primary: "combined_fee_status",
           decisionStatus: "all",
-          stack: "decision_status",
+          secondary: "decision_status",
+          year: 2022,
           target: [],
           combined: true,
           data: undefined,
@@ -101,7 +105,8 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
             y: 0,
           },
           decisionStatus: "all",
-          graphType: "nationality",
+          primary: "nationality",
+          year: 2022,
           data: undefined,
           title: "Nationality Pie Chart (ALL)",
           top: 10,
@@ -117,7 +122,8 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
             y: 0,
           },
           decisionStatus: "all",
-          graphType: "ethnicity",
+          primary: "ethnicity",
+          year: 2022,
           data: undefined,
           title: "Ethnicity Pie Chart (ALL)",
           top: 10,
@@ -133,7 +139,8 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
             y: 0,
           },
           decisionStatus: "all",
-          graphType: "gender",
+          primary: "gender",
+          year: 2022,
           data: undefined,
           title: "Gender Pie Chart (ALL)",
         },
@@ -154,9 +161,10 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
           },
           programType: "ALL",
           decisionStatus: "all",
-          graphType: "hi",
+          primary: "hi",
           data: undefined,
           title: "Line graph",
+          year: 2022,
           frequency: 10,
           breakdown: "year",
           series: "gender",
@@ -236,14 +244,24 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
     }
   }, [graphContent]);
 
-  const add = () => {
+  const addTab = async (newTab: string) => {
+    let newGraph: Graph[] = [];
+    let newLabel: string = "Untitled";
+    const api = new APIService();
+    if (newTab !== "") {
+      const res = await api.importTab(newTab);
+      newGraph = JSON.parse(atob(res.data["base64JSON"]));
+      newLabel = res.data["title"] ? res.data["title"] : "Untitled";
+    }
+    console.log(newGraph);
+
     const newItemKey = `item-${keyCounter}`;
     const newGraphContent: GraphGridInterface[] = [
       ...graphContent,
-      { label: "Untitled", key: newItemKey, graph: [] },
+      { label: newLabel, key: newItemKey, graph: newGraph },
     ];
+
     setGraphContentWithCookie(newGraphContent);
-    setItems(makeTabItem(newGraphContent));
     setActiveKey(newItemKey);
     setKeyCounter((old) => old + 1);
   };
@@ -272,7 +290,9 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
     if (items.map((i) => i.key).includes(targetKey)) {
       showDeleteConfirm(targetKey);
     } else {
-      add();
+      setNewTab("");
+      setNewTabModalOpen(true);
+      // add();
     }
   };
 
@@ -307,6 +327,7 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
   };
 
   const exportUniqueLink = () => {
+    const api = new APIService();
     const targetIndex = items.findIndex((i: any) => i.key === activeKey);
 
     let newGraphs: Graph[] = [...graphContent][targetIndex].graph;
@@ -315,23 +336,37 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
       return g;
     });
 
-    navigator.clipboard.writeText(btoa(JSON.stringify(newGraphs)));
-    message.success("JSON Model Copied to Clipboard", 0.5);
+    const base64 = btoa(JSON.stringify(newGraphs));
+
+    api.exportTab(base64).then((res) => {
+      if (res.success) {
+        navigator.clipboard.writeText(res.data.id);
+        message.success("JSON Model Copied to Clipboard", 0.5);
+      } else {
+        message.error("Failed to export", 0.5);
+      }
+    });
   };
 
   const importUniqueLink = (value: string) => {
     try {
-      const newGraph = JSON.parse(atob(value));
-      const targetIndex = items.findIndex((i: any) => i.key === activeKey);
+      const api = new APIService();
 
-      let newGraphContent: GraphGridInterface[] = [...graphContent];
+      api.importTab(value).then((res) => {
+        if (res.success) {
+          const newGraph = JSON.parse(atob(res.data["base64JSON"]));
+          const targetIndex = items.findIndex((i: any) => i.key === activeKey);
 
-      newGraphContent[targetIndex].graph = newGraph;
+          let newGraphContent: GraphGridInterface[] = [...graphContent];
 
-      console.log(newGraphContent);
+          newGraphContent[targetIndex].graph = newGraph;
 
-      setGraphContentWithCookie(newGraphContent);
-      message.success("Imported Successfully", 0.5);
+          setGraphContentWithCookie(newGraphContent);
+          message.success("Imported Successfully", 0.5);
+        } else {
+          message.error("Import failed", 0.5);
+        }
+      });
     } catch {
       message.error("Unable To Parse Input", 0.5);
     }
@@ -350,7 +385,7 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
     setGraphContentWithCookie(newGraphContent);
   };
 
-  const operationItems2: MenuItem[] = [
+  const operationItems: MenuProps["items"] = [
     {
       label: "Export",
       key: "op-1",
@@ -365,27 +400,10 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
     },
   ];
 
-  const menu = <Menu items={operationItems2} />;
-
-  // const operationItems: MenuProps["items"] = [
-  //   {
-  //     label: "Export",
-  //     key: "op-1",
-  //     icon: <ExportOutlined />,
-  //     onClick: exportUniqueLink,
-  //   },
-  //   {
-  //     label: "Import",
-  //     key: "op-2",
-  //     icon: <ImportOutlined />,
-  //     onClick: (e) => setImportModalOpen(true),
-  //   },
-  // ];
-
   const operations = (
     <>
       <GraphModal submitAction={addGraph} isEdit={false} />
-      <Dropdown overlay={menu}>
+      <Dropdown menu={{ items: operationItems }}>
         <Button>
           More Actions
           <DownOutlined />
@@ -409,8 +427,70 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
     setModalOpen(false);
   };
 
+  const [isNewTabModalOpen, setNewTabModalOpen] = useState<boolean>(false);
+
+  const handleNewTabOk = () => {
+    addTab(newTab);
+    setNewTab("");
+    setNewTabModalOpen(false);
+  };
+
+  const [defaultTabOptions, setDefaultTabOptions] = useState<any[]>([]);
+  const [newTab, setNewTab] = useState("");
+
+  React.useEffect(() => {
+    if (isNewTabModalOpen) {
+      const api = new APIService();
+
+      api.getDefaultTabs().then((res) => {
+        if (res.success) {
+          let options: any[] = [
+            {
+              value: "",
+              label: "Blank",
+            },
+          ];
+
+          const otherOptions = res.data.map((v: any) => {
+            return {
+              value: v.id,
+              label: v.title,
+            };
+          });
+
+          options = options.concat(otherOptions);
+
+          setDefaultTabOptions(options);
+        }
+      });
+    }
+  }, [isNewTabModalOpen]);
+
+  const newTabModal = (
+    <Modal
+      title={"Create a new Tab"}
+      open={isNewTabModalOpen}
+      onOk={handleNewTabOk}
+      onCancel={() => {
+        setNewTab("");
+        setNewTabModalOpen(false);
+      }}
+    >
+      <Form name="Preset">
+        <Form.Item initialValue={newTab}>
+          <Select
+            value={newTab}
+            options={defaultTabOptions}
+            onChange={(e) => setNewTab(e)}
+          />
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
+
   return (
     <div>
+      {newTabModal}
       <Modal
         title={
           "Rename '" + items.find((i: Tab) => i.key === activeKey)?.label + "'"
