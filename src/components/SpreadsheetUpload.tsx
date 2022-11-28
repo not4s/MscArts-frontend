@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { FileUploader } from "react-drag-drop-files";
 import { Alert, Button, Form, message, Select, Spin, Upload } from "antd";
 import axios from "axios";
 import { Modal, Input } from "antd";
@@ -135,7 +134,7 @@ const SpreadsheetUpload: React.FC<Props> = ({ mock, setMock, setMockData }) => {
               <Option value="APPLICANT">Applicant Spreadsheet</Option>
               <Option value="DEPOSIT">Deposit Spreadsheet</Option>
             </Select>
-            Are you sure you want to upload this spreadsheet?
+            <p>Are you sure you want to upload this spreadsheet?</p>
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit">
