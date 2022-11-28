@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { APIService } from "../services/API";
 import { Container } from "../styles/app-style";
 import { ActionButton } from "../styles/dialog-style";
@@ -7,7 +7,6 @@ import {
   Form,
   Input,
   Label,
-  Logo,
   Name,
   Tagline,
 } from "../styles/login-style";
@@ -32,7 +31,6 @@ export default function Login(props: any) {
     api
       .login(username, password)
       .then((res: any) => {
-        console.log(res);
         sessionStorage.setItem("user", res.data.accessToken);
 
         api
@@ -45,6 +43,7 @@ export default function Login(props: any) {
           });
       })
       .catch((res) => {
+        console.log(res);
         if (res.response.status === 401) {
           message.error("Request Access from System Administrator");
         } else {

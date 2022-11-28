@@ -9,12 +9,12 @@ testing:
 
 staging:
   variables:
-    REACT_APP_API_URL: http://146.169.43.35:5000
+    REACT_APP_API_URL: http://146.169.43.35:5000/
     ENV: staging
   stage: staging
   script:
     - source ~/.bashrc
-    - npm install
+    - node --max-old-space-size=8000 $(which npm) ci
     - CI=false npm run build
     - sudo rm -rf /usr/share/nginx/html/*
     - sudo cp -a build/. /usr/share/nginx/html/

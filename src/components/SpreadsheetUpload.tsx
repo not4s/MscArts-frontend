@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { FileUploader } from "react-drag-drop-files";
 import { Alert, Button, Form, message, Select, Spin, Upload } from "antd";
 import axios from "axios";
 import { Modal, Input } from "antd";
@@ -33,20 +32,6 @@ const SpreadsheetUpload: React.FC<Props> = ({ mock, setMock, setMockData }) => {
   const [file, setFile] = useState<File>();
   const [form] = Form.useForm();
 
-  // const showConfirm = (file: File) => {
-  //   confirm({
-  //     title: "Are you sure you want to upload this spreadsheet?",
-  //     icon: <ExclamationCircleOutlined />,
-  //     okText: "Upload",
-  //     onOk() {
-  //         setFile(file);
-  //         setOpenModal(true);
-  //     },
-  //     onCancel() {
-  //       console.log("Canceled");
-  //     },
-  //   });
-  // };
   const handleChange = (file: File) => {
     setFile(file);
     setOpenModal(true);
@@ -69,6 +54,7 @@ const SpreadsheetUpload: React.FC<Props> = ({ mock, setMock, setMockData }) => {
           }
           setReload(true);
           setShowSpin(false);
+          setOpenModal(false);
           setMock(res.success);
           setMockData(res.data);
         })
@@ -85,6 +71,7 @@ const SpreadsheetUpload: React.FC<Props> = ({ mock, setMock, setMockData }) => {
           }
           setReload(true);
           setShowSpin(false);
+          setOpenModal(false);
         })
         .catch(() => console.log("failure"));
     }

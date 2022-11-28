@@ -11,18 +11,28 @@ export interface TargetInterface {
 
 export type Graph = BarGraphInterface | PieGraphInterface | LineGraphInterface;
 
+export type DecisionStatus = "all" | "live" | "not_live" | "custom";
+
+export interface GraphGridInterface {
+  label: string;
+  key: string;
+  graph: Graph[];
+}
+
 export interface BaseGraphInterface {
   title: string;
   layout: RGL.Layout;
   type: GraphType;
   programType: string;
-  decisionStatus: string;
-  graphType: string;
+  decisionStatus: DecisionStatus;
+  customDecision?: string[]; // Required if decisionStatus is custom
+  primary: string;
+  year: number;
   data: any[] | undefined;
 }
 
 export interface BarGraphInterface extends BaseGraphInterface {
-  stack?: string;
+  secondary?: string;
   combined?: boolean;
   target?: TargetInterface[];
 }
@@ -34,4 +44,5 @@ export interface PieGraphInterface extends BaseGraphInterface {
 export interface LineGraphInterface extends BaseGraphInterface {
   frequency?: number;
   breakdown?: string;
+  series?: string;
 }

@@ -9,6 +9,7 @@ import {
   SlidersOutlined,
   RiseOutlined,
   ContactsOutlined,
+  LayoutOutlined,
 } from "@ant-design/icons";
 import React, { useState } from "react";
 import SpreadsheetUpload from "./components/SpreadsheetUpload";
@@ -16,13 +17,11 @@ import VisualisationNavigation from "./components/VisualisationNavigation";
 import { Layout, MenuProps, Menu } from "antd";
 import GeneralSettings from "./components/Settings/GeneralSettings";
 import TargetSettings from "./components/Settings/TargetSettings";
-import Login from "./components/Login";
-import ProgramPage from "./components/ProgramPage";
+import ProgramPage from "./components/Settings/ProgramSettings";
 import { APIService } from "./services/API";
 import { ItemType } from "antd/lib/menu/hooks/useItems";
 import ApplicantTable from "./components/Applicants/ApplicantTable";
 import UserAccessSettings from "./components/Settings/UserAccessSettings";
-import MockVisualisation from "./components/Mocks/MockVisualisation";
 import {
   Outlet,
   useNavigate,
@@ -32,6 +31,8 @@ import {
 } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthVerification from "./services/AuthVerification";
+import ParamGraphGrid from "./components/ParamGraphGrid";
+import TemplateSettings from "./components/Settings/TemplateSettings";
 
 const { Sider, Header, Footer, Content } = Layout;
 
@@ -92,6 +93,12 @@ export default function App() {
           <SlidersOutlined />
         ),
         getItem(
+          currentUserRole >= 3,
+          "Templates",
+          "/settings/templates",
+          <LayoutOutlined />
+        ),
+        getItem(
           currentUserRole >= 2,
           "Programs",
           "/settings/programs",
@@ -107,7 +114,7 @@ export default function App() {
           currentUserRole >= 3,
           "User Access",
           "/settings/user",
-          <SettingOutlined />
+          <UserOutlined />
         ),
       ]
     ),
@@ -124,7 +131,6 @@ export default function App() {
   ];
 
   React.useEffect(() => {
-    console.log("Location is ", location);
     const accessToken = sessionStorage.getItem("user");
     const api = new APIService();
     api.getRole().then((res) => {
@@ -195,14 +201,23 @@ export default function App() {
                     roleRequired={1}
                     rolePossessed={currentUserRole}
                   >
-                    {!mockMode ? (
-                      <VisualisationNavigation />
-                    ) : (
-                      <MockVisualisation mockData={mockData} />
-                    )}
+                    <VisualisationNavigation mock={mockMode} />
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="visuals/:graphs"
+                element={
+                  <ProtectedRoute
+                    user={currentUser}
+                    roleRequired={1}
+                    rolePossessed={currentUserRole}
+                  >
+                    <ParamGraphGrid />
+                  </ProtectedRoute>
+                }
+              />
+
               <Route
                 path="spreadsheets"
                 element={
@@ -229,6 +244,18 @@ export default function App() {
                       rolePossessed={currentUserRole}
                     >
                       <GeneralSettings />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="templates"
+                  element={
+                    <ProtectedRoute
+                      user={currentUser}
+                      roleRequired={3}
+                      rolePossessed={currentUserRole}
+                    >
+                      <TemplateSettings />
                     </ProtectedRoute>
                   }
                 />

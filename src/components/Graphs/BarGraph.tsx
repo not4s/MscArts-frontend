@@ -3,7 +3,18 @@ import { EditText } from "react-edit-text";
 import "react-edit-text/dist/index.css";
 import { Column, ColumnConfig } from "@ant-design/charts";
 import { DraggableHandle } from "./styles";
-import { TargetInterface } from "../../constants/graphs";
+import { Graph, TargetInterface } from "../../constants/graphs";
+import { Modal, Button, Dropdown } from "antd";
+import type { MenuProps } from "antd";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  EllipsisOutlined,
+  ExclamationCircleOutlined,
+} from "@ant-design/icons";
+import GraphModal from "../GraphModal";
+
+const { confirm } = Modal;
 
 const DEFAULT_CONFIG = {
   data: [],
@@ -17,17 +28,21 @@ const DEFAULT_CONFIG = {
 };
 
 interface BarGraphProps {
-  graphType: string;
+  primary: string;
   data: any[] | undefined;
   title: string;
   setTitle: (newTitle: string) => void;
+  deleteGraph: () => void;
+  editGraph: (x: Graph) => void;
 }
 
 const BarGraph: React.FC<BarGraphProps> = ({
-  graphType,
+  primary,
   data,
   title,
   setTitle,
+  deleteGraph,
+  editGraph,
   ...props
 }) => {
   const [config, setConfig] = useState<ColumnConfig>(DEFAULT_CONFIG);
@@ -36,7 +51,7 @@ const BarGraph: React.FC<BarGraphProps> = ({
       let newConfig: ColumnConfig = {
         ...DEFAULT_CONFIG,
         data,
-        xField: graphType,
+        xField: primary,
       };
       const p: any = props;
       if (p["target"] !== undefined && p["target"].length > 1) {
@@ -75,22 +90,67 @@ const BarGraph: React.FC<BarGraphProps> = ({
         }
         newConfig = { ...newConfig, annotations };
       }
-
-      console.log(newConfig);
-
       setConfig(newConfig);
     }
   }, [data]);
 
+  const operationItems: MenuProps["items"] = [
+    {
+      label: "Edit",
+      key: `op-1`,
+      icon: <EditOutlined />,
+      onClick: (e) => {
+        // @ts-ignore
+        setEdit({ ...props, data: undefined, title, primary, type: "BAR" });
+      },
+    },
+    {
+      label: "Delete",
+      key: `op-2`,
+      icon: <DeleteOutlined />,
+      onClick: (e) => showDeleteConfirm(),
+    },
+  ];
+
+  const [edit, setEdit] = useState<Graph | undefined>(undefined);
+
+  const showDeleteConfirm = () => {
+    confirm({
+      title: "Delete this graph?",
+      icon: <ExclamationCircleOutlined />,
+      okText: "Yes",
+      okType: "danger",
+      cancelText: "No",
+      onOk() {
+        deleteGraph();
+      },
+      onCancel() {},
+    });
+  };
+
   return (
     <>
+      <GraphModal editInput={edit} submitAction={editGraph} isEdit={true} />
       <DraggableHandle className="myDragHandleClassName">
-        <EditText
-          name="textbox3"
-          defaultValue={title}
-          inputClassName="bg-success"
-          onSave={(e) => setTitle(e.value)}
-        />
+        <table>
+          <tr>
+            <td className="a" style={{ width: "calc(100%)" }}>
+              <EditText
+                name="textbox3"
+                defaultValue={title}
+                inputClassName="bg-success"
+                onSave={(e) => setTitle(e.value)}
+              />
+            </td>
+            <td>
+              <Dropdown menu={{ items: operationItems }}>
+                <Button>
+                  <EllipsisOutlined />
+                </Button>
+              </Dropdown>
+            </td>
+          </tr>
+        </table>
       </DraggableHandle>
       <Column className="our-chart" {...config} />
     </>
