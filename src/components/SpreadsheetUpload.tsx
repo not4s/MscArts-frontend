@@ -122,7 +122,7 @@ const SpreadsheetUpload: React.FC<Props> = ({ mock, setMock, setMockData }) => {
               <Option value="APPLICANT">Applicant Spreadsheet</Option>
               <Option value="DEPOSIT">Deposit Spreadsheet</Option>
             </Select>
-            Are you sure you want to upload this spreadsheet?
+            <p>Are you sure you want to upload this spreadsheet?</p>
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit">
