@@ -77,6 +77,8 @@ const GraphGrid: React.FC<Props> = ({
               breakdown: lineGraph.breakdown,
               frequency: lineGraph.frequency,
               series: lineGraph.series,
+              code: lineGraph.programType,
+              decisionStatus: lineGraph.decisionStatus,
             };
             let res = await api.getTrends(fetchParams);
             let data = res.data.reverse();
@@ -126,7 +128,13 @@ const GraphGrid: React.FC<Props> = ({
     } else if (graphData.type === "LINE") {
       return (
         <GraphSize key={graphData.layout.i} data-grid={graphData.layout}>
-          <LineGraph data={graphData.data} />
+          <LineGraph
+            data={graphData.data}
+            setTitle={(e) => setTitle(index, e)}
+            title={graphData.title}
+            editGraph={(e) => editGraph(index, e)}
+            deleteGraph={() => deleteGraph(index)}
+          />
         </GraphSize>
       );
     }

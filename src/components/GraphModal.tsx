@@ -79,7 +79,6 @@ const GraphModal: React.FC<GraphModalProps> = ({
   /* Line Graph Values */
   const [breakdown, setBreakdown] = useState("Year");
   const [frequency, setFrequency] = useState(3);
-
   React.useEffect(() => {
     if (editInput !== undefined) {
       /* Set the Shared Inputs */
@@ -153,6 +152,7 @@ const GraphModal: React.FC<GraphModalProps> = ({
             type,
             breakdown,
             frequency,
+            series: primary,
           };
         default:
       }
@@ -216,17 +216,21 @@ const GraphModal: React.FC<GraphModalProps> = ({
                 />
               </Form.Item>
 
-              <Form.Item initialValue={2022}>
-                <Select
-                  defaultValue={2022}
-                  value={year}
-                  onChange={(e) => setYear(e)}
-                  options={[2022, 2021, 2020].map((v) => ({
-                    value: v,
-                    label: `Admissions Cycle ${v}`,
-                  }))}
-                ></Select>
-              </Form.Item>
+              {type !== "LINE" ? (
+                <Form.Item initialValue={2022}>
+                  <Select
+                    defaultValue={2022}
+                    value={year}
+                    onChange={(e) => setYear(e)}
+                    options={[2022, 2021, 2020].map((v) => ({
+                      value: v,
+                      label: `Admissions Cycle ${v}`,
+                    }))}
+                  ></Select>
+                </Form.Item>
+              ) : (
+                <></>
+              )}
 
               <Form.Item
                 label="Decision Status"
@@ -405,12 +409,15 @@ const GraphModal: React.FC<GraphModalProps> = ({
                   ))}
                 </Select>
               </Form.Item>
-              <Form.Item name="Time Frame" rules={[{ required: true }]}>
+              <Form.Item
+                name="Time Frame"
+                rules={[{ required: true }]}
+                extra="Return the trend for the previous (frame) number of (period)s i.e. 3 weeks"
+              >
                 <Select
                   placeholder="Time Frame"
                   style={{ width: 240 }}
                   onChange={(value) => setFrequency(value)}
-                  // extra="Return the trend for the previous (frame) number of (period)s i.e. 3 weeks"
                 >
                   {[...Array(24).keys()].map((type) => (
                     <Option key={`${type}`} value={type}>

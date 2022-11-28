@@ -216,10 +216,17 @@ export class APIService {
     });
   }
 
-  getTrends({ breakdown, frequency, series }: any) {
+  getTrends({ breakdown, frequency, series, code, decisionStatus }: any) {
+    console.log(series);
     let endpoint = `api/trends/?unit=${frequency}&period=${breakdown}`;
     if (series != null && series != "all") {
       endpoint += `&series=${series}`;
+    }
+    if (code != null) {
+      endpoint += `&code=${code}`;
+    }
+    if (decisionStatus != null) {
+      endpoint += `&decision_status=${decisionStatus}`;
     }
     return this.buildAuthRequest("GET", endpoint);
   }
