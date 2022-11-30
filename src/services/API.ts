@@ -67,6 +67,10 @@ export class APIService {
     return this.buildAuthRequest("GET", "api/applicant/");
   }
 
+  getAllAttributes(): Promise<APIResponse> {
+    return this.buildAuthRequest("GET", "api/applicant/attribute");
+  }
+
   getGraph(graph: Graph, mock: boolean = false): Promise<APIResponse> {
     const { programType, decisionStatus, primary, customDecision, year } =
       graph;
@@ -251,8 +255,8 @@ export class APIService {
       endpoint += `&cycle=${cycles}`;
     }
     if (startDate !== "" && endDate !== "") {
-      endpoint += `&start=${startDate.slice(5)}`;
-      endpoint += `&end=${endDate.slice(5)}`;
+      endpoint += `&start=${startDate.slice(0, 5)}`;
+      endpoint += `&end=${endDate.slice(0, 5)}`;
     }
 
     return this.buildAuthRequest("GET", endpoint);
