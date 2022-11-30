@@ -74,7 +74,7 @@ export default function App() {
       currentUserRole >= 1,
       "Visualisations",
       "/visuals",
-      <PieChartOutlined />
+      <PieChartOutlined className="tester" />
     ),
     getItem(
       currentUserRole >= 2,

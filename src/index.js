@@ -13,8 +13,24 @@ import { TourProvider } from "@reactour/tour";
 
 const tutorialSteps = [
   {
-    selector: ".buttonx",
-    content: "This is my first Step",
+    selector: ".ant-tabs-nav-list",
+    content: "Example Text",
+  },
+  {
+    selector: ".ant-tabs-nav-add",
+    content: "Example Text",
+  },
+  {
+    selector: ".ant-tabs-content-holder",
+    content: "Example Text",
+  },
+  {
+    selector: ".add-graph-button",
+    content: "Example Text",
+  },
+  {
+    selector: ".more-actions-button",
+    content: "Example Text",
   },
 ];
 
