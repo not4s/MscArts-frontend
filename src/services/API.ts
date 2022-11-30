@@ -20,8 +20,6 @@ export class APIService {
     endpoint: string,
     data: { [key: string]: any } | FormData = {}
   ) {
-    console.log(`Fetching from ${apiURL + endpoint}`);
-
     let res = await axios.request({
       url: apiURL + endpoint,
       method: method,
@@ -36,8 +34,6 @@ export class APIService {
     endpoint: string,
     data: { [key: string]: any } | FormData = {}
   ) {
-    console.log(`Fetching from ${apiURL + endpoint}`);
-
     const accessToken = sessionStorage.getItem("user");
 
     if (!accessToken)
@@ -106,10 +102,6 @@ export class APIService {
     return this.buildAuthRequest("GET", reqURL);
   }
 
-  getAllAttributes(): Promise<APIResponse> {
-    return this.buildAuthRequest("GET", "api/applicant/attribute/");
-  }
-
   login(username: string, password: string): Promise<APIResponse> {
     return this.buildRequest("POST", "api/user/login/", { username, password });
   }
@@ -152,6 +144,20 @@ export class APIService {
       program_type: course,
       fee_status,
       year,
+    });
+  }
+
+  getComments(erpid: number): Promise<APIResponse> {
+    return this.buildAuthRequest(
+      "GET",
+      `api/applicant/comment/?erpid=${erpid}`
+    );
+  }
+
+  postComment(erpid: number, comment: string): Promise<APIResponse> {
+    return this.buildAuthRequest("POST", "api/applicant/comment/", {
+      erpid,
+      comment,
     });
   }
 
@@ -218,7 +224,7 @@ export class APIService {
 
   getTrends({ breakdown, frequency, series, code, decisionStatus }: any) {
     let endpoint = `api/trends/?unit=${frequency}&period=${breakdown}`;
-    if (series != null && series != "all") {
+    if (series !== null && series !== "all") {
       endpoint += `&series=${series}`;
     }
     if (code != null) {

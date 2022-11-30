@@ -81,6 +81,12 @@ export default function App() {
       <FileOutlined />
     ),
     getItem(
+      currentUserRole >= 2,
+      "Applicants",
+      "/applicants",
+      <ContactsOutlined />
+    ),
+    getItem(
       currentUserRole >= 3,
       "Settings",
       "/settings",
@@ -117,12 +123,6 @@ export default function App() {
           <UserOutlined />
         ),
       ]
-    ),
-    getItem(
-      currentUserRole >= 2,
-      "Applicants",
-      "/applicants",
-      <ContactsOutlined />
     ),
   ];
 
