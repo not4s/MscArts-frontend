@@ -80,7 +80,12 @@ const GraphGrid: React.FC<Props> = ({
               code: lineGraph.programType,
               decisionStatus: lineGraph.decisionStatus,
             };
-            let res = await api.getTrends(fetchParams);
+            let res = null;
+            if (true || lineGraph.cycle === null || !lineGraph.cycle) {
+              res = await api.getCycles(fetchParams);
+            } else {
+              res = await api.getTrends(fetchParams);
+            }
             let data = res.data.reverse();
             console.log(data);
             newGraphs[i]["data"] = data;

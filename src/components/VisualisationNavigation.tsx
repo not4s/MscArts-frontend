@@ -168,6 +168,7 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
           frequency: 10,
           breakdown: "year",
           series: "gender",
+          cycle: false,
         },
       ],
     },

@@ -217,7 +217,6 @@ export class APIService {
   }
 
   getTrends({ breakdown, frequency, series, code, decisionStatus }: any) {
-    console.log(series);
     let endpoint = `api/trends/?unit=${frequency}&period=${breakdown}`;
     if (series != null && series != "all") {
       endpoint += `&series=${series}`;
@@ -228,6 +227,11 @@ export class APIService {
     if (decisionStatus != null) {
       endpoint += `&decision_status=${decisionStatus}`;
     }
+    return this.buildAuthRequest("GET", endpoint);
+  }
+
+  getCycles({ breakdown, frequency, series, code, decisionStatus }: any) {
+    let endpoint = `api/trends/cycle?cycle=22,23&period=month`;
     return this.buildAuthRequest("GET", endpoint);
   }
 
