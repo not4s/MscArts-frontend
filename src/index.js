@@ -14,23 +14,23 @@ import { TourProvider } from "@reactour/tour";
 const tutorialSteps = [
   {
     selector: ".ant-tabs-nav-list",
-    content: "Example Text",
+    content: "These are the different tabs where you can add graphs to",
   },
   {
     selector: ".ant-tabs-nav-add",
-    content: "Example Text",
+    content: "Press this to add a new tab",
   },
   {
     selector: ".ant-tabs-content-holder",
-    content: "Example Text",
+    content: "This is where your graphs will be displayed",
   },
   {
     selector: ".add-graph-button",
-    content: "Example Text",
+    content: "You can add a new graph using this button",
   },
   {
     selector: ".more-actions-button",
-    content: "Example Text",
+    content: "Import and export tabs using this option",
   },
 ];
 
