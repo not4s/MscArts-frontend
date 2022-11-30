@@ -32,6 +32,7 @@ interface DataType {
   gender: string;
   prefix: string;
   combined_fee_status: string;
+  admissions_cycle: number;
   nationality: string;
   program_code: string;
 }
@@ -50,6 +51,7 @@ export const ApplicantTable = () => {
   const [program_codes, setProgramCodes] = useState([]);
   const [genders, setGenders] = useState([]);
   const [fee_status, setFeeStatus] = useState([]);
+  const [admissions_cycle, setAdmissionsCycle] = useState([]);
 
   /* Table Search Filters */
   const [searchText, setSearchText] = useState("");
@@ -190,6 +192,13 @@ export const ApplicantTable = () => {
             ...new Set(res.data.map((v: any) => v["combined_fee_status"])),
           ];
           setFeeStatus(fee_status);
+
+          const admissions_cycle: any = [
+            ...new Set(res.data.map((v: any) => v["admissions_cycle"])),
+          ];
+
+          setAdmissionsCycle(admissions_cycle);
+
           setReload(false);
         })
         .catch((err) => console.log(err));
@@ -205,12 +214,19 @@ export const ApplicantTable = () => {
       ...getColumnSearchProps("erpid"),
     },
     {
-      title: "Name",
+      title: "Admission Cycle",
+      dataIndex: "admissions_cycle",
+      filters: admissions_cycle.map((code) => ({ text: code, value: code })),
+      filterSearch: true,
+      onFilter: (value, record) => record.admissions_cycle === value,
+    },
+    {
+      title: "First Name",
       dataIndex: "first_name",
       ...getColumnSearchProps("first_name"),
     },
     {
-      title: "Surname",
+      title: "Last Name",
       dataIndex: "last_name",
       ...getColumnSearchProps("last_name"),
     },
@@ -305,8 +321,11 @@ export const ApplicantTable = () => {
         onClose={onDrawerClose}
       >
         <Descriptions size="small" title="Status" bordered>
-          <Descriptions.Item label="Status" span={3}>
+          <Descriptions.Item label="Proposed Decision" span={3}>
             {activeCandidate?.proposed_decision}
+          </Descriptions.Item>
+          <Descriptions.Item label="Decision" span={3}>
+            {activeCandidate?.decision_status}
           </Descriptions.Item>
         </Descriptions>
         <Divider />
