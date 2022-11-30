@@ -523,7 +523,7 @@ const GraphModal: React.FC<GraphModalProps> = ({
           onClick={() => setModalOpen(true)}
           style={{ marginRight: "5px" }}
         >
-          Add Graph
+          Graph
         </Button>
       ) : (
         <></>
