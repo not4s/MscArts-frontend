@@ -45,5 +45,8 @@ export interface LineGraphInterface extends BaseGraphInterface {
   frequency?: number;
   breakdown?: string;
   series?: string;
-  cycle?: boolean;
+  cycle?: string;
+  startDate?: string;
+  endDate?: string;
+  cycleYears?: string[];
 }

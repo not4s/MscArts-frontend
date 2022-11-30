@@ -79,9 +79,12 @@ const GraphGrid: React.FC<Props> = ({
               series: lineGraph.series,
               code: lineGraph.programType,
               decisionStatus: lineGraph.decisionStatus,
+              cycleYears: lineGraph.cycleYears,
+              startDate: lineGraph.startDate,
+              endDate: lineGraph.endDate,
             };
             let res = null;
-            if (true || lineGraph.cycle === null || !lineGraph.cycle) {
+            if (lineGraph.cycle !== null && lineGraph.cycle === "cycle") {
               res = await api.getCycles(fetchParams);
             } else {
               res = await api.getTrends(fetchParams);

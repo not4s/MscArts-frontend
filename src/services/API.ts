@@ -230,8 +230,25 @@ export class APIService {
     return this.buildAuthRequest("GET", endpoint);
   }
 
-  getCycles({ breakdown, frequency, series, code, decisionStatus }: any) {
-    let endpoint = `api/trends/cycle?cycle=22,23&period=month`;
+  getCycles({
+    breakdown,
+    frequency,
+    series,
+    code,
+    cycleYears,
+    startDate,
+    endDate,
+  }: any) {
+    let cycles = cycleYears.join(",");
+    let endpoint = `api/trends/cycle?period=${breakdown}`;
+    if (cycleYears.length > 0) {
+      endpoint += `&cycle=${cycles}`;
+    }
+    if (startDate !== "" && endDate !== "") {
+      endpoint += `&start=${startDate.slice(5)}`;
+      endpoint += `&end=${endDate.slice(5)}`;
+    }
+
     return this.buildAuthRequest("GET", endpoint);
   }
 

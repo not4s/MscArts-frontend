@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BarChartOutlined,
   PieChartOutlined,
@@ -15,6 +15,8 @@ import {
   Input,
   InputNumber,
   Radio,
+  DatePicker,
+  Space,
 } from "antd";
 import {
   APPLICANT_COLUMN_MAPPING,
@@ -29,6 +31,7 @@ import {
   PieGraphInterface,
 } from "../constants/graphs";
 import { Layout } from "react-grid-layout";
+import { APIService } from "../services/API";
 
 const { Option } = Select;
 const degreeTypes = ["ALL", "MAC", "AIML", "MCSS", "MCS"];
@@ -62,10 +65,11 @@ const GraphModal: React.FC<GraphModalProps> = ({
     y: 0,
   });
   const [type, setType] = useState("");
-  const [programType, setProgramType] = useState("");
+  const [programType, setProgramType] = useState("ALL");
   const [year, setYear] = useState<number>(2022);
   const [decisionStatus, setDecisionStatus] = useState<DecisionStatus>("all");
   const [customDecision, setCustomDecision] = useState<string[]>([]);
+  const [cycleYears, setCycleYears] = useState<string[]>([]);
   const [primary, setPrimary] = useState("");
 
   /* Bar Graph Values */
@@ -77,8 +81,18 @@ const GraphModal: React.FC<GraphModalProps> = ({
   const [top, setTop] = useState(0);
 
   /* Line Graph Values */
-  const [breakdown, setBreakdown] = useState("Year");
+  const [breakdown, setBreakdown] = useState("Month");
   const [frequency, setFrequency] = useState(3);
+  const [cycle, setCycle] = useState("cycle");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [admissionCycles, setAdmissionCycles] = useState([
+    "23",
+    "22",
+    "21",
+    "20",
+  ]);
+
   React.useEffect(() => {
     if (editInput !== undefined) {
       /* Set the Shared Inputs */
@@ -109,6 +123,19 @@ const GraphModal: React.FC<GraphModalProps> = ({
       setModalOpen(true);
     }
   }, [editInput]);
+
+  const api = new APIService();
+  const { RangePicker } = DatePicker;
+
+  const getAdmissionCycles = async () => {
+    let res = await api.getAllAttributes();
+    let cycles = res.data.admissions_cycle.map((v: any) => String(v).slice(-2));
+    setAdmissionCycles(cycles);
+  };
+
+  // useEffect(() => {
+  // getAdmissionCycles();
+  // }, [])
 
   const handleOk = () => {
     form.submit();
@@ -153,6 +180,10 @@ const GraphModal: React.FC<GraphModalProps> = ({
             breakdown,
             frequency,
             series: primary,
+            cycleYears,
+            startDate,
+            endDate,
+            cycle,
           };
         default:
       }
@@ -286,31 +317,35 @@ const GraphModal: React.FC<GraphModalProps> = ({
                 </Select>
               </Form.Item>
 
-              <Form.Item
-                name="Columns"
-                rules={[{ required: true }]}
-                extra="E.g. 'Gender' will create columns for 'Male' and 'Female' respectfully"
-                initialValue={primary}
-              >
-                <Select
-                  placeholder="Select columns"
-                  style={{ width: 240 }}
-                  onChange={(value) => {
-                    if (value !== "combined_fee_status") {
-                      setPlotTarget(false);
-                    }
-                    setPrimary(value);
-                  }}
+              {cycle === "cycle" && type === "LINE" ? (
+                <></>
+              ) : (
+                <Form.Item
+                  name="Columns"
+                  rules={[{ required: true }]}
+                  extra="E.g. 'Gender' will create columns for 'Male' and 'Female' respectfully"
+                  initialValue={primary}
                 >
-                  {Object.keys(APPLICANT_COLUMN_MAPPING).map((k, index) => {
-                    return (
-                      <Option key={index} value={APPLICANT_COLUMN_MAPPING[k]}>
-                        {k}
-                      </Option>
-                    );
-                  })}
-                </Select>
-              </Form.Item>
+                  <Select
+                    placeholder="Select columns"
+                    style={{ width: 240 }}
+                    onChange={(value) => {
+                      if (value !== "combined_fee_status") {
+                        setPlotTarget(false);
+                      }
+                      setPrimary(value);
+                    }}
+                  >
+                    {Object.keys(APPLICANT_COLUMN_MAPPING).map((k, index) => {
+                      return (
+                        <Option key={index} value={APPLICANT_COLUMN_MAPPING[k]}>
+                          {k}
+                        </Option>
+                      );
+                    })}
+                  </Select>
+                </Form.Item>
+              )}
             </>
           ) : (
             <></>
@@ -396,30 +431,79 @@ const GraphModal: React.FC<GraphModalProps> = ({
           )}
           {type === "LINE" ? (
             <>
-              <Form.Item name="Time Period" rules={[{ required: true }]}>
+              <Form.Item label="Cycle" name="cycle" initialValue={cycle}>
+                <Radio.Group onChange={(e) => setCycle(e.target.value)}>
+                  <Radio.Button value="cycle">Per Admission Cycle</Radio.Button>
+                  <Radio.Button value="relative">
+                    Relative To Today
+                  </Radio.Button>
+                </Radio.Group>
+              </Form.Item>
+              {cycle === "cycle" ? (
+                <>
+                  <Form.Item
+                    name="Cycle Years"
+                    rules={[{ required: true }]}
+                    initialValue={cycleYears}
+                  >
+                    <Select
+                      mode="multiple"
+                      placeholder="Select Admission Cycles to Compare"
+                      onChange={(e) => setCycleYears(e)}
+                      options={admissionCycles.map((v) => ({
+                        label: "Admission Cycle 20" + v,
+                        value: v,
+                      }))}
+                    ></Select>
+                  </Form.Item>
+
+                  <Form.Item
+                    name="Date"
+                    extra="By default will show a whole cycle"
+                    rules={[{ required: false }]}
+                    initialValue=""
+                  >
+                    <RangePicker
+                      onChange={(v) => {
+                        setStartDate(String(v?.[0]?.format("L")));
+                        setEndDate(String(v?.[1]?.format("L")));
+                      }}
+                    />
+                  </Form.Item>
+                </>
+              ) : (
+                <>
+                  <Form.Item
+                    name="Time Frame"
+                    rules={[{ required: true }]}
+                    extra="Return the trend for the previous (frame) number of (period)s i.e. 3 weeks"
+                  >
+                    <Select
+                      placeholder="Time Frame"
+                      style={{ width: 240 }}
+                      onChange={(value) => setFrequency(value)}
+                    >
+                      {[...Array(24).keys()].map((type) => (
+                        <Option key={`${type + 1}`} value={type + 1}>
+                          {type + 1}
+                        </Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </>
+              )}
+              <Form.Item
+                name="Time Period"
+                rules={[{ required: true }]}
+                extra="How to split up the information"
+                initialValue={breakdown}
+              >
                 <Select
                   placeholder="Time Period"
                   style={{ width: 240 }}
                   onChange={(value) => setBreakdown(value)}
                 >
                   {["Day", "Week", "Month", "Year"].map((type) => (
-                    <Option key={`${type}`} value={type}>
-                      {type}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-              <Form.Item
-                name="Time Frame"
-                rules={[{ required: true }]}
-                extra="Return the trend for the previous (frame) number of (period)s i.e. 3 weeks"
-              >
-                <Select
-                  placeholder="Time Frame"
-                  style={{ width: 240 }}
-                  onChange={(value) => setFrequency(value)}
-                >
-                  {[...Array(24).keys()].map((type) => (
                     <Option key={`${type}`} value={type}>
                       {type}
                     </Option>
