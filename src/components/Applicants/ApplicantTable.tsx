@@ -9,6 +9,7 @@ import {
   Form,
   Input,
   InputRef,
+  Layout,
   List,
   message,
   Row,
@@ -38,6 +39,8 @@ interface DataType {
 }
 
 type DataIndex = keyof DataType;
+
+const { Content } = Layout;
 
 export const ApplicantTable = () => {
   const api = new APIService();
@@ -299,21 +302,33 @@ export const ApplicantTable = () => {
 
   return (
     <>
-      <Table
-        columns={columns}
-        dataSource={tableData}
-        onChange={onChange}
-        loading={reload}
-        onRow={(record: DataType, index) => {
-          return {
-            onClick: (e) => {
-              setActiveCandidate(record as any);
-              setDrawerOpen(true);
-            },
-          };
-        }}
-        scroll={{ y: "calc(90vh - 4em)" }}
-      />
+      <Layout>
+        <Content
+          className="site-layout-content"
+          style={{
+            padding: 24,
+            margin: 0,
+            minHeight: 280,
+            background: "#fff",
+          }}
+        >
+          <Table
+            columns={columns}
+            dataSource={tableData}
+            onChange={onChange}
+            loading={reload}
+            onRow={(record: DataType, index) => {
+              return {
+                onClick: (e) => {
+                  setActiveCandidate(record as any);
+                  setDrawerOpen(true);
+                },
+              };
+            }}
+            scroll={{ y: "calc(90vh - 4em)" }}
+          />
+        </Content>
+      </Layout>
       <Drawer
         width={640}
         open={drawerOpen}

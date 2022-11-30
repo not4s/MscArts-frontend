@@ -125,7 +125,12 @@ export class APIService {
     );
   }
 
-  postTarget({ course, target, fee_status, year }: any): Promise<APIResponse> {
+  postTarget(
+    course: any,
+    year: number,
+    fee_status: any,
+    target: number
+  ): Promise<APIResponse> {
     return this.buildAuthRequest("POST", `api/target/`, {
       program_type: course,
       year,
@@ -134,7 +139,12 @@ export class APIService {
     });
   }
 
-  putTarget({ course, target, fee_status, year }: any): Promise<APIResponse> {
+  putTarget(
+    course: any,
+    year: number,
+    fee_status: any,
+    target: number
+  ): Promise<APIResponse> {
     return this.buildAuthRequest("PUT", `api/target/`, {
       program_type: course,
       year,
@@ -143,7 +153,11 @@ export class APIService {
     });
   }
 
-  deleteTarget({ course, fee_status, year }: any): Promise<APIResponse> {
+  deleteTarget(
+    course: string,
+    fee_status: string,
+    year: number
+  ): Promise<APIResponse> {
     return this.buildAuthRequest("DELETE", `api/target/`, {
       program_type: course,
       fee_status,
