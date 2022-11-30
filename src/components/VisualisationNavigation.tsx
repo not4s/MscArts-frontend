@@ -403,7 +403,7 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
 
   const operations = (
     <>
-      <GraphModal submitAction={addGraph} isEdit={false} />
+      <GraphModal submitAction={addGraph}/>
       <Dropdown menu={{ items: operationItems }}>
         <Button>
           More Actions

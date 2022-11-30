@@ -115,7 +115,7 @@ const GraphGrid: React.FC<Props> = ({
       return (
         <GraphSize key={graphData.layout.i} data-grid={graphData.layout}>
           <PieGraph
-            {...graphData}
+            graph={graphData}
             setTitle={(e) => setTitle(index, e)}
             deleteGraph={() => deleteGraph(index)}
             editGraph={(e) => editGraph(index, e)}
@@ -126,7 +126,7 @@ const GraphGrid: React.FC<Props> = ({
       return (
         <GraphSize key={graphData.layout.i} data-grid={graphData.layout}>
           <BarGraph
-            {...graphData}
+            graph={graphData}
             setTitle={(e) => setTitle(index, e)}
             deleteGraph={() => deleteGraph(index)}
             editGraph={(e) => editGraph(index, e)}
@@ -137,9 +137,8 @@ const GraphGrid: React.FC<Props> = ({
       return (
         <GraphSize key={graphData.layout.i} data-grid={graphData.layout}>
           <LineGraph
-            data={graphData.data}
+            graph={graphData}
             setTitle={(e) => setTitle(index, e)}
-            title={graphData.title}
             editGraph={(e) => editGraph(index, e)}
             deleteGraph={() => deleteGraph(index)}
           />

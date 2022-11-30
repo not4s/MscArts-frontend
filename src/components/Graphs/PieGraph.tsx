@@ -11,7 +11,7 @@ import {
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
-import { Graph } from "../../constants/graphs";
+import { Graph, PieGraphInterface } from "../../constants/graphs";
 import GraphModal from "../GraphModal";
 
 const { confirm } = Modal;
@@ -40,28 +40,25 @@ const DEFAULT_CONFIG: PieConfig = {
 };
 
 interface PieGraphProps {
-  data: any[] | undefined;
-  title: string;
+  graph: PieGraphInterface;
   setTitle: (newTitle: string) => void;
   deleteGraph: () => void;
   editGraph: (newGraph: Graph) => void;
 }
 
 const PieGraph: React.FC<PieGraphProps> = ({
-  data,
-  title,
+  graph,
   setTitle,
   deleteGraph,
   editGraph,
-  ...props
 }) => {
   const [config, setConfig] = useState<PieConfig>(DEFAULT_CONFIG);
 
   useEffect(() => {
-    if (data) {
-      setConfig({ ...DEFAULT_CONFIG, data });
+    if (graph.data) {
+      setConfig({ ...DEFAULT_CONFIG, data: graph.data });
     }
-  }, [data]);
+  }, [graph]);
 
   const operationItems: MenuProps["items"] = [
     {
@@ -69,8 +66,7 @@ const PieGraph: React.FC<PieGraphProps> = ({
       key: `op-1`,
       icon: <EditOutlined />,
       onClick: (e) => {
-        // @ts-ignore
-        setEdit({ ...props, data: undefined, title, type: "PIE" });
+        setEdit(graph);
       },
     },
     {
@@ -99,14 +95,14 @@ const PieGraph: React.FC<PieGraphProps> = ({
 
   return (
     <>
-      <GraphModal editInput={edit} submitAction={editGraph} isEdit={true} />
+      <GraphModal editInput={edit} submitAction={editGraph} isEdit={true} resetEdit={() => setEdit(undefined)}/>
       <DraggableHandle className="myDragHandleClassName">
         <table>
           <tr>
             <td className="a" style={{ width: "calc(100%)" }}>
               <EditText
                 name="textbox3"
-                defaultValue={title}
+                defaultValue={graph.title}
                 inputClassName="bg-success"
                 onSave={(e) => setTitle(e.value)}
               />
