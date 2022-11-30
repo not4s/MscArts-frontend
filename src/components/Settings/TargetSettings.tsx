@@ -244,8 +244,9 @@ const TargetSettings = () => {
                 </>
               }
               dataSource={targets.filter(
-                (target: DataType) =>
-                  activeYear === 0 || target.year === activeYear
+                (target: DataType) => {
+                  return  activeYear === 0 || Number(target.year) === activeYear
+                }
               )}
               renderItem={(target: DataType) => (
                 <List.Item
@@ -265,8 +266,8 @@ const TargetSettings = () => {
                   <div style={{width: "70%"}}>
                     { target.progress ? 
                     <div style={{width: "100%"}}>
-                      <span>{Math.round(target.progress * target.target / 100)} / {target.target}</span>
-                      <Progress percent={target.progress}/>
+                      <span>{target.progress} / {target.target}</span>
+                      <Progress percent={Math.round(100 * target.progress / target.target)}/>
                     </div> : <></>
                     }
                   </div>

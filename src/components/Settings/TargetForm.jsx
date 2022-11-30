@@ -101,7 +101,7 @@ const TargetForm = () => {
                       <div>
                         <h3>{target.program_type} ({target.year}) ({target.fee_status})</h3>
                         <Button onClick={e => handleRemove(e, target.program_type, target.year)}>Remove</Button>
-                        <Progress percent={100 * target.progress / target.target} status="active" />
+                        <Progress percent={100 *target.progress / target.target} status="active" />
                       </div>
                     )
                   })}
