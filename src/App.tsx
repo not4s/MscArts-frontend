@@ -10,11 +10,12 @@ import {
   RiseOutlined,
   ContactsOutlined,
   LayoutOutlined,
+  QuestionCircleOutlined,
 } from "@ant-design/icons";
 import React, { useState } from "react";
 import SpreadsheetUpload from "./components/SpreadsheetUpload";
 import VisualisationNavigation from "./components/VisualisationNavigation";
-import { Layout, MenuProps, Menu } from "antd";
+import { Layout, MenuProps, Menu, Button } from "antd";
 import GeneralSettings from "./components/Settings/GeneralSettings";
 import TargetSettings from "./components/Settings/TargetSettings";
 import ProgramPage from "./components/Settings/ProgramSettings";
@@ -127,8 +128,14 @@ export default function App() {
     ),
   ];
 
+  const { setIsOpen } = useTour(); // Will be used to activate tutorial
+
   const logOutItem: ItemType[] = [
     getItem(currentUserRole >= 1, "Logout", LOGOUT_KEY, <LogoutOutlined />),
+  ];
+
+  const tourItem: ItemType[] = [
+    getItem(currentUserRole >= 1, "Tutorial", "", <QuestionCircleOutlined />),
   ];
 
   React.useEffect(() => {
@@ -183,12 +190,23 @@ export default function App() {
               items={items.filter((e: any) => e.key !== -1)}
               onClick={(e) => navigate(e.key)}
             ></Menu>
-            <Menu
-              theme="dark"
-              mode="inline"
-              items={logOutItem}
-              onClick={(e) => logout()}
-            />
+            <div>
+              {/* This div ensures that the login and tutorial are at the bottom of the sider */}
+              {/* selectedKeys to empty array so Tutorial buttom doesn't change color */}
+              <Menu
+                selectedKeys={[]}
+                theme="dark"
+                mode="inline"
+                items={tourItem}
+                onClick={() => setIsOpen(true)}
+              />
+              <Menu
+                theme="dark"
+                mode="inline"
+                items={logOutItem}
+                onClick={(e) => logout()}
+              />
+            </div>
           </div>
         </Sider>
         <Layout style={{ minHeight: "100vh" }}>

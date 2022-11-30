@@ -7,7 +7,6 @@ import {
   ExclamationCircleOutlined,
   ExportOutlined,
   ImportOutlined,
-  QuestionCircleOutlined,
 } from "@ant-design/icons";
 import GraphGrid from "./GraphGrid";
 import { Graph, GraphGridInterface } from "../constants/graphs";
@@ -16,7 +15,6 @@ import ImportModal from "./ImportModal";
 import GraphModal from "./GraphModal";
 import type { MenuProps } from "antd";
 import { APIService } from "../services/API";
-import { useTour } from "@reactour/tour";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -403,8 +401,6 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
     },
   ];
 
-  const { setIsOpen } = useTour(); // Will be used to activate tutorial
-
   const operations = (
     <>
       <GraphModal submitAction={addGraph} isEdit={false} />
@@ -414,14 +410,6 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
           <DownOutlined />
         </Button>
       </Dropdown>
-      {/* TODO: Extract this css to an external file */}
-      <Button
-        style={{ marginLeft: "5px", marginRight: "5px" }}
-        onClick={() => setIsOpen(true)}
-      >
-        <QuestionCircleOutlined />
-        Tutorial
-      </Button>
     </>
   );
 
