@@ -2,6 +2,7 @@ import axios from "axios";
 import {
   BarGraphInterface,
   Graph,
+  GraphGridInterface,
   PieGraphInterface,
 } from "../constants/graphs";
 
@@ -293,6 +294,17 @@ export class APIService {
     return this.buildAuthRequest("PUT", "api/template/default/", {
       uid,
       title,
+    });
+  }
+
+  getUserLayout(): Promise<APIResponse> {
+    return this.buildAuthRequest("GET", "api/user/layout");
+  }
+
+  postUserLayout(layout: GraphGridInterface[]): Promise<APIResponse> {
+    console.log(layout);
+    return this.buildAuthRequest("POST", "api/user/layout", {
+      layout: layout,
     });
   }
 }

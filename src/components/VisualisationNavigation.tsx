@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Alert, Form, Menu, message, Select } from "antd";
 import { Button, Dropdown, Input, Modal, Tabs } from "antd";
 import type { Tab } from "rc-tabs/lib/interface";
@@ -21,7 +21,7 @@ type MenuItem = Required<MenuProps>["items"][number];
 interface VisualisationNavigationProps {
   mock: boolean;
 }
-
+const api = new APIService();
 const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
   mock = false,
 }) => {
@@ -174,23 +174,19 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
     },
   ];
 
-  const [graphContent, setGraphContent] = useState<GraphGridInterface[]>(
-    cookies.get("visualisations") || defaultItems2
-  );
-
   const setGraphContentWithCookie = (content: GraphGridInterface[]) => {
-    cookies.set(
-      "visualisations",
-      [...content].map(({ label, key, graph }: GraphGridInterface) => ({
-        label,
-        key,
-        graph: [...graph].map((graph: Graph) => {
-          let newG = { ...graph };
-          newG["data"] = undefined;
-          return newG;
-        }),
-      }))
-    );
+    // cookies.set(
+    //   "visualisations",
+    //   [...content].map(({ label, key, graph }: GraphGridInterface) => ({
+    //     label,
+    //     key,
+    //     graph: [...graph].map((graph: Graph) => {
+    //       let newG = { ...graph };
+    //       newG["data"] = undefined;
+    //       return newG;
+    //     }),
+    //   }))
+    // );
 
     setGraphContent(content);
   };
@@ -230,7 +226,29 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
   const [isModalOpen, setModalOpen] = useState(false);
   const [isImportModalOpen, setImportModalOpen] = useState(false);
   const [newName, setNewName] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [graphContent, setGraphContent] =
+    useState<GraphGridInterface[]>(defaultItems2);
   const { confirm } = Modal;
+
+  const setKeyAndSaveTab = (key: string) => {
+    saveToDatabase();
+    setActiveKey(key);
+  };
+
+  const saveToDatabase = () => {
+    api.postUserLayout(graphContent).then();
+  };
+
+  useEffect(() => {
+    api.getUserLayout().then((res) => {
+      if (res.data["layout"] != "") {
+        console.log("pulled values", JSON.parse(res.data));
+        setGraphContent(JSON.parse(res.data));
+      }
+      setLoading(false);
+    });
+  }, []);
 
   React.useEffect(() => {
     let newItems = makeTabItem(graphContent);
@@ -489,7 +507,7 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
     </Modal>
   );
 
-  return (
+  return !loading ? (
     <div>
       {newTabModal}
       <Modal
@@ -522,7 +540,7 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
         <></>
       )}
       <Tabs
-        onChange={setActiveKey}
+        onChange={setKeyAndSaveTab}
         activeKey={activeKey}
         type="editable-card"
         onEdit={(e: any) => {
@@ -536,6 +554,8 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
         tabBarExtraContent={operations}
       />
     </div>
+  ) : (
+    <></>
   );
 };
 

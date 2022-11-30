@@ -1,6 +1,7 @@
 import { Card, Col, Row, Button, Collapse, Switch } from "antd";
 import { SettingOutlined } from "@ant-design/icons";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { APIService } from "../../services/API";
 
 const GeneralSettings = () => {
   const { Panel } = Collapse;
