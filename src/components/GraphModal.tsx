@@ -518,6 +518,7 @@ const GraphModal: React.FC<GraphModalProps> = ({
       </Modal>
       {!isEdit ? (
         <Button
+          className="buttonx"
           icon={<PlusOutlined />}
           type="dashed"
           onClick={() => setModalOpen(true)}

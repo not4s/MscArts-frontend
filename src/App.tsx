@@ -33,6 +33,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AuthVerification from "./services/AuthVerification";
 import ParamGraphGrid from "./components/ParamGraphGrid";
 import TemplateSettings from "./components/Settings/TemplateSettings";
+import { useTour } from "@reactour/tour";
 
 const { Sider, Header, Footer, Content } = Layout;
 

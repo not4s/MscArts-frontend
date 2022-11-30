@@ -9,6 +9,14 @@ import "./components/Settings/GeneralSettings.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./components/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { TourProvider } from "@reactour/tour";
+
+const tutorialSteps = [
+  {
+    selector: ".buttonx",
+    content: "This is my first Step",
+  },
+];
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -20,7 +28,9 @@ root.render(
           path="/*"
           element={
             <ProtectedRoute user={sessionStorage.getItem("user")}>
-              <App />
+              <TourProvider steps={tutorialSteps}>
+                <App />
+              </TourProvider>
             </ProtectedRoute>
           }
         />
