@@ -68,7 +68,7 @@ export class APIService {
   }
 
   getAllAttributes(): Promise<APIResponse> {
-    return this.buildAuthRequest("GET", "api/applicant/attribute");
+    return this.buildAuthRequest("GET", "api/applicant/attribute/");
   }
 
   getGraph(graph: Graph, mock: boolean = false): Promise<APIResponse> {

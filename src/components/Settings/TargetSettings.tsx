@@ -2,6 +2,7 @@ import {
   DeleteOutlined,
   EditOutlined,
   ExclamationOutlined,
+  PlusOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -42,7 +43,15 @@ const TargetSettings = () => {
   const [editInput, setEditInput] = useState<DataType>();
   const [activeYear, setActiveYear] = useState<number>(0);
 
+  /* Year Attributes */
+  const [year, setYear] = useState<number[]>();
+
   const api = new APIService();
+
+  useEffect(() => {
+    api.getAllAttributes()
+      .then((res) => setYear(res.data["admissions_cycle"]))
+  }, [])
 
   useEffect(() => {
     if (reload) {
@@ -173,11 +182,10 @@ const TargetSettings = () => {
             rules={[{ required: true }]}
           >
             <Select placeholder="Year" disabled={editInput !== undefined}>
-              <Select.Option value={2023}>2023</Select.Option>
-              <Select.Option value={2022}>21/22</Select.Option>
-              <Select.Option value={2021}>20/21</Select.Option>
-              <Select.Option value={2020}>19/20</Select.Option>
-              <Select.Option value={2019}>18/19</Select.Option>
+              {
+                year?.map((year, index) =>
+                  (<Select.Option key={`${year}-${index}`} value={year}>{year}</Select.Option>))
+              }
             </Select>
           </Form.Item>
           <Form.Item
@@ -201,51 +209,41 @@ const TargetSettings = () => {
             className="site-layout-content"
             style={{
               padding: 24,
-              margin: 24,
-              minHeight: 100,
-              background: "#fff",
-            }}
-          >
-            Main Statistics
-          </Content>
-        </Layout>
-        <Layout>
-          <Content
-            className="site-layout-content"
-            style={{
-              padding: 24,
               marginTop: 10,
               margin: 24,
-              minHeight: 280,
+              minHeight: 100,
               background: "#fff",
             }}
           >
             <List
               header={
                 <>
-                  <Space>
-                    <Button onClick={(e) => setModalOpen(true)}>
-                      New Target
+                  <Row>
+                    <Col span={4}>
+                      <Select
+                        style={{ width: "100%" }}
+                        defaultValue={0}
+                        value={activeYear}
+                        onChange={(e) => setActiveYear(e)}
+                      >
+                        <Select.Option value={0}>All</Select.Option>
+                        {
+                          year?.map((year, index) =>
+                            (<Select.Option key={`${year}-${index}`} value={year}>{year}</Select.Option>))
+                        }
+                      </Select>
+                    </Col>
+                    <Col xl={{ span: 1, offset: 18}} lg={{span:1, offset: 17}} md={{ span: 1, offset: 16}}>
+                    <Button type="primary" icon={<PlusOutlined />} onClick={(e) => setModalOpen(true)}>
+                      Target
                     </Button>
-                    <Select
-                      style={{ width: 120 }}
-                      defaultValue={0}
-                      value={activeYear}
-                      onChange={(e) => setActiveYear(e)}
-                    >
-                      <Select.Option value={0}>All</Select.Option>
-                      <Select.Option value={2023}>2023</Select.Option>
-                      <Select.Option value={2022}>2022</Select.Option>
-                      <Select.Option value={2021}>2021</Select.Option>
-                      <Select.Option value={2020}>2020</Select.Option>
-                      <Select.Option value={2019}>2019</Select.Option>
-                    </Select>
-                  </Space>
+                    </Col>
+                  </Row>
                 </>
               }
               dataSource={targets.filter(
                 (target: DataType) => {
-                  return  activeYear === 0 || Number(target.year) === activeYear
+                  return activeYear === 0 || Number(target.year) === activeYear
                 }
               )}
               renderItem={(target: DataType) => (
@@ -263,12 +261,12 @@ const TargetSettings = () => {
                     title={<p>{target.program_type} ({target.year})</p>}
                     description={target.fee_status}
                   />
-                  <div style={{width: "70%"}}>
-                    { target.progress ? 
-                    <div style={{width: "100%"}}>
-                      <span>{target.progress} / {target.target}</span>
-                      <Progress percent={Math.round(100 * target.progress / target.target)}/>
-                    </div> : <></>
+                  <div style={{ width: "70%" }}>
+                    {target.progress ?
+                      <div style={{ width: "100%" }}>
+                        <span>{target.progress} / {target.target}</span>
+                        <Progress percent={Math.round(100 * target.progress / target.target)} />
+                      </div> : <></>
                     }
                   </div>
                 </List.Item>
