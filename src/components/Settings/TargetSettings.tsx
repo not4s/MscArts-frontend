@@ -118,7 +118,7 @@ const TargetSettings = () => {
             message.error("Failed to delete target");
           });
       },
-      onCancel() {},
+      onCancel() { },
     });
   };
 
@@ -258,15 +258,18 @@ const TargetSettings = () => {
                     </Button>,
                   ]}
                 >
-                  <Col>
-                    <List.Item.Meta
-                      title={<p>{target.program_type}</p>}
-                      description={target.fee_status}
-                    />
-                  </Col>
-                  <Col span={12}>
-                    <Progress percent={50} showInfo={true} />
-                  </Col>
+                  <List.Item.Meta
+                    title={<p>{target.program_type} ({target.year})</p>}
+                    description={target.fee_status}
+                  />
+                  <div style={{width: "70%"}}>
+                    { target.progress ? 
+                    <div style={{width: "100%"}}>
+                      <span>{Math.round(target.progress * target.target / 100)} / {target.target}</span>
+                      <Progress percent={target.progress}/>
+                    </div> : <></>
+                    }
+                  </div>
                 </List.Item>
               )}
             />
