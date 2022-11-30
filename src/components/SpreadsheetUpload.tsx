@@ -26,7 +26,7 @@ const SpreadsheetUpload: React.FC<Props> = ({ mock, setMock, setMockData }) => {
   // const [file, setFile] = useState("");
   const { confirm } = Modal;
   const [showSpin, setShowSpin] = useState(false);
-  const [reload, setReload] = useState(false);
+  const [reload, setReload] = useState(true);
   const api = new APIService();
   const [openModal, setOpenModal] = useState(false);
   const [file, setFile] = useState<File>();
@@ -41,6 +41,7 @@ const SpreadsheetUpload: React.FC<Props> = ({ mock, setMock, setMockData }) => {
     formData.append("file", file!);
     formData.append("type", values["spreadsheet-type"]);
     console.log("POSTING");
+    setOpenModal(false);
     setShowSpin(true);
     if (mock) {
       api
@@ -71,7 +72,6 @@ const SpreadsheetUpload: React.FC<Props> = ({ mock, setMock, setMockData }) => {
           }
           setReload(true);
           setShowSpin(false);
-          setOpenModal(false);
         })
         .catch(() => console.log("failure"));
     }
@@ -104,6 +104,7 @@ const SpreadsheetUpload: React.FC<Props> = ({ mock, setMock, setMockData }) => {
       >
         <Form onFinish={handleOk} form={form}>
           <Form.Item name="spreadsheet-type">
+            <p>Are you sure you want to upload this spreadsheet?</p>
             <Select
               placeholder="Select Spreadsheet Type"
               style={{ width: 240 }}
@@ -122,7 +123,6 @@ const SpreadsheetUpload: React.FC<Props> = ({ mock, setMock, setMockData }) => {
               <Option value="APPLICANT">Applicant Spreadsheet</Option>
               <Option value="DEPOSIT">Deposit Spreadsheet</Option>
             </Select>
-            <p>Are you sure you want to upload this spreadsheet?</p>
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit">
@@ -169,7 +169,11 @@ const SpreadsheetUpload: React.FC<Props> = ({ mock, setMock, setMockData }) => {
             Click or drag file to this area to upload
           </p>
         </Dragger>
-        {!mock ? <RollbackTable reload={reload} /> : <></>}
+        {!mock ? (
+          <RollbackTable reload={reload} setReload={setReload} />
+        ) : (
+          <></>
+        )}
       </Spin>
     </div>
   );
