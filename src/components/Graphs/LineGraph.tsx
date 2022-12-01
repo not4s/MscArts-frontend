@@ -4,7 +4,7 @@ import { EditText } from "react-edit-text";
 import "react-edit-text/dist/index.css";
 import { Column, ColumnConfig } from "@ant-design/charts";
 import { DraggableHandle } from "./styles";
-import { Graph, TargetInterface } from "../../constants/graphs";
+import { Graph, LineGraphInterface, TargetInterface } from "../../constants/graphs";
 import { Modal, Button, Dropdown } from "antd";
 import type { MenuProps } from "antd";
 import {
@@ -16,24 +16,22 @@ import {
 import GraphModal from "../GraphModal";
 
 interface LineGraphProps {
-  data: any;
-  title: string;
+  graph: LineGraphInterface;
   deleteGraph: () => void;
   setTitle: (newTitle: string) => void;
   editGraph: (x: Graph) => void;
 }
 
 const LineGraph: React.FC<LineGraphProps> = ({
-  data,
+  graph,
   deleteGraph,
-  title,
   setTitle,
   editGraph,
 }) => {
   const { confirm } = Modal;
 
   const config: LineConfig = {
-    data,
+    data: (graph.data as any), 
     xField: "period",
     yField: "count",
     seriesField: "series",
@@ -82,15 +80,14 @@ const LineGraph: React.FC<LineGraphProps> = ({
   };
 
   const operationItems: MenuProps["items"] = [
-    // {
-    //   label: "Edit",
-    //   key: `op-1`,
-    //   icon: <EditOutlined />,
-    //   onClick: (e) => {
-    //     // @ts-ignore
-    //     setEdit({ ...props, data: undefined, title, primary, type: "LINE" });
-    //   },
-    // },
+    {
+      label: "Edit",
+      key: `op-1`,
+      icon: <EditOutlined />,
+      onClick: (e) => {
+        setEdit(graph);
+      },
+    },
     {
       label: "Delete",
       key: `op-2`,
@@ -103,14 +100,14 @@ const LineGraph: React.FC<LineGraphProps> = ({
 
   return (
     <>
-      <GraphModal editInput={edit} submitAction={editGraph} isEdit={true} />
+      <GraphModal editInput={edit} submitAction={editGraph} isEdit={true} resetEdit={() => setEdit(undefined)}/>
       <DraggableHandle className="myDragHandleClassName">
         <table>
           <tr>
             <td className="a" style={{ width: "calc(100%)" }}>
               <EditText
                 name="textbox3"
-                defaultValue={title}
+                defaultValue={graph.title}
                 inputClassName="bg-success"
                 onSave={(e) => setTitle(e.value)}
               />
@@ -125,7 +122,7 @@ const LineGraph: React.FC<LineGraphProps> = ({
           </tr>
         </table>
       </DraggableHandle>
-      {data === undefined ? <></> : <Line {...config} />}
+      {graph.data === undefined ? <></> : <Line {...config} />}
     </>
   );
 };

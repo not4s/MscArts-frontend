@@ -144,12 +144,14 @@ export default function ProgramPage() {
       api.getPrograms().then((result) => {
         console.log(result.data);
 
-        setPrograms(
-          result.data.map((v: any, i: any) => ({
+        const programs: any = result.data
+          .map((v: any, i: any) => ({
             key: String(i),
             ...v,
           }))
-        );
+          .sort((a: any, b: any) => (a.active ? (b.active ? 0 : -1) : 1));
+
+        setPrograms(programs);
         setReload(false);
       });
     }

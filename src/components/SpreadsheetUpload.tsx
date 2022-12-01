@@ -1,6 +1,8 @@
 import React, { useState } from "react";
-import { Alert, message, Spin, Upload } from "antd";
-import { Modal } from "antd";
+import { Alert, Button, Form, message, Select, Spin, Upload } from "antd";
+import axios from "axios";
+import { Modal, Input } from "antd";
+import { ApplicantTable } from "./Applicants/ApplicantTable";
 import {
   ExclamationCircleOutlined,
   InboxOutlined,
@@ -12,6 +14,7 @@ import type { UploadProps } from "antd";
 
 const FILE_TYPES = ["CSV", "XLS", "XML", "XLSX"];
 const { Dragger } = Upload;
+const { Option } = Select;
 
 interface Props {
   mock: boolean;
@@ -23,31 +26,24 @@ const SpreadsheetUpload: React.FC<Props> = ({ mock, setMock, setMockData }) => {
   // const [file, setFile] = useState("");
   const { confirm } = Modal;
   const [showSpin, setShowSpin] = useState(false);
-  const [reload, setReload] = useState(false);
+  const [reload, setReload] = useState(true);
   const api = new APIService();
+  const [openModal, setOpenModal] = useState(false);
+  const [file, setFile] = useState<File>();
+  const [form] = Form.useForm();
 
-  const showConfirm = (file: File) => {
-    confirm({
-      title: "Are you sure you want to upload this spreadsheet?",
-      icon: <ExclamationCircleOutlined />,
-      okText: "Upload",
-      onOk() {
-        handleOk(file);
-      },
-      onCancel() {
-        console.log("Canceled");
-      },
-    });
-  };
   const handleChange = (file: File) => {
-    // setFile(file);
-    showConfirm(file);
+    setFile(file);
+    setOpenModal(true);
   };
-  const handleOk = (file: File) => {
+  const handleOk = (values: any) => {
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("file", file!);
+    formData.append("type", values["spreadsheet-type"]);
     console.log("POSTING");
+    setOpenModal(false);
     setShowSpin(true);
+
     if (mock) {
       api
         .postMockSpreadsheet(formData)
@@ -60,6 +56,7 @@ const SpreadsheetUpload: React.FC<Props> = ({ mock, setMock, setMockData }) => {
           }
           setReload(true);
           setShowSpin(false);
+          setOpenModal(false);
           setMock(res.success);
           setMockData(res.data);
         })
@@ -99,6 +96,42 @@ const SpreadsheetUpload: React.FC<Props> = ({ mock, setMock, setMockData }) => {
 
   return (
     <div>
+      <Modal
+        title="Choose the Spreadsheet Type"
+        okText="Submit"
+        onCancel={() => setOpenModal(false)}
+        open={openModal}
+        footer={null}
+      >
+        <Form onFinish={handleOk} form={form}>
+          <Form.Item name="spreadsheet-type">
+            <p>Are you sure you want to upload this spreadsheet?</p>
+            <Select
+              placeholder="Select Spreadsheet Type"
+              style={{ width: 240 }}
+              onChange={(value) => {
+                switch (value) {
+                  case "APPLICANT":
+                    form.setFieldsValue({ "spreadsheet-type": "APPLICANT" });
+                    return;
+                  case "DEPOSIT":
+                    form.setFieldsValue({ "spreadsheet-type": "DEPOSIT" });
+                    return;
+                  default:
+                }
+              }}
+            >
+              <Option value="APPLICANT">Applicant Spreadsheet</Option>
+              <Option value="DEPOSIT">Deposit Spreadsheet</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Submit
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
       <Spin
         spinning={showSpin}
         indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
@@ -137,7 +170,11 @@ const SpreadsheetUpload: React.FC<Props> = ({ mock, setMock, setMockData }) => {
             Click or drag file to this area to upload
           </p>
         </Dragger>
-        {!mock ? <RollbackTable reload={reload} /> : <></>}
+        {!mock ? (
+          <RollbackTable reload={reload} setReload={setReload} />
+        ) : (
+          <></>
+        )}
       </Spin>
     </div>
   );

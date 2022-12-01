@@ -2,15 +2,19 @@ import React, { useEffect, useRef, useState } from "react";
 import { APIService } from "../services/API";
 import { ColumnsType } from "antd/lib/table";
 import { Table, Button, Modal, message } from "antd";
-import { RollbackOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import {
+  RollbackOutlined,
+  ExclamationCircleOutlined,
+  ConsoleSqlOutlined,
+} from "@ant-design/icons";
 import type { InputRef } from "antd";
 
 interface DataType {
   key: React.Key;
-  name: string;
-  code: string;
-  academic_level: string;
-  active: boolean;
+  filetype: string;
+  file_name: string;
+  version: number;
+  timestamp: string;
 }
 
 export const RollbackTable = (props: any) => {
@@ -36,7 +40,7 @@ export const RollbackTable = (props: any) => {
     api.rollbackUploadedSheet(version).then((res) => {
       if (res.data.message === "Rolled Back File") {
         message.success("Successfully rolled back");
-        setSheets(undefined);
+        props.setReload(true);
       } else {
         message.error("Failed to rollback File");
       }
@@ -44,27 +48,20 @@ export const RollbackTable = (props: any) => {
   };
 
   useEffect(() => {
-    api.getUploadedSheets().then((result) => {
-      setSheets(mapToToggle(result.data));
-    });
+    if (props.reload) {
+      api.getUploadedSheets().then((result) => {
+        setSheets(result.data);
+        props.setReload(false);
+      });
+    }
   }, [props.reload]);
 
-  const mapToToggle = (data: any) => {
-    return data.map((obj: any) => {
-      obj.actions = (
-        <>
-          <Button
-            onClick={(e) => showConfirm(obj["version"])}
-            icon={<RollbackOutlined />}
-            style={{ marginLeft: "2vh", marginRight: "2vh" }}
-          />
-        </>
-      );
-      return obj;
-    });
-  };
-
   const columns: ColumnsType<DataType> = [
+    {
+      title: "File Type",
+      dataIndex: "filetype",
+      width: 150,
+    },
     {
       title: "File Name",
       dataIndex: "name",
@@ -76,12 +73,25 @@ export const RollbackTable = (props: any) => {
     {
       title: "Rollback",
       dataIndex: "actions",
+      render: (_, record: DataType) => {
+        return record["filetype"] === "Applicant" || "Deposit" ? (
+          <>
+            <Button
+              onClick={(e) => showConfirm(record.version)}
+              icon={<RollbackOutlined />}
+              style={{ marginLeft: "2vh", marginRight: "2vh" }}
+            />
+          </>
+        ) : (
+          <></>
+        );
+      },
     },
   ];
 
   return (
     <>
-      <Table columns={columns} dataSource={sheets} />
+      <Table loading={props.reload} columns={columns} dataSource={sheets} />
     </>
   );
 };

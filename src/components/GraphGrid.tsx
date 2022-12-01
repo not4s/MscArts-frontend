@@ -84,6 +84,8 @@ const GraphGrid: React.FC<Props> = ({
               cycleYears: lineGraph.cycleYears,
               startDate: lineGraph.startDate,
               endDate: lineGraph.endDate,
+              cumulative: lineGraph.cumulative ? 1 : 0,
+              customDecision: lineGraph.customDecision,
             };
             let res = null;
             if (lineGraph.cycle !== null && lineGraph.cycle === "cycle") {
@@ -91,7 +93,7 @@ const GraphGrid: React.FC<Props> = ({
             } else {
               res = await api.getTrends(fetchParams);
             }
-            let data = res.data.reverse();
+            let data = res.data;
             console.log(data);
             newGraphs[i]["data"] = data;
           }
@@ -117,7 +119,7 @@ const GraphGrid: React.FC<Props> = ({
       return (
         <GraphSize key={graphData.layout.i} data-grid={graphData.layout}>
           <PieGraph
-            {...graphData}
+            graph={graphData}
             setTitle={(e) => setTitle(index, e)}
             deleteGraph={() => deleteGraph(index)}
             editGraph={(e) => editGraph(index, e)}
@@ -128,7 +130,7 @@ const GraphGrid: React.FC<Props> = ({
       return (
         <GraphSize key={graphData.layout.i} data-grid={graphData.layout}>
           <BarGraph
-            {...graphData}
+            graph={graphData}
             setTitle={(e) => setTitle(index, e)}
             deleteGraph={() => deleteGraph(index)}
             editGraph={(e) => editGraph(index, e)}
@@ -139,9 +141,8 @@ const GraphGrid: React.FC<Props> = ({
       return (
         <GraphSize key={graphData.layout.i} data-grid={graphData.layout}>
           <LineGraph
-            data={graphData.data}
+            graph={graphData}
             setTitle={(e) => setTitle(index, e)}
-            title={graphData.title}
             editGraph={(e) => editGraph(index, e)}
             deleteGraph={() => deleteGraph(index)}
           />

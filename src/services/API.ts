@@ -69,7 +69,7 @@ export class APIService {
   }
 
   getAllAttributes(): Promise<APIResponse> {
-    return this.buildAuthRequest("GET", "api/applicant/attribute");
+    return this.buildAuthRequest("GET", "api/applicant/attribute/");
   }
 
   getGraph(graph: Graph, mock: boolean = false): Promise<APIResponse> {
@@ -126,7 +126,12 @@ export class APIService {
     );
   }
 
-  postTarget({ course, target, fee_status, year }: any): Promise<APIResponse> {
+  postTarget(
+    course: any,
+    year: number,
+    fee_status: any,
+    target: number
+  ): Promise<APIResponse> {
     return this.buildAuthRequest("POST", `api/target/`, {
       program_type: course,
       year,
@@ -135,7 +140,12 @@ export class APIService {
     });
   }
 
-  putTarget({ course, target, fee_status, year }: any): Promise<APIResponse> {
+  putTarget(
+    course: any,
+    year: number,
+    fee_status: any,
+    target: number
+  ): Promise<APIResponse> {
     return this.buildAuthRequest("PUT", `api/target/`, {
       program_type: course,
       year,
@@ -144,7 +154,11 @@ export class APIService {
     });
   }
 
-  deleteTarget({ course, fee_status, year }: any): Promise<APIResponse> {
+  deleteTarget(
+    course: string,
+    fee_status: string,
+    year: number
+  ): Promise<APIResponse> {
     return this.buildAuthRequest("DELETE", `api/target/`, {
       program_type: course,
       fee_status,
@@ -227,16 +241,27 @@ export class APIService {
     });
   }
 
-  getTrends({ breakdown, frequency, series, code, decisionStatus }: any) {
+  getTrends({
+    breakdown,
+    frequency,
+    series,
+    code,
+    decisionStatus,
+    customDecision,
+  }: any) {
     let endpoint = `api/trends/?unit=${frequency}&period=${breakdown}`;
     if (series !== null && series !== "all") {
       endpoint += `&series=${series}`;
     }
     if (code != null) {
-      endpoint += `&code=${code}`;
+      endpoint += `&program_type=${code}`;
     }
-    if (decisionStatus != null) {
+    if (decisionStatus != null && decisionStatus.toLowerCase() !== "all") {
       endpoint += `&decision_status=${decisionStatus}`;
+    }
+    console.log(customDecision);
+    if (customDecision !== undefined && customDecision.length > 0) {
+      endpoint += `&custom_decision=${customDecision.join(",")}`;
     }
     return this.buildAuthRequest("GET", endpoint);
   }
@@ -249,15 +274,29 @@ export class APIService {
     cycleYears,
     startDate,
     endDate,
+    decisionStatus,
+    cumulative,
+    customDecision,
   }: any) {
     let cycles = cycleYears.join(",");
-    let endpoint = `api/trends/cycle?period=${breakdown}`;
+    let endpoint = `api/trends/cycle?period=${breakdown}&cumulative=${cumulative}`;
+    console.log(customDecision);
+
     if (cycleYears.length > 0) {
       endpoint += `&cycle=${cycles}`;
     }
-    if (startDate !== "" && endDate !== "") {
+    if (startDate !== "undefined" && endDate !== "undefined") {
       endpoint += `&start=${startDate.slice(0, 5)}`;
       endpoint += `&end=${endDate.slice(0, 5)}`;
+    }
+    if (code !== null && code.toLowerCase() !== "all") {
+      endpoint += `&program_type=${code}`;
+    }
+    if (decisionStatus !== null && decisionStatus.toLowerCase() !== "all") {
+      endpoint += `&decision_status=${decisionStatus}`;
+    }
+    if (customDecision !== undefined && customDecision.length > 0) {
+      endpoint += `&custom_decision=${customDecision.join(",")}`;
     }
 
     return this.buildAuthRequest("GET", endpoint);

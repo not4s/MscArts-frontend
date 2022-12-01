@@ -4,7 +4,6 @@ export const APPLICANT_COLUMN_MAPPING: { [key: string]: string } = {
   "Fee Status": "combined_fee_status",
   Gender: "gender",
   "Decision Status": "decision_status",
-  "First Name": "first_name",
 };
 
 export const DECISION_STATUS_OPTIONS = [

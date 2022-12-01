@@ -16,7 +16,6 @@ import {
   InputNumber,
   Radio,
   DatePicker,
-  Space,
 } from "antd";
 import {
   APPLICANT_COLUMN_MAPPING,
@@ -25,9 +24,7 @@ import {
 import {
   BarGraphInterface,
   BaseGraphInterface,
-  DecisionStatus,
   Graph,
-  LineGraphInterface,
   PieGraphInterface,
 } from "../constants/graphs";
 import { Layout } from "react-grid-layout";
@@ -39,7 +36,8 @@ const degreeTypes = ["ALL", "MAC", "AIML", "MCSS", "MCS"];
 interface GraphModalProps {
   submitAction: (newGraph: Graph) => void;
   editInput?: Graph | undefined;
-  isEdit: boolean;
+  resetEdit?: () => void;
+  isEdit?: boolean;
 }
 
 const makeTitle = (graph: Graph) => {
@@ -49,14 +47,14 @@ const makeTitle = (graph: Graph) => {
 
 const GraphModal: React.FC<GraphModalProps> = ({
   submitAction,
-  editInput = undefined,
-  isEdit,
+  editInput,
+  resetEdit,
+  isEdit = false,
 }) => {
   const [isModalOpen, setModalOpen] = useState(false);
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<Graph>();
 
   /* Base Graph Values */
-  const [title, setTitle] = useState("");
   const [layout, setLayout] = useState<Layout>({
     i: `layout-`,
     w: 10,
@@ -64,28 +62,14 @@ const GraphModal: React.FC<GraphModalProps> = ({
     x: 0,
     y: 0,
   });
-  const [type, setType] = useState("");
-  const [programType, setProgramType] = useState("ALL");
-  const [year, setYear] = useState<number>(2022);
-  const [decisionStatus, setDecisionStatus] = useState<DecisionStatus>("all");
-  const [customDecision, setCustomDecision] = useState<string[]>([]);
-  const [cycleYears, setCycleYears] = useState<string[]>([]);
-  const [primary, setPrimary] = useState("");
 
-  /* Bar Graph Values */
-  const [stacked, setStacked] = useState(true);
-  const [secondary, setSecondary] = useState("");
-  const [plotTarget, setPlotTarget] = useState(false);
-
-  /* Pie Graph Values */
-  const [top, setTop] = useState(0);
+  const type = Form.useWatch("type", form);
+  const decisionStatus = Form.useWatch("decisionStatus", form);
+  const primary = Form.useWatch("primary", form);
+  const secondary = Form.useWatch("secondary", form);
+  const cycle = Form.useWatch("cycle", form);
 
   /* Line Graph Values */
-  const [breakdown, setBreakdown] = useState("Month");
-  const [frequency, setFrequency] = useState(3);
-  const [cycle, setCycle] = useState("cycle");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
   const [admissionCycles, setAdmissionCycles] = useState([
     "23",
     "22",
@@ -95,30 +79,10 @@ const GraphModal: React.FC<GraphModalProps> = ({
 
   React.useEffect(() => {
     if (editInput !== undefined) {
-      /* Set the Shared Inputs */
-      setType(editInput.type);
-      setTitle(editInput.title);
-      setProgramType(editInput.programType);
-      setPrimary(editInput.primary);
+      console.log(editInput);
+      form.setFieldsValue(editInput);
       setLayout(editInput.layout);
-      setCustomDecision(
-        editInput.customDecision ? editInput.customDecision : []
-      );
 
-      /* Set the Specialized Case */
-      if (editInput.type === "PIE") {
-        const pieInput: PieGraphInterface = editInput;
-        setTop(pieInput.top ? pieInput.top : 0);
-      } else if (editInput.type === "BAR") {
-        const barInput: BarGraphInterface = editInput;
-        setStacked(barInput.combined ? barInput.combined : false);
-        setSecondary(barInput.secondary ? barInput.secondary : "");
-        setPlotTarget(barInput.target !== undefined ? true : false);
-      } else if (editInput.type === "LINE") {
-        const lineInput: LineGraphInterface = editInput;
-        setBreakdown(lineInput.breakdown ? lineInput.breakdown : "Year");
-        setFrequency(lineInput.frequency ? lineInput.frequency : 3);
-      }
       /* Open the Modal */
       setModalOpen(true);
     }
@@ -127,76 +91,89 @@ const GraphModal: React.FC<GraphModalProps> = ({
   const api = new APIService();
   const { RangePicker } = DatePicker;
 
-  const getAdmissionCycles = async () => {
-    let res = await api.getAllAttributes();
-    let cycles = res.data.admissions_cycle.map((v: any) => String(v).slice(-2));
-    setAdmissionCycles(cycles);
-  };
+  useEffect(() => {
+    api.getAllAttributes().then((res) => {
+      const cycles = res.data.admissions_cycle.map((v: any) =>
+        String(v).slice(-2)
+      );
+      setAdmissionCycles(cycles);
+    });
+  }, []);
 
-  // useEffect(() => {
-  // getAdmissionCycles();
-  // }, [])
+  const handleOk = (values: Graph) => {
+    setModalOpen(false);
+    console.log(values);
+    const {
+      type,
+      title,
+      primary,
+      year,
+      programType,
+      decisionStatus,
+      customDecision,
+    } = values;
 
-  const handleOk = () => {
-    form.submit();
-    if (!Object.values(form.getFieldsValue()).includes(undefined)) {
-      setModalOpen(false);
+    let baseGraph: BaseGraphInterface = {
+      type: type,
+      title: title === "" ? "Graph" : title,
+      primary: primary,
+      data: undefined,
+      year: year,
+      layout: layout,
+      programType: programType,
+      decisionStatus: decisionStatus,
+      customDecision: decisionStatus === "custom" ? customDecision : [],
+    };
 
-      let baseGraph: BaseGraphInterface = {
-        type: "BAR",
-        title: title === "" ? "Graph" : title,
-        primary: primary,
-        data: undefined,
-        year: year,
-        layout: layout,
-        programType: programType,
-        decisionStatus: decisionStatus,
-        customDecision: decisionStatus === "custom" ? customDecision : [],
-      };
+    let finalGraph: Graph = { ...baseGraph };
 
-      let finalGraph: Graph = { ...baseGraph };
+    switch (type) {
+      case "BAR":
+        const barValues: BarGraphInterface = values;
+        finalGraph = {
+          ...finalGraph,
+          secondary: barValues.secondary,
+          combined: barValues.combined,
+          target: barValues.target,
+        };
+        break;
+      case "PIE":
+        const pieValues: PieGraphInterface = values;
+        finalGraph = {
+          ...finalGraph,
+          top: pieValues.top,
+        };
+        break;
+      case "LINE":
+        const lineValues: any = values;
 
-      switch (type) {
-        case "BAR":
-          finalGraph = {
-            ...finalGraph,
-            type,
-            secondary: secondary === "" ? undefined : secondary,
-            combined: stacked,
-            target: plotTarget ? [] : undefined,
-          };
-          break;
-        case "PIE":
-          finalGraph = {
-            ...finalGraph,
-            type,
-            top: top,
-          };
-          break;
-        case "LINE":
-          finalGraph = {
-            ...finalGraph,
-            type,
-            breakdown,
-            frequency,
-            series: primary,
-            cycleYears,
-            startDate,
-            endDate,
-            cycle,
-          };
-        default:
-      }
-      submitAction(finalGraph);
+        console.log(lineValues["dateRange"]);
+
+        const startDate = String(lineValues["dateRange"]?.[0]?.format("L"));
+        const endDate = String(lineValues["dateRange"]?.[1]?.format("L"));
+
+        finalGraph = {
+          ...finalGraph,
+          breakdown: lineValues.breakdown,
+          frequency: lineValues.frequency,
+          series: primary,
+          cycleYears: lineValues.cycleYears,
+          startDate,
+          endDate,
+          cycle: lineValues.cycle,
+          cumulative: lineValues.cumulative,
+        };
+      default:
     }
+    submitAction(finalGraph);
   };
 
   const handleCancel = () => {
     setModalOpen(false);
+    if (editInput !== undefined && resetEdit) {
+      resetEdit();
+    }
     form.resetFields();
-    setSecondary("");
-    setDecisionStatus("all");
-    setType("");
   };
 
   return (
@@ -204,23 +181,25 @@ const GraphModal: React.FC<GraphModalProps> = ({
       <Modal
         title="Create a new visualisation"
         open={isModalOpen}
-        onOk={handleOk}
+        onOk={() => {
+          form
+            .validateFields()
+            .then((values) => {
+              form.resetFields();
+              handleOk(values);
+            })
+            .catch((info) => {
+              console.log("Validation Fail: ", info);
+            });
+        }}
         okText="Submit"
         onCancel={handleCancel}
       >
         <Form form={form}>
-          <Form.Item
-            name="Visualisation"
-            rules={[{ required: true }]}
-            initialValue={type}
-          >
+          <Form.Item name="type" rules={[{ required: true }]}>
             <Select
               placeholder="Select visualisation type"
               style={{ width: 240 }}
-              onChange={(value) => {
-                console.log(value);
-                setType(value);
-              }}
             >
               <Option value="BAR">
                 <BarChartOutlined /> Bar Chart
@@ -237,22 +216,16 @@ const GraphModal: React.FC<GraphModalProps> = ({
             </Select>
           </Form.Item>
 
-          {type !== "" ? (
+          {type ? (
             <>
-              <Form.Item initialValue={title}>
-                <Input
-                  placeholder="Chart Title (Optional)"
-                  onChange={(e) => setTitle(e.target.value)}
-                  value={title}
-                />
+              <Form.Item name="title">
+                <Input placeholder="Chart Title (Optional)" />
               </Form.Item>
 
               {type !== "LINE" ? (
                 <Form.Item initialValue={2022}>
                   <Select
                     defaultValue={2022}
-                    value={year}
-                    onChange={(e) => setYear(e)}
                     options={[2022, 2021, 2020].map((v) => ({
                       value: v,
                       label: `Admissions Cycle ${v}`,
@@ -266,11 +239,9 @@ const GraphModal: React.FC<GraphModalProps> = ({
               <Form.Item
                 label="Decision Status"
                 name="decisionStatus"
-                initialValue={decisionStatus}
+                initialValue={"all"}
               >
-                <Radio.Group
-                  onChange={(e) => setDecisionStatus(e.target.value)}
-                >
+                <Radio.Group>
                   <Radio.Button value="all">All</Radio.Button>
                   <Radio.Button value="live">Live</Radio.Button>
                   <Radio.Button value="not_live">Not Live</Radio.Button>
@@ -279,15 +250,10 @@ const GraphModal: React.FC<GraphModalProps> = ({
               </Form.Item>
 
               {decisionStatus === "custom" ? (
-                <Form.Item
-                  name="customDecisions"
-                  rules={[{ required: true }]}
-                  initialValue={customDecision}
-                >
+                <Form.Item name="customDecision" rules={[{ required: true }]}>
                   <Select
                     mode="multiple"
                     placeholder="Select Decision Status to filter"
-                    onChange={(e) => setCustomDecision(e)}
                     options={DECISION_STATUS_OPTIONS.map((v) => ({
                       label: v,
                       value: v,
@@ -299,16 +265,11 @@ const GraphModal: React.FC<GraphModalProps> = ({
               )}
 
               <Form.Item
-                name="Degree"
+                name="programType"
                 rules={[{ required: true }]}
                 extra="This is the degree from which to access the data"
-                initialValue={programType}
               >
-                <Select
-                  placeholder="Select Degree"
-                  style={{ width: 240 }}
-                  onChange={(value) => setProgramType(value)}
-                >
+                <Select placeholder="Select Degree" style={{ width: 240 }}>
                   {degreeTypes.map((type, index) => (
                     <Option key={`degree-${index}`} value={type}>
                       {type}
@@ -321,21 +282,11 @@ const GraphModal: React.FC<GraphModalProps> = ({
                 <></>
               ) : (
                 <Form.Item
-                  name="Columns"
+                  name="primary"
                   rules={[{ required: true }]}
                   extra="E.g. 'Gender' will create columns for 'Male' and 'Female' respectfully"
-                  initialValue={primary}
                 >
-                  <Select
-                    placeholder="Select columns"
-                    style={{ width: 240 }}
-                    onChange={(value) => {
-                      if (value !== "combined_fee_status") {
-                        setPlotTarget(false);
-                      }
-                      setPrimary(value);
-                    }}
-                  >
+                  <Select placeholder="Select columns" style={{ width: 240 }}>
                     {Object.keys(APPLICANT_COLUMN_MAPPING).map((k, index) => {
                       return (
                         <Option key={index} value={APPLICANT_COLUMN_MAPPING[k]}>
@@ -354,36 +305,26 @@ const GraphModal: React.FC<GraphModalProps> = ({
           {type === "BAR" ? (
             <>
               {primary === "combined_fee_status" ? (
-                <Form.Item initialValue={plotTarget}>
-                  <Checkbox
-                    onChange={(e) => setPlotTarget(e.target.checked)}
-                    checked={plotTarget}
-                  >
-                    Plot Targets
-                  </Checkbox>
+                <Form.Item name="target" valuePropName="checked">
+                  <Checkbox>Plot Targets</Checkbox>
                 </Form.Item>
               ) : (
                 <></>
               )}
 
               <Form.Item
-                name="Stack Type"
+                name="secondary"
                 hasFeedback
                 validateStatus={
                   secondary !== "" && secondary === primary ? "error" : ""
                 }
-                initialValue={secondary}
                 help={
                   secondary !== "" && secondary === primary
                     ? "Columns and Stack Type cannot be the same!"
                     : "E.g. 'Fee Status' will breakdown the Genders into their fee statuses"
                 }
               >
-                <Select
-                  placeholder="Select Stack Type"
-                  style={{ width: 240 }}
-                  onChange={(value) => setSecondary(value)}
-                >
+                <Select placeholder="Select Stack Type" style={{ width: 240 }}>
                   <Option value={""}>None</Option>
                   {Object.keys(APPLICANT_COLUMN_MAPPING).map((k, index) => {
                     return (
@@ -397,13 +338,8 @@ const GraphModal: React.FC<GraphModalProps> = ({
 
               <br></br>
 
-              <Form.Item initialValue={stacked}>
-                <Checkbox
-                  onChange={(e) => setStacked(e.target.checked)}
-                  checked={stacked}
-                >
-                  Show Combined?
-                </Checkbox>
+              <Form.Item name="combined" valuePropName="checked">
+                <Checkbox>Show Combined?</Checkbox>
               </Form.Item>
             </>
           ) : (
@@ -412,18 +348,8 @@ const GraphModal: React.FC<GraphModalProps> = ({
 
           {type === "PIE" ? (
             <>
-              <Form.Item
-                name="Display Top X"
-                label="Display Top"
-                initialValue={top}
-              >
-                <InputNumber
-                  min={0}
-                  value={top}
-                  onChange={(e: any) => {
-                    setTop(e);
-                  }}
-                />
+              <Form.Item name="top" label="Display Top">
+                <InputNumber min={0} />
               </Form.Item>
             </>
           ) : (
@@ -431,8 +357,8 @@ const GraphModal: React.FC<GraphModalProps> = ({
           )}
           {type === "LINE" ? (
             <>
-              <Form.Item label="Cycle" name="cycle" initialValue={cycle}>
-                <Radio.Group onChange={(e) => setCycle(e.target.value)}>
+              <Form.Item label="Cycle" name="cycle" initialValue={"cycle"}>
+                <Radio.Group>
                   <Radio.Button value="cycle">Per Admission Cycle</Radio.Button>
                   <Radio.Button value="relative">
                     Relative To Today
@@ -441,15 +367,10 @@ const GraphModal: React.FC<GraphModalProps> = ({
               </Form.Item>
               {cycle === "cycle" ? (
                 <>
-                  <Form.Item
-                    name="Cycle Years"
-                    rules={[{ required: true }]}
-                    initialValue={cycleYears}
-                  >
+                  <Form.Item name="cycleYears" rules={[{ required: true }]}>
                     <Select
                       mode="multiple"
                       placeholder="Select Admission Cycles to Compare"
-                      onChange={(e) => setCycleYears(e)}
                       options={admissionCycles.map((v) => ({
                         label: "Admission Cycle 20" + v,
                         value: v,
@@ -458,31 +379,22 @@ const GraphModal: React.FC<GraphModalProps> = ({
                   </Form.Item>
 
                   <Form.Item
-                    name="Date"
+                    name="dateRange"
                     extra="By default will show a whole cycle"
                     rules={[{ required: false }]}
                     initialValue=""
                   >
-                    <RangePicker
-                      onChange={(v) => {
-                        setStartDate(String(v?.[0]?.format("L")));
-                        setEndDate(String(v?.[1]?.format("L")));
-                      }}
-                    />
+                    <RangePicker />
                   </Form.Item>
                 </>
               ) : (
                 <>
                   <Form.Item
-                    name="Time Frame"
+                    name="frequency"
                     rules={[{ required: true }]}
                     extra="Return the trend for the previous (frame) number of (period)s i.e. 3 weeks"
                   >
-                    <Select
-                      placeholder="Time Frame"
-                      style={{ width: 240 }}
-                      onChange={(value) => setFrequency(value)}
-                    >
+                    <Select placeholder="Time Frame" style={{ width: 240 }}>
                       {[...Array(24).keys()].map((type) => (
                         <Option key={`${type + 1}`} value={type + 1}>
                           {type + 1}
@@ -493,22 +405,21 @@ const GraphModal: React.FC<GraphModalProps> = ({
                 </>
               )}
               <Form.Item
-                name="Time Period"
+                name="breakdown"
                 rules={[{ required: true }]}
                 extra="How to split up the information"
-                initialValue={breakdown}
+                initialValue={"Month"}
               >
-                <Select
-                  placeholder="Time Period"
-                  style={{ width: 240 }}
-                  onChange={(value) => setBreakdown(value)}
-                >
+                <Select placeholder="Time Period" style={{ width: 240 }}>
                   {["Day", "Week", "Month", "Year"].map((type) => (
                     <Option key={`${type}`} value={type}>
                       {type}
                     </Option>
                   ))}
                 </Select>
+              </Form.Item>
+              <Form.Item name="cumulative" valuePropName="checked">
+                <Checkbox defaultChecked>Cumulative</Checkbox>
               </Form.Item>
             </>
           ) : (
@@ -518,12 +429,13 @@ const GraphModal: React.FC<GraphModalProps> = ({
       </Modal>
       {!isEdit ? (
         <Button
+          className="add-graph-button"
           icon={<PlusOutlined />}
           type="dashed"
           onClick={() => setModalOpen(true)}
           style={{ marginRight: "5px" }}
         >
-          Add Graph
+          Graph
         </Button>
       ) : (
         <></>

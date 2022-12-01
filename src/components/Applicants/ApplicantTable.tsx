@@ -9,6 +9,7 @@ import {
   Form,
   Input,
   InputRef,
+  Layout,
   List,
   message,
   Row,
@@ -34,10 +35,12 @@ interface DataType {
   combined_fee_status: string;
   admissions_cycle: number;
   nationality: string;
-  program_code: string;
+  program_type: string;
 }
 
 type DataIndex = keyof DataType;
+
+const { Content } = Layout;
 
 export const ApplicantTable = () => {
   const api = new APIService();
@@ -48,7 +51,7 @@ export const ApplicantTable = () => {
 
   /* Table Filters */
   const [nationalities, setNationalities] = useState([]);
-  const [program_codes, setProgramCodes] = useState([]);
+  const [program_type, setProgramType] = useState([]);
   const [genders, setGenders] = useState([]);
   const [fee_status, setFeeStatus] = useState([]);
   const [admissions_cycle, setAdmissionsCycle] = useState([]);
@@ -183,10 +186,10 @@ export const ApplicantTable = () => {
           ];
           setGenders(gender);
 
-          const program_code: any = [
-            ...new Set(res.data.map((v: any) => v["program_code"])),
+          const program_type: any = [
+            ...new Set(res.data.map((v: any) => v["program_type"])),
           ];
-          setProgramCodes(program_code);
+          setProgramType(program_type);
 
           const fee_status: any = [
             ...new Set(res.data.map((v: any) => v["combined_fee_status"])),
@@ -241,12 +244,12 @@ export const ApplicantTable = () => {
     },
     {
       title: "Program",
-      dataIndex: "program_code",
-      filters: program_codes.map((code) => {
+      dataIndex: "program_type",
+      filters: program_type.map((code) => {
         return { text: code, value: code };
       }),
       filterSearch: true,
-      onFilter: (value, record) => record.program_code === value,
+      onFilter: (value, record) => record.program_type === value,
     },
     {
       title: "Fee Status",
@@ -299,21 +302,32 @@ export const ApplicantTable = () => {
 
   return (
     <>
-      <Table
-        columns={columns}
-        dataSource={tableData}
-        onChange={onChange}
-        loading={reload}
-        onRow={(record: DataType, index) => {
-          return {
-            onClick: (e) => {
-              setActiveCandidate(record as any);
-              setDrawerOpen(true);
-            },
-          };
-        }}
-        scroll={{ y: "calc(90vh - 4em)" }}
-      />
+      <Layout>
+        <Content
+          className="site-layout-content"
+          style={{
+            padding: 24,
+            margin: 24,
+            minHeight: 280,
+            background: "#fff",
+          }}
+        >
+          <Table
+            columns={columns}
+            dataSource={tableData}
+            onChange={onChange}
+            loading={reload}
+            onRow={(record: DataType, index) => {
+              return {
+                onClick: (e) => {
+                  setActiveCandidate(record as any);
+                  setDrawerOpen(true);
+                },
+              };
+            }}
+          />
+        </Content>
+      </Layout>
       <Drawer
         width={640}
         open={drawerOpen}

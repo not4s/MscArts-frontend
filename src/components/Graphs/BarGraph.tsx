@@ -3,7 +3,7 @@ import { EditText } from "react-edit-text";
 import "react-edit-text/dist/index.css";
 import { Column, ColumnConfig } from "@ant-design/charts";
 import { DraggableHandle } from "./styles";
-import { Graph, TargetInterface } from "../../constants/graphs";
+import { BarGraphInterface, Graph, TargetInterface } from "../../constants/graphs";
 import { Modal, Button, Dropdown } from "antd";
 import type { MenuProps } from "antd";
 import {
@@ -24,42 +24,47 @@ const DEFAULT_CONFIG = {
   seriesField: "type",
   tooltip: {
     showTitle: true,
-  },
+  }
 };
 
 interface BarGraphProps {
-  primary: string;
-  data: any[] | undefined;
-  title: string;
+  graph: BarGraphInterface
   setTitle: (newTitle: string) => void;
   deleteGraph: () => void;
   editGraph: (x: Graph) => void;
 }
 
 const BarGraph: React.FC<BarGraphProps> = ({
-  primary,
-  data,
-  title,
+  graph,
   setTitle,
   deleteGraph,
   editGraph,
-  ...props
 }) => {
-  const [config, setConfig] = useState<ColumnConfig>(DEFAULT_CONFIG);
+  const [config, setConfig] = useState<ColumnConfig>();
   useEffect(() => {
-    if (data) {
-      let newConfig: ColumnConfig = {
+    if (graph.data) {
+      let newConfig: any = {
         ...DEFAULT_CONFIG,
-        data,
-        xField: primary,
+        data: graph.data,
+        xField: graph.primary,
       };
-      const p: any = props;
-      if (p["target"] !== undefined && p["target"].length > 1) {
+      if (graph.target && graph.target.length > 1) {
         const annotations: any[] = [];
-        const target: TargetInterface[] = p["target"];
+        const target: TargetInterface[] = graph.target;
 
         for (let i = 0; i < target.length; i++) {
           const targetAmount = target[i]["target"];
+
+          const tooltip = {
+            showTitle: true,
+            customItems: (originalItems: any[]) => {
+              originalItems.push({
+                name: "Target",
+                value: targetAmount
+              })
+              return originalItems;
+            }
+          }
 
           annotations.push({
             type: "line",
@@ -80,7 +85,7 @@ const BarGraph: React.FC<BarGraphProps> = ({
               ];
             },
             text: {
-              content: `Target`,
+              content: `Target ${targetAmount}`,
             },
             style: {
               lineWidth: 2,
@@ -88,11 +93,21 @@ const BarGraph: React.FC<BarGraphProps> = ({
             },
           });
         }
-        newConfig = { ...newConfig, annotations };
+        newConfig = {
+          ...newConfig, annotations, onReady: (plot: any) => {
+            // console.log(plot);
+
+            // plot.on('tooltip:show', (evt: any) => {
+            //   console.log(plot);
+            //   console.log(evt);
+            //   evt["data"]["items"]
+            // })
+          }
+        };
       }
       setConfig(newConfig);
     }
-  }, [data]);
+  }, [graph]);
 
   const operationItems: MenuProps["items"] = [
     {
@@ -100,8 +115,7 @@ const BarGraph: React.FC<BarGraphProps> = ({
       key: `op-1`,
       icon: <EditOutlined />,
       onClick: (e) => {
-        // @ts-ignore
-        setEdit({ ...props, data: undefined, title, primary, type: "BAR" });
+        setEdit(graph);
       },
     },
     {
@@ -124,20 +138,20 @@ const BarGraph: React.FC<BarGraphProps> = ({
       onOk() {
         deleteGraph();
       },
-      onCancel() {},
+      onCancel() { },
     });
   };
 
   return (
     <>
-      <GraphModal editInput={edit} submitAction={editGraph} isEdit={true} />
+      <GraphModal editInput={edit} submitAction={editGraph} isEdit={true} resetEdit={() => setEdit(undefined)} />
       <DraggableHandle className="myDragHandleClassName">
         <table>
           <tr>
             <td className="a" style={{ width: "calc(100%)" }}>
               <EditText
                 name="textbox3"
-                defaultValue={title}
+                defaultValue={graph.title}
                 inputClassName="bg-success"
                 onSave={(e) => setTitle(e.value)}
               />
@@ -152,7 +166,7 @@ const BarGraph: React.FC<BarGraphProps> = ({
           </tr>
         </table>
       </DraggableHandle>
-      <Column className="our-chart" {...config} />
+      { config ? <Column className="our-chart" {...config} /> : <></> }
     </>
   );
 };
