@@ -18,8 +18,9 @@ const ReactGridLayout = WidthProvider(RGL);
 interface Props {
   graphIndex: number;
   graphContent: Graph[];
-  setGraphContent: (key: number, graph: Graph[]) => void;
+  setGraphContent: (key: number, graph: Graph[], store?: boolean) => void;
   mock: boolean;
+  initialLoad: boolean;
 }
 
 const GraphGrid: React.FC<Props> = ({
@@ -27,6 +28,7 @@ const GraphGrid: React.FC<Props> = ({
   graphContent,
   setGraphContent,
   mock = false,
+  initialLoad,
 }) => {
   const [graphs, setGraphs] = useState<Graph[]>([]);
   const [loaded, setLoaded] = useState<boolean>(false);
@@ -35,8 +37,8 @@ const GraphGrid: React.FC<Props> = ({
   const api = new APIService();
 
   React.useEffect(() => {
+    if (!initialLoad) return;
     const newGraphs = [...graphContent];
-
     const init = async (newGraphs: Graph[]) => {
       if (!loaded) setLoading(true);
       let change = false;
@@ -154,7 +156,7 @@ const GraphGrid: React.FC<Props> = ({
     for (let i = 0; i < newGraphs.length; i++) {
       newGraphs[i].layout = layouts[i];
     }
-    setGraphContent(graphIndex, newGraphs);
+    setGraphContent(graphIndex, newGraphs, true);
   };
 
   const setTitle = (i: number, title: string) => {
@@ -163,7 +165,7 @@ const GraphGrid: React.FC<Props> = ({
     newGraphs[i].title = title;
 
     console.log(newGraphs);
-    setGraphContent(graphIndex, newGraphs);
+    setGraphContent(graphIndex, newGraphs, true);
   };
 
   const deleteGraph = (i: number) => {
@@ -171,7 +173,7 @@ const GraphGrid: React.FC<Props> = ({
     console.log(newGraphs);
 
     newGraphs.splice(i, 1);
-    setGraphContent(graphIndex, newGraphs);
+    setGraphContent(graphIndex, newGraphs, true);
   };
 
   const editGraph = (i: number, newGraph: Graph) => {
@@ -179,7 +181,7 @@ const GraphGrid: React.FC<Props> = ({
 
     newGraphs[i] = newGraph;
 
-    setGraphContent(graphIndex, newGraphs);
+    setGraphContent(graphIndex, newGraphs, true);
   };
 
   return !loading ? (

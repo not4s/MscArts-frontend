@@ -55,6 +55,7 @@ const ParamGraphGrid = () => {
           graphIndex={graphIndex}
           mock={false}
           setGraphContent={(e, v) => setGraphContent(0, v)}
+          initialLoad={true}
         />
       )}
     </>

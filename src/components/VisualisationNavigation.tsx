@@ -174,27 +174,23 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
     },
   ];
 
-  const setGraphContentWithCookie = (content: GraphGridInterface[]) => {
-    // cookies.set(
-    //   "visualisations",
-    //   [...content].map(({ label, key, graph }: GraphGridInterface) => ({
-    //     label,
-    //     key,
-    //     graph: [...graph].map((graph: Graph) => {
-    //       let newG = { ...graph };
-    //       newG["data"] = undefined;
-    //       return newG;
-    //     }),
-    //   }))
-    // );
-
+  const setGraphContentWithStore = (content: GraphGridInterface[]) => {
+    saveToDatabase();
     setGraphContent(content);
   };
 
-  const setGraphContentByKey = (key: number, newGraphs: Graph[]): void => {
+  const setGraphContentByKey = (
+    key: number,
+    newGraphs: Graph[],
+    store = false
+  ): void => {
     let newGraphContent = [...graphContent];
     newGraphContent[key].graph = newGraphs;
-    setGraphContentWithCookie(newGraphContent);
+    if (store) {
+      setGraphContentWithStore(newGraphContent);
+    } else {
+      setGraphContent(newGraphContent);
+    }
   };
 
   const makeGraphGrid = (index: number, graph: Graph[]) => {
@@ -204,6 +200,7 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
         graphIndex={index}
         setGraphContent={setGraphContentByKey}
         mock={mock}
+        initialLoad={!loading}
       />
     );
   };
@@ -237,14 +234,26 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
   };
 
   const saveToDatabase = () => {
-    api.postUserLayout(graphContent).then();
+    const newG = [...graphContent].map(
+      ({ label, key, graph }: GraphGridInterface) => ({
+        label,
+        key,
+        graph: [...graph].map((graph: Graph) => {
+          let newG = { ...graph };
+          newG["data"] = undefined;
+          return newG;
+        }),
+      })
+    );
+    api.postUserLayout(newG).then();
   };
 
   useEffect(() => {
     api.getUserLayout().then((res) => {
-      if (res.data["layout"] != "") {
+      if (res.data != undefined) {
         console.log("pulled values", JSON.parse(res.data));
         setGraphContent(JSON.parse(res.data));
+        console.log("content set");
       }
       setLoading(false);
     });
@@ -280,7 +289,7 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
       { label: newLabel, key: newItemKey, graph: newGraph },
     ];
 
-    setGraphContentWithCookie(newGraphContent);
+    setGraphContentWithStore(newGraphContent);
     setActiveKey(newItemKey);
     setKeyCounter((old) => old + 1);
   };
@@ -291,7 +300,7 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
     let newGraphContent = [...graphContent];
     newGraphContent.splice(targetIndex, 1);
 
-    setGraphContentWithCookie(newGraphContent);
+    setGraphContentWithStore(newGraphContent);
 
     console.log(newGraphContent);
 
@@ -380,7 +389,7 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
 
           newGraphContent[targetIndex].graph = newGraph;
 
-          setGraphContentWithCookie(newGraphContent);
+          setGraphContentWithStore(newGraphContent);
           message.success("Imported Successfully", 0.5);
         } else {
           message.error("Import failed", 0.5);
@@ -401,7 +410,7 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
       newGraph,
       ...newGraphContent[targetIndex].graph,
     ];
-    setGraphContentWithCookie(newGraphContent);
+    setGraphContentWithStore(newGraphContent);
   };
 
   const operationItems: MenuProps["items"] = [
@@ -438,7 +447,7 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
 
     if (targetIndex != -1) {
       newGraphContent[targetIndex].label = newName;
-      setGraphContentWithCookie(newGraphContent);
+      setGraphContentWithStore(newGraphContent);
       setItems(makeTabItem(newGraphContent));
     }
 

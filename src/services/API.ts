@@ -298,12 +298,12 @@ export class APIService {
   }
 
   getUserLayout(): Promise<APIResponse> {
-    return this.buildAuthRequest("GET", "api/user/layout");
+    return this.buildAuthRequest("GET", "api/user/layout/");
   }
 
   postUserLayout(layout: GraphGridInterface[]): Promise<APIResponse> {
     console.log(layout);
-    return this.buildAuthRequest("POST", "api/user/layout", {
+    return this.buildAuthRequest("POST", "api/user/layout/", {
       layout: layout,
     });
   }
