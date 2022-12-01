@@ -419,7 +419,7 @@ const GraphModal: React.FC<GraphModalProps> = ({
                 </Select>
               </Form.Item>
               <Form.Item name="cumulative" valuePropName="checked">
-                <Checkbox>Cumulative</Checkbox>
+                <Checkbox defaultChecked>Cumulative</Checkbox>
               </Form.Item>
             </>
           ) : (

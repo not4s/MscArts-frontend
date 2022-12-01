@@ -83,6 +83,7 @@ const GraphGrid: React.FC<Props> = ({
               startDate: lineGraph.startDate,
               endDate: lineGraph.endDate,
               cumulative: lineGraph.cumulative ? 1 : 0,
+              customDecision: lineGraph.customDecision,
             };
             let res = null;
             if (lineGraph.cycle !== null && lineGraph.cycle === "cycle") {
@@ -90,7 +91,7 @@ const GraphGrid: React.FC<Props> = ({
             } else {
               res = await api.getTrends(fetchParams);
             }
-            let data = res.data.reverse();
+            let data = res.data;
             console.log(data);
             newGraphs[i]["data"] = data;
           }

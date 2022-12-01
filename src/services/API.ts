@@ -240,16 +240,27 @@ export class APIService {
     });
   }
 
-  getTrends({ breakdown, frequency, series, code, decisionStatus }: any) {
+  getTrends({
+    breakdown,
+    frequency,
+    series,
+    code,
+    decisionStatus,
+    customDecision,
+  }: any) {
     let endpoint = `api/trends/?unit=${frequency}&period=${breakdown}`;
     if (series !== null && series !== "all") {
       endpoint += `&series=${series}`;
     }
     if (code != null) {
-      endpoint += `&code=${code}`;
+      endpoint += `&program_type=${code}`;
     }
-    if (decisionStatus != null) {
+    if (decisionStatus != null && decisionStatus.toLowerCase() !== "all") {
       endpoint += `&decision_status=${decisionStatus}`;
+    }
+    console.log(customDecision);
+    if (customDecision !== undefined && customDecision.length > 0) {
+      endpoint += `&custom_decision=${customDecision.join(",")}`;
     }
     return this.buildAuthRequest("GET", endpoint);
   }
@@ -264,16 +275,16 @@ export class APIService {
     endDate,
     decisionStatus,
     cumulative,
+    customDecision,
   }: any) {
     let cycles = cycleYears.join(",");
     let endpoint = `api/trends/cycle?period=${breakdown}&cumulative=${cumulative}`;
-    console.log(code);
-    console.log(decisionStatus);
+    console.log(customDecision);
 
     if (cycleYears.length > 0) {
       endpoint += `&cycle=${cycles}`;
     }
-    if (startDate !== "" && endDate !== "") {
+    if (startDate !== "undefined" && endDate !== "undefined") {
       endpoint += `&start=${startDate.slice(0, 5)}`;
       endpoint += `&end=${endDate.slice(0, 5)}`;
     }
@@ -283,6 +294,10 @@ export class APIService {
     if (decisionStatus !== null && decisionStatus.toLowerCase() !== "all") {
       endpoint += `&decision_status=${decisionStatus}`;
     }
+    if (customDecision !== undefined && customDecision.length > 0) {
+      endpoint += `&custom_decision=${customDecision.join(",")}`;
+    }
+
     return this.buildAuthRequest("GET", endpoint);
   }
 
