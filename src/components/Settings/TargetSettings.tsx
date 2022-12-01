@@ -49,9 +49,8 @@ const TargetSettings = () => {
   const api = new APIService();
 
   useEffect(() => {
-    api.getAllAttributes()
-      .then((res) => setYear(res.data["admissions_cycle"]))
-  }, [])
+    api.getAllAttributes().then((res) => setYear(res.data["admissions_cycle"]));
+  }, []);
 
   useEffect(() => {
     if (reload) {
@@ -127,7 +126,7 @@ const TargetSettings = () => {
             message.error("Failed to delete target");
           });
       },
-      onCancel() { },
+      onCancel() {},
     });
   };
 
@@ -182,10 +181,11 @@ const TargetSettings = () => {
             rules={[{ required: true }]}
           >
             <Select placeholder="Year" disabled={editInput !== undefined}>
-              {
-                year?.map((year, index) =>
-                  (<Select.Option key={`${year}-${index}`} value={year}>{year}</Select.Option>))
-              }
+              {year?.map((year, index) => (
+                <Select.Option key={`${year}-${index}`} value={year}>
+                  {year}
+                </Select.Option>
+              ))}
             </Select>
           </Form.Item>
           <Form.Item
@@ -204,76 +204,93 @@ const TargetSettings = () => {
         </Form>
       </Modal>
       <Layout>
-        <Layout>
-          <Content
-            className="site-layout-content"
-            style={{
-              padding: 24,
-              marginTop: 10,
-              margin: 24,
-              minHeight: 100,
-              background: "#fff",
-            }}
-          >
-            <List
-              header={
-                <>
-                  <Row>
-                    <Col span={4}>
-                      <Select
-                        style={{ width: "100%" }}
-                        defaultValue={0}
-                        value={activeYear}
-                        onChange={(e) => setActiveYear(e)}
-                      >
-                        <Select.Option value={0}>All</Select.Option>
-                        {
-                          year?.map((year, index) =>
-                            (<Select.Option key={`${year}-${index}`} value={year}>{year}</Select.Option>))
-                        }
-                      </Select>
-                    </Col>
-                    <Col xl={{ span: 1, offset: 18}} lg={{span:1, offset: 17}} md={{ span: 1, offset: 16}}>
-                    <Button type="primary" icon={<PlusOutlined />} onClick={(e) => setModalOpen(true)}>
+        <Content
+          className="site-layout-content"
+          style={{
+            padding: 24,
+            marginTop: 10,
+            margin: 24,
+            minHeight: 100,
+            background: "#fff",
+          }}
+        >
+          <List
+            header={
+              <>
+                <Row>
+                  <Col span={4}>
+                    <Select
+                      style={{ width: "100%" }}
+                      defaultValue={0}
+                      value={activeYear}
+                      onChange={(e) => setActiveYear(e)}
+                    >
+                      <Select.Option value={0}>All</Select.Option>
+                      {year?.map((year, index) => (
+                        <Select.Option key={`${year}-${index}`} value={year}>
+                          {year}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Col>
+                  <Col
+                    xl={{ span: 1, offset: 18 }}
+                    lg={{ span: 1, offset: 17 }}
+                    md={{ span: 1, offset: 16 }}
+                  >
+                    <Button
+                      type="primary"
+                      icon={<PlusOutlined />}
+                      onClick={(e) => setModalOpen(true)}
+                    >
                       Target
                     </Button>
-                    </Col>
-                  </Row>
-                </>
-              }
-              dataSource={targets.filter(
-                (target: DataType) => {
-                  return activeYear === 0 || Number(target.year) === activeYear
-                }
-              )}
-              renderItem={(target: DataType) => (
-                <List.Item
-                  actions={[
-                    <Button onClick={(e) => setEditInput(target)}>
-                      <EditOutlined />
-                    </Button>,
-                    <Button onClick={(e) => deleteTarget(target)}>
-                      <DeleteOutlined />
-                    </Button>,
-                  ]}
-                >
-                  <List.Item.Meta
-                    title={<p>{target.program_type} ({target.year})</p>}
-                    description={target.fee_status}
-                  />
-                  <div style={{ width: "70%" }}>
-                    {target.progress ?
-                      <div style={{ width: "100%" }}>
-                        <span>{target.progress} / {target.target}</span>
-                        <Progress percent={Math.round(100 * target.progress / target.target)} />
-                      </div> : <></>
-                    }
-                  </div>
-                </List.Item>
-              )}
-            />
-          </Content>
-        </Layout>
+                  </Col>
+                </Row>
+              </>
+            }
+            dataSource={targets.filter((target: DataType) => {
+              return activeYear === 0 || Number(target.year) === activeYear;
+            })}
+            renderItem={(target: DataType) => (
+              <List.Item
+                actions={[
+                  <Button onClick={(e) => setEditInput(target)}>
+                    <EditOutlined />
+                  </Button>,
+                  <Button onClick={(e) => deleteTarget(target)}>
+                    <DeleteOutlined />
+                  </Button>,
+                ]}
+              >
+                <List.Item.Meta
+                  title={
+                    <p>
+                      {target.program_type} ({target.year})
+                    </p>
+                  }
+                  description={target.fee_status}
+                />
+                <div style={{ width: "70%" }}>
+                  {target.progress ? (
+                    <div style={{ width: "100%" }}>
+                      <span>
+                        {target.progress} / {target.target}
+                      </span>
+                      <Progress
+                        percent={Math.round(
+                          (100 * target.progress) / target.target
+                        )}
+                      />
+                    </div>
+                  ) : (
+                    <></>
+                  )}
+                </div>
+              </List.Item>
+            )}
+          />
+        </Content>
       </Layout>
     </>
   );

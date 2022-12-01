@@ -7,13 +7,17 @@ import {
 } from "@ant-design/icons";
 import {
   Button,
+  Col,
   Form,
   Input,
+  Layout,
   message,
   Modal,
+  Row,
   Space,
   Table,
   Tooltip,
+  Typography,
 } from "antd";
 import { ColumnsType } from "antd/lib/table";
 import React, { useEffect, useState } from "react";
@@ -26,6 +30,7 @@ interface DataType {
   title: string;
 }
 
+const { Content } = Layout;
 const { confirm } = Modal;
 
 const TemplateSettings = () => {
@@ -210,28 +215,41 @@ const TemplateSettings = () => {
           </Form.Item>
         </Form>
       </Modal>
-
-      <Table
-        columns={columns}
-        dataSource={data}
-        loading={reload}
-        pagination={{
-          total: 1,
-          showTotal: (total) => {
-            return (
+      <Layout>
+        <Content
+          className="site-layout-content"
+          style={{
+            padding: 24,
+            marginTop: 10,
+            margin: 24,
+            minHeight: 100,
+            background: "#fff",
+          }}
+        >
+          <Row>
+            <Col span={4}>
+              <Typography.Title level={3}>Template Settings</Typography.Title>
+            </Col>
+            <Col
+              xl={{ span: 1, offset: 17 }}
+              lg={{ span: 1, offset: 16 }}
+              md={{ span: 1, offset: 15 }}
+            >
               <Button
+                type="primary"
                 icon={<PlusOutlined />}
                 onClick={(e) => {
                   setEditInput(undefined);
                   setModalOpen(true);
                 }}
               >
-                New Default Template
+                Default Template
               </Button>
-            );
-          },
-        }}
-      />
+            </Col>
+          </Row>
+          <Table columns={columns} dataSource={data} loading={reload} />
+        </Content>
+      </Layout>
     </>
   );
 };
