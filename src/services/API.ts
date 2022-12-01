@@ -262,9 +262,14 @@ export class APIService {
     cycleYears,
     startDate,
     endDate,
+    decisionStatus,
+    cumulative,
   }: any) {
     let cycles = cycleYears.join(",");
-    let endpoint = `api/trends/cycle?period=${breakdown}`;
+    let endpoint = `api/trends/cycle?period=${breakdown}&cumulative=${cumulative}`;
+    console.log(code);
+    console.log(decisionStatus);
+
     if (cycleYears.length > 0) {
       endpoint += `&cycle=${cycles}`;
     }
@@ -272,7 +277,12 @@ export class APIService {
       endpoint += `&start=${startDate.slice(0, 5)}`;
       endpoint += `&end=${endDate.slice(0, 5)}`;
     }
-
+    if (code !== null && code.toLowerCase() !== "all") {
+      endpoint += `&program_type=${code}`;
+    }
+    if (decisionStatus !== null && decisionStatus.toLowerCase() !== "all") {
+      endpoint += `&decision_status=${decisionStatus}`;
+    }
     return this.buildAuthRequest("GET", endpoint);
   }
 

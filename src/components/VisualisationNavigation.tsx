@@ -169,6 +169,7 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
           breakdown: "year",
           series: "gender",
           cycle: "relative",
+          cumulative: true,
         },
       ],
     },
@@ -403,7 +404,7 @@ const VisualisationNavigation: React.FC<VisualisationNavigationProps> = ({
 
   const operations = (
     <>
-      <GraphModal submitAction={addGraph}/>
+      <GraphModal submitAction={addGraph} />
       <Dropdown menu={{ items: operationItems }}>
         <Button className="more-actions-button">
           More Actions

@@ -37,7 +37,7 @@ interface GraphModalProps {
   submitAction: (newGraph: Graph) => void;
   editInput?: Graph | undefined;
   resetEdit?: () => void;
-  isEdit?: boolean
+  isEdit?: boolean;
 }
 
 const makeTitle = (graph: Graph) => {
@@ -49,7 +49,7 @@ const GraphModal: React.FC<GraphModalProps> = ({
   submitAction,
   editInput,
   resetEdit,
-  isEdit = false
+  isEdit = false,
 }) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [form] = Form.useForm<Graph>();
@@ -63,11 +63,11 @@ const GraphModal: React.FC<GraphModalProps> = ({
     y: 0,
   });
 
-  const type = Form.useWatch('type', form);
-  const decisionStatus = Form.useWatch('decisionStatus', form);
-  const primary = Form.useWatch('primary', form);
-  const secondary = Form.useWatch('secondary', form);
-  const cycle = Form.useWatch('cycle', form);
+  const type = Form.useWatch("type", form);
+  const decisionStatus = Form.useWatch("decisionStatus", form);
+  const primary = Form.useWatch("primary", form);
+  const secondary = Form.useWatch("secondary", form);
+  const cycle = Form.useWatch("cycle", form);
 
   /* Line Graph Values */
   const [admissionCycles, setAdmissionCycles] = useState([
@@ -79,8 +79,8 @@ const GraphModal: React.FC<GraphModalProps> = ({
 
   React.useEffect(() => {
     if (editInput !== undefined) {
-      console.log(editInput)
-      form.setFieldsValue(editInput)
+      console.log(editInput);
+      form.setFieldsValue(editInput);
       setLayout(editInput.layout);
 
       /* Open the Modal */
@@ -92,17 +92,26 @@ const GraphModal: React.FC<GraphModalProps> = ({
   const { RangePicker } = DatePicker;
 
   useEffect(() => {
-    api.getAllAttributes()
-      .then((res) => {
-        const cycles = res.data.admissions_cycle.map((v: any) => String(v).slice(-2));
-        setAdmissionCycles(cycles);
-      })
-  }, [])
+    api.getAllAttributes().then((res) => {
+      const cycles = res.data.admissions_cycle.map((v: any) =>
+        String(v).slice(-2)
+      );
+      setAdmissionCycles(cycles);
+    });
+  }, []);
 
   const handleOk = (values: Graph) => {
     setModalOpen(false);
     console.log(values);
-    const { type, title, primary, year, programType, decisionStatus, customDecision, } = values;
+    const {
+      type,
+      title,
+      primary,
+      year,
+      programType,
+      decisionStatus,
+      customDecision,
+    } = values;
 
     let baseGraph: BaseGraphInterface = {
       type: type,
@@ -137,11 +146,11 @@ const GraphModal: React.FC<GraphModalProps> = ({
         break;
       case "LINE":
         const lineValues: any = values;
-        
-        console.log(lineValues["dateRange"])
 
-        const startDate = String(lineValues["dateRange"]?.[0]?.format("L"))
-        const endDate = String(lineValues["dateRange"]?.[1]?.format("L"))
+        console.log(lineValues["dateRange"]);
+
+        const startDate = String(lineValues["dateRange"]?.[0]?.format("L"));
+        const endDate = String(lineValues["dateRange"]?.[1]?.format("L"));
 
         finalGraph = {
           ...finalGraph,
@@ -152,6 +161,7 @@ const GraphModal: React.FC<GraphModalProps> = ({
           startDate,
           endDate,
           cycle: lineValues.cycle,
+          cumulative: lineValues.cumulative,
         };
       default:
     }
@@ -172,23 +182,21 @@ const GraphModal: React.FC<GraphModalProps> = ({
         title="Create a new visualisation"
         open={isModalOpen}
         onOk={() => {
-          form.validateFields()
+          form
+            .validateFields()
             .then((values) => {
               form.resetFields();
               handleOk(values);
             })
             .catch((info) => {
               console.log("Validation Fail: ", info);
-            })
+            });
         }}
         okText="Submit"
         onCancel={handleCancel}
       >
         <Form form={form}>
-          <Form.Item
-            name="type"
-            rules={[{ required: true }]}
-          >
+          <Form.Item name="type" rules={[{ required: true }]}>
             <Select
               placeholder="Select visualisation type"
               style={{ width: 240 }}
@@ -211,9 +219,7 @@ const GraphModal: React.FC<GraphModalProps> = ({
           {type ? (
             <>
               <Form.Item name="title">
-                <Input
-                  placeholder="Chart Title (Optional)"
-                />
+                <Input placeholder="Chart Title (Optional)" />
               </Form.Item>
 
               {type !== "LINE" ? (
@@ -244,10 +250,7 @@ const GraphModal: React.FC<GraphModalProps> = ({
               </Form.Item>
 
               {decisionStatus === "custom" ? (
-                <Form.Item
-                  name="customDecision"
-                  rules={[{ required: true }]}
-                >
+                <Form.Item name="customDecision" rules={[{ required: true }]}>
                   <Select
                     mode="multiple"
                     placeholder="Select Decision Status to filter"
@@ -266,10 +269,7 @@ const GraphModal: React.FC<GraphModalProps> = ({
                 rules={[{ required: true }]}
                 extra="This is the degree from which to access the data"
               >
-                <Select
-                  placeholder="Select Degree"
-                  style={{ width: 240 }}
-                >
+                <Select placeholder="Select Degree" style={{ width: 240 }}>
                   {degreeTypes.map((type, index) => (
                     <Option key={`degree-${index}`} value={type}>
                       {type}
@@ -286,10 +286,7 @@ const GraphModal: React.FC<GraphModalProps> = ({
                   rules={[{ required: true }]}
                   extra="E.g. 'Gender' will create columns for 'Male' and 'Female' respectfully"
                 >
-                  <Select
-                    placeholder="Select columns"
-                    style={{ width: 240 }}
-                  >
+                  <Select placeholder="Select columns" style={{ width: 240 }}>
                     {Object.keys(APPLICANT_COLUMN_MAPPING).map((k, index) => {
                       return (
                         <Option key={index} value={APPLICANT_COLUMN_MAPPING[k]}>
@@ -327,10 +324,7 @@ const GraphModal: React.FC<GraphModalProps> = ({
                     : "E.g. 'Fee Status' will breakdown the Genders into their fee statuses"
                 }
               >
-                <Select
-                  placeholder="Select Stack Type"
-                  style={{ width: 240 }}
-                >
+                <Select placeholder="Select Stack Type" style={{ width: 240 }}>
                   <Option value={""}>None</Option>
                   {Object.keys(APPLICANT_COLUMN_MAPPING).map((k, index) => {
                     return (
@@ -354,10 +348,7 @@ const GraphModal: React.FC<GraphModalProps> = ({
 
           {type === "PIE" ? (
             <>
-              <Form.Item
-                name="top"
-                label="Display Top"
-              >
+              <Form.Item name="top" label="Display Top">
                 <InputNumber min={0} />
               </Form.Item>
             </>
@@ -376,10 +367,7 @@ const GraphModal: React.FC<GraphModalProps> = ({
               </Form.Item>
               {cycle === "cycle" ? (
                 <>
-                  <Form.Item
-                    name="cycleYears"
-                    rules={[{ required: true }]}
-                  >
+                  <Form.Item name="cycleYears" rules={[{ required: true }]}>
                     <Select
                       mode="multiple"
                       placeholder="Select Admission Cycles to Compare"
@@ -406,10 +394,7 @@ const GraphModal: React.FC<GraphModalProps> = ({
                     rules={[{ required: true }]}
                     extra="Return the trend for the previous (frame) number of (period)s i.e. 3 weeks"
                   >
-                    <Select
-                      placeholder="Time Frame"
-                      style={{ width: 240 }}
-                    >
+                    <Select placeholder="Time Frame" style={{ width: 240 }}>
                       {[...Array(24).keys()].map((type) => (
                         <Option key={`${type + 1}`} value={type + 1}>
                           {type + 1}
@@ -425,16 +410,16 @@ const GraphModal: React.FC<GraphModalProps> = ({
                 extra="How to split up the information"
                 initialValue={"Month"}
               >
-                <Select
-                  placeholder="Time Period"
-                  style={{ width: 240 }}
-                >
+                <Select placeholder="Time Period" style={{ width: 240 }}>
                   {["Day", "Week", "Month", "Year"].map((type) => (
                     <Option key={`${type}`} value={type}>
                       {type}
                     </Option>
                   ))}
                 </Select>
+              </Form.Item>
+              <Form.Item name="cumulative" valuePropName="checked">
+                <Checkbox>Cumulative</Checkbox>
               </Form.Item>
             </>
           ) : (

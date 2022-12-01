@@ -49,4 +49,5 @@ export interface LineGraphInterface extends BaseGraphInterface {
   startDate?: string;
   endDate?: string;
   cycleYears?: string[];
+  cumulative?: boolean;
 }

@@ -82,6 +82,7 @@ const GraphGrid: React.FC<Props> = ({
               cycleYears: lineGraph.cycleYears,
               startDate: lineGraph.startDate,
               endDate: lineGraph.endDate,
+              cumulative: lineGraph.cumulative ? 1 : 0,
             };
             let res = null;
             if (lineGraph.cycle !== null && lineGraph.cycle === "cycle") {
